@@ -85,8 +85,8 @@ class FlipComposite(Composite):
     flip = True
 
 
-_x = _chain_ = CallableFactory(funcs=Composite)
-x_ = _niahc_ = CallableFactory(funcs=FlipComposite)
+_x = _comp_ = CallableFactory(funcs=Composite)
+x_ = _pmoc_ = CallableFactory(funcs=FlipComposite)
 stars = CallableFactory(funcs=Stars)
 
 # __*fin*__

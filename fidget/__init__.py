@@ -3,15 +3,15 @@
 try:
     from .sequence import _l, _t, _list_, _tuple_
     from .container import _s, _d, _f, _dict_, _conditional_, _set_
-    from .composite import _x, stars, _chain_, _niahc_, x_
+    from .composite import _x, stars, _comp_, _pmoc_, x_
 except:
     from sequence import _l, _t, _list_, _tuple_
     from container import _s, _d, _f, _dict_, _conditional_, _set_
-    from composite import _x, stars, _chain_, _niahc_, x_
+    from composite import _x, stars, _comp_, _pmoc_, x_
 
 
 __all__ = [
-    '_x', 'x_', '_s', '_d', '_l', '_t', '_f', 'stars', '_chain_', '_niahc_',
+    '_x', 'x_', '_s', '_d', '_l', '_t', '_f', 'stars', '_comp_', '_pmoc_',
     '_dict_', '_list_', '_conditional_', '_set_', '_tuple_'
 ]
 
