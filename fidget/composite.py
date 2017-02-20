@@ -113,10 +113,4 @@ _x = _comp_ = CallableFactory(funcs=Composite)
 x_ = _pmoc_ = CallableFactory(funcs=FlipComposite)
 stars = CallableFactory(funcs=Stars)
 
-
-from toolz.curried.operator import *
-
-
-_x(11)[range] % x_(5)[lt] >> list
-
 # __*fin*__
