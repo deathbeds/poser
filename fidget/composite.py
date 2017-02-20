@@ -29,29 +29,55 @@ dispatcher = _conditional_[OrderedDict(
              isgenerator, _sequence_.__getitem__][identity, identity].compose
 
 
-class CompositeSugarMixin:
-    def __mul__(self, value):
-        return self[map(dispatcher(value))]
+class CompositeAttributes:
+    def pipe(self, value):
+        return self[value]
 
-    def __truediv__(self, value):
-        return self[filter(dispatcher(value))]
+    def map(self, value):
+        return self.pipe(map(dispatcher(value)))
 
-    def __floordiv__(self, value):
-        return self[reduce(dispatcher(value))]
+    def filter(self, value):
+        return self.pipe(filter(dispatcher(value)))
 
-    def __mod__(self, value):
-        return self[filter(complement(dispatcher(value)))]
+    def reduce(self, value):
+        return self.pipe(reduce(dispatcher(value)))
 
-    def __matmul__(self, value):
-        return self[groupby(dispatcher(value))]
+    def filterfalse(self, value):
+        return self.pipe(filter(complement(dispatcher(value))))
 
-    def __lshift__(self, value):
-        return self[do(dispatcher(value))]
+    def groupby(self, value):
+        return self.pipe(groupby(dispatcher(value)))
 
-    def __or__(self, value):
+    def do(self, value):
+        return self.pipe(do(dispatcher(value)))
+
+    def excepts(self, value):
         return self.__class__(
             args=self.args, kwargs=self.kwargs)[excepts(
                 Exception, self.compose, handler=functor(value))]
+
+
+class CompositeSugarMixin(CompositeAttr):
+    def __mul__(self, value):
+        return self.map(value)
+
+    def __truediv__(self, value):
+        return self.filter(value)
+
+    def __floordiv__(self, value):
+        return self.reduce(value)
+
+    def __mod__(self, value):
+        return self.filterfalse(value)
+
+    def __matmul__(self, value):
+        return self.groupby(value)
+
+    def __lshift__(self, value):
+        return self.do(value)
+
+    def __or__(self, value):
+        return self.excepts(value)
 
     def __and__(self, value):
         return self.copy()[value]
@@ -86,5 +112,11 @@ class FlipComposite(Composite):
 _x = _comp_ = CallableFactory(funcs=Composite)
 x_ = _pmoc_ = CallableFactory(funcs=FlipComposite)
 stars = CallableFactory(funcs=Stars)
+
+
+from toolz.curried.operator import *
+
+
+_x(11)[range] % x_(5)[lt] >> list
 
 # __*fin*__
