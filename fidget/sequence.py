@@ -5,20 +5,21 @@
 
 
 try:
-    from .model import Callables, CallableFactory
+    from .model import Callable, CallableFactory
     from .recipes import juxt
 except:
-    from model import Callables, CallableFactory
+    from model import Callable, CallableFactory
     from recipes import juxt
 
-from traitlets import List, Tuple, Callable, validate
+from traitlets import List, Tuple, validate
+import traitlets
 from toolz.curried import compose, concatv
 
 
-class SequenceCallable(Callables):
+class SequenceCallable(Callable):
     """Apply function composition to List objects.
     """
-    generator = Callable(juxt)
+    generator = traitlets.Callable(juxt)
 
     @property
     def compose(self):

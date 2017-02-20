@@ -16,7 +16,7 @@ from toolz.curried import (compose, map, complement, reduce, groupby, do,
                            excepts, filter, flip, identity, get, first, second,
                            concatv)
 from collections import Iterable, OrderedDict
-from traitlets import List, Callable
+import traitlets
 
 
 dispatcher = _conditional_[OrderedDict(
@@ -25,8 +25,7 @@ dispatcher = _conditional_[OrderedDict(
         [[(str, int, float), get], [set, _set_.__getitem__],
          [slice, compose_slice], [list, _list_.__getitem__],
          [dict, _dict_.__getitem__], [tuple, _tuple_.__getitem__],
-         [Iterable, compose(_tuple_.__getitem__, tuple)]]))].append(
-             [identity, identity]).compose
+         [Iterable, compose(_tuple_.__getitem__, tuple)]]))]
 
 
 class CompositeSugarMixin:
@@ -61,8 +60,9 @@ class CompositeSugarMixin:
 
 
 class Composite(CompositeSugarMixin, SequenceCallable):
-    funcs = List(list())
-    generator = Callable(compose(Compose, list, map(dispatcher), reversed))
+    funcs = traitlets.List(list())
+    generator = traitlets.Callable(
+        compose(Compose, list, map(dispatcher), reversed))
 
     def copy(self, *args, **kwargs):
         return self.__class__(

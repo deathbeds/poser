@@ -5,12 +5,13 @@ try:
 except:
     from recipes import item_to_args
 from collections import Sequence
-from traitlets import HasTraits, Callable, Tuple, Dict
-from toolz.curried import identity, merge, compose, partial, flip
+from traitlets import HasTraits, Tuple, Dict
+import traitlets
+from toolz.curried import identity, merge, compose, partial, flip, isiterable
 from inspect import isgenerator
 
 
-class CallablesSugarMixin:
+class CallableSugar:
     def __pow__(self, value):
         args, kwargs = item_to_args(value)
         if args:
@@ -27,7 +28,7 @@ class CallablesSugarMixin:
         return self[value]
 
 
-class Callables(HasTraits, CallablesSugarMixin):
+class Base(HasTraits):
     args = Tuple(tuple())
     kwargs = Dict(dict())
     flip = False
@@ -40,6 +41,17 @@ class Callables(HasTraits, CallablesSugarMixin):
     def __setstate__(self):
         return self.compose.__setstate__
 
+    def __repr__(self):
+        if self.args or self.kwargs:
+            return repr(self())
+        return repr({
+            'args': self.args,
+            'kwargs': self.kwargs,
+            'funcs': self.funcs
+        })
+
+
+class Callable(CallableSugar, Base):
     def compose(self, func):
         """Returns a pickleable callable of the current state.
         """
@@ -55,15 +67,6 @@ class Callables(HasTraits, CallablesSugarMixin):
         """
         return self.compose
 
-    def __repr__(self):
-        if self.args or self.kwargs:
-            return repr(self())
-        return repr({
-            'args': self.args,
-            'kwargs': self.kwargs,
-            'funcs': self.funcs
-        })
-
     def __call__(self, *args, **kwargs):
         """Call a higher order function
         """
@@ -75,8 +78,8 @@ class Callables(HasTraits, CallablesSugarMixin):
         return self.append(item)
 
 
-class CallableFactory(Callables):
-    funcs = Callable()
+class CallableFactory(Callable):
+    funcs = traitlets.Callable()
 
     def __call__(self, *args, **kwargs):
         return self.funcs(args=args, kwargs=kwargs)
@@ -89,12 +92,15 @@ class CallableFactory(Callables):
         if isinstance(self.funcs, type) and not issubclass(self.funcs,
                                                            HasTraits):
             return self.funcs(item)
+        if isinstance(item, dict):
+            return self.funcs(funcs=item)
+
         funcs = self.funcs()
         if item == slice(None):
             return funcs
         if isgenerator(item):
             item = self.coerce(item)
-        if not isinstance(item, Sequence):
+        if not isiterable(item):
             item = (item, )
         for i in item:
             funcs.append(i)

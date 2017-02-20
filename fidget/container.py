@@ -5,25 +5,23 @@
 
 
 try:
-    from .model import (Callables, CallableFactory)
+    from .model import (Callable, CallableFactory)
     from .recipes import functor, raises, juxt
     from .sequence import ListCallable
 except:
-    from model import (Callables, CallableFactory)
+    from model import (Callable, CallableFactory)
     from recipes import functor, raises, juxt
     from sequence import ListCallable
 
 from collections import OrderedDict
-from traitlets import Any, Set, Dict, Callable
+from traitlets import Any, Set, Dict, validate
 
 from six import iteritems
 from toolz.curried import excepts, first, filter, compose, partial, identity
-from traitlets import validate
 
 
-class ContainerCallable(Callables):
+class ContainerCallable(Callable):
     funcs = Dict()
-    post = Callable(identity)
     excepts = Any(None)
 
     @validate('funcs')
