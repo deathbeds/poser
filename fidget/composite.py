@@ -49,12 +49,9 @@ class CompositeSugarMixin:
         return self[do(dispatcher(value))]
 
     def __or__(self, value):
-        output = self.copy()
-        output.funcs = [
-            excepts(
-                Exception, self.compose, handler=functor(value))
-        ]
-        return output
+        return self.__class__(
+            args=self.args, kwargs=self.kwargs)[excepts(
+                Exception, self.compose, handler=functor(value))]
 
     def __and__(self, value):
         return self.copy()[value]
