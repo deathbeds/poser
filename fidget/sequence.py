@@ -1,9 +1,5 @@
 # coding: utf-8
 
-# %reload_ext autoreload
-# %autoreload 2
-
-
 try:
     from .model import Callable, CallableFactory
     from .recipes import juxt
@@ -11,9 +7,10 @@ except:
     from model import Callable, CallableFactory
     from recipes import juxt
 
-from traitlets import Any, List, Tuple, validate
+from collections import OrderedDict
+from traitlets import Any, List, Tuple, validate, Set
 import traitlets
-from toolz.curried import compose, concatv, identity
+from toolz.curried import compose, concatv, identity, partial
 
 
 class SequenceCallable(Callable):
@@ -53,8 +50,26 @@ class TupleCallable(ListCallable):
     funcs = Tuple(tuple())
 
 
+class SetCallable(ListCallable):
+    """Apply function composition to Set objects.
+    """
+    funcs = Set(set())
+
+    @property
+    def compose(self):
+        return compose(OrderedDict,
+                       partial(zip, list(self.funcs)),
+                       super(SetCallable, self).compose)
+
+    def append(self, item):
+        self.funcs.add(item)
+        self.funcs = self.funcs
+        return self
+
+
 _sequence_ = CallableFactory(funcs=SequenceCallable)
 _l = _list_ = CallableFactory(funcs=ListCallable)
 _t = _tuple_ = CallableFactory(funcs=TupleCallable)
+_s = _set_ = CallableFactory(funcs=SetCallable)
 
 # __*fin*__

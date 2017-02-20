@@ -1,23 +1,17 @@
 # coding: utf-8
 
-# %reload_ext autoreload
-# %autoreload 2
-
-
 try:
     from .model import (Callable, CallableFactory)
     from .recipes import functor, raises, juxt
-    from .sequence import ListCallable
 except:
     from model import (Callable, CallableFactory)
     from recipes import functor, raises, juxt
-    from sequence import ListCallable
 
 from collections import OrderedDict
-from traitlets import Any, Set, Dict, validate
+from traitlets import Any, Dict, validate
 
 from six import iteritems
-from toolz.curried import excepts, first, filter, compose, partial, identity
+from toolz.curried import excepts, first, filter, compose, partial
 
 
 class ContainerCallable(Callable):
@@ -70,24 +64,6 @@ class ConditionCallable(ContainerCallable):
                     functor(None)), super(ConditionCallable, self).compose)
 
 
-class SetCallable(ListCallable):
-    """Apply function composition to Set objects.
-    """
-    funcs = Set(set())
-
-    @property
-    def compose(self):
-        return compose(OrderedDict,
-                       partial(zip, list(self.funcs)),
-                       super(SetCallable, self).compose)
-
-    def append(self, item):
-        self.funcs.add(item)
-        self.funcs = self.funcs
-        return self
-
-
-_s = _set_ = CallableFactory(funcs=SetCallable)
 _d = _dict_ = CallableFactory(funcs=DictCallable)
 _f = _conditional_ = CallableFactory(funcs=ConditionCallable)
 
