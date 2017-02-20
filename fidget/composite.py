@@ -1,12 +1,12 @@
 # coding: utf-8
 
 try:
-    from .sequence import _list_, _tuple_, SequenceCallable
+    from .sequence import _list_, _tuple_, SequenceCallable, _sequence_
     from .container import _dict_, _conditional_, _set_
     from .model import CallableFactory
     from .recipes import item_to_args, functor, compose_slice, juxt
 except:
-    from sequence import _list_, _tuple_, SequenceCallable
+    from sequence import _list_, _tuple_, SequenceCallable, _sequence_
     from container import _dict_, _conditional_, _set_
     from model import CallableFactory
     from recipes import item_to_args, functor, compose_slice, juxt
@@ -17,6 +17,7 @@ from toolz.curried import (compose, map, complement, reduce, groupby, do,
                            concatv)
 from collections import Iterable, OrderedDict
 import traitlets
+from inspect import isgenerator
 
 
 dispatcher = _conditional_[OrderedDict(
@@ -24,9 +25,8 @@ dispatcher = _conditional_[OrderedDict(
         juxt(compose(flip(isinstance), first), second),
         [[(str, int, float), get], [set, _set_.__getitem__],
          [slice, compose_slice], [list, _list_.__getitem__],
-         [dict, _dict_.__getitem__], [tuple, _tuple_.__getitem__],
-         [Iterable, compose(_tuple_.__getitem__, tuple)]]))].append(
-             (identity, identity)).compose
+         [dict, _dict_.__getitem__], [tuple, _tuple_.__getitem__]]))][
+             isgenerator, _sequence_.__getitem__][identity, identity].compose
 
 
 class CompositeSugarMixin:

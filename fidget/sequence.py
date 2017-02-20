@@ -11,20 +11,29 @@ except:
     from model import Callable, CallableFactory
     from recipes import juxt
 
-from traitlets import List, Tuple, validate
+from traitlets import Any, List, Tuple, validate
 import traitlets
-from toolz.curried import compose, concatv
+from toolz.curried import compose, concatv, identity
 
 
 class SequenceCallable(Callable):
     """Apply function composition to List objects.
     """
+    funcs = Any(tuple())
     generator = traitlets.Callable(juxt)
+
+    @property
+    def coerce(self):
+        return getattr(self.traits()['funcs'], 'klass', identity)
 
     @property
     def compose(self):
         return super(SequenceCallable,
                      self).compose(self.generator(self.funcs))
+
+    def append(self, item):
+        self.funcs = self.coerce(concatv(self.funcs, (item, )))
+        return self
 
 
 class ListCallable(SequenceCallable):
@@ -33,17 +42,9 @@ class ListCallable(SequenceCallable):
     funcs = List(list())
 
     @property
-    def coerce(self):
-        return getattr(self.traits()['funcs'], 'klass', None)
-
-    @property
     def compose(self):
         composition = super(ListCallable, self).compose
         return compose(self.coerce, composition)
-
-    def append(self, item):
-        self.funcs = self.coerce(concatv(self.funcs, (item, )))
-        return self
 
 
 class TupleCallable(ListCallable):
@@ -52,6 +53,7 @@ class TupleCallable(ListCallable):
     funcs = Tuple(tuple())
 
 
+_sequence_ = CallableFactory(funcs=SequenceCallable)
 _l = _list_ = CallableFactory(funcs=ListCallable)
 _t = _tuple_ = CallableFactory(funcs=TupleCallable)
 
