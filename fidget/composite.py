@@ -25,7 +25,8 @@ dispatcher = _conditional_[OrderedDict(
         [[(str, int, float), get], [set, _set_.__getitem__],
          [slice, compose_slice], [list, _list_.__getitem__],
          [dict, _dict_.__getitem__], [tuple, _tuple_.__getitem__],
-         [Iterable, compose(_tuple_.__getitem__, tuple)]]))]
+         [Iterable, compose(_tuple_.__getitem__, tuple)]]))].append(
+             (identity, identity)).compose
 
 
 class CompositeSugarMixin:
@@ -48,12 +49,12 @@ class CompositeSugarMixin:
         return self[do(dispatcher(value))]
 
     def __or__(self, value):
-        self.set_trait(
-            'post',
-            compose(
-                excepts(
-                    Exception, handler=functor(value)), self.post))
-        return self
+        output = self.copy()
+        output.funcs = [
+            excepts(
+                Exception, self.compose, handler=functor(value))
+        ]
+        return output
 
     def __and__(self, value):
         return self.copy()[value]
