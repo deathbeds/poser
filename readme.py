@@ -1,68 +1,50 @@
 
 # coding: utf-8
 
-# * Everything is function
-# * Functions are immutable, Arguments and Keywords are Muttable
-
-# # `chain`
+# # `fidget` - A Python and Functional Programming Pidgin Syntax
 # 
-# Typographically dense function programming in Python.
-
-# ## Getting Started
-# 
-
-# This project is largely inspired by heavy use of [`toolz`](http://toolz.readthedocs.io/en/latest/index.html) for functional programming in `python`. Object-oriented functional programming looks weird.
-
-# In[2]:
-
-get_ipython().magic('reload_ext autoreload')
-get_ipython().magic('autoreload 2')
-
-
-# In[3]:
-
-from chain import *
-from IPython import get_ipython
-ip = get_ipython()
-ip.ast_node_interactivity = 'all'
-
-
-# ### Chain `_x`
-
-# In[8]:
-
-_x(10)[range][reversed][list]
-_x(10) >> range >> reversed >> list
-
-
-# In[12]:
-
-[:] ** (20, ) >> ('r', str) >> 
-
-
-# In[4]:
-
-_x(10)[range][list][filter(lambda x: x > 5)][tuple]
-_x(10)[range][list] % (lambda x: x > 5) > tuple
-
-
-# In[7]:
-
-_x('Whatever Forever') | str.upper
-type(_)
-_x('Whatever Forever') > str.upper
-type(_)
-
-
-# ### Discussion
-# 
-# * Lazy by default
-# * There were no modifications to the `AST`.
-# * Consistent Grammar's for 
-# * Common operations converted to symbols.
-# 
+# `fidget` helps you get started.
 
 # In[6]:
 
-get_ipython().run_cell_magic('file', 'requirements.txt', 'mypy\nsix\ntoolz\ntraitlets\ntyping')
+from fidget import _x
+_x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.format]
 
+
+# In[31]:
+
+add = _x(_x[lambda x: x+1, str])[map]
+
+
+# In[32]:
+
+from jinja2 import Template
+Template("""It is import to mix narrative and code for a {{
+_x[:][range][add][list][', '.join](3)
+}} 👊.""").render(
+    list=list, **globals()
+)
+
+
+# ---
+# 
+# `fidget` provides typographically dense interfaces to functional programming objects in Python.  `fidget` is inspired by literate programming, it attempts to reduce the text required to displayed programming logic in software & data-driven narratives.
+# 
+# All `fidget` objects, or `fidgets`, are pure python objects that do not modify the Abstract Syntax Tree.  All of the typographic features of `fidget` are extended from the Python Data Model.  The syntactic sugar for each `fidget` is designed with the [Operator Precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) in mind. 
+# 
+# `fidget` relies on `toolz` and `traitlets`.  `toolz` provides a python 2 and 3 compatible interface to functional programmming in pure Python.  `toolz` was designed with parallel computing in mind.  Consequently, `fidget` objects can be pickled and used in parallel computing tasks like `joblib`, `luigi`, or `dask`.
+# 
+# The `fidget` namespace is design for a "programming as UI" experience.  In the minimal namespace, function methods and type can be modified with a single text character.  For example, `_l`, `_t`, and `_s` produce a `list`, `tuple`, and `set`, respectively.
+# 
+# 
+# 
+# 
+# Other notes:
+# 
+# * lazy
+# * Everything is a function
+# * Functions are immutable, Arguments and Keywords are Muttable
+# 
+# More later:
+# * interactive type checking
+# * extensions
