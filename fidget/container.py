@@ -38,7 +38,7 @@ class ContainerCallable(Callable):
             value = OrderedDict((value, ))
         for key, value in iteritems(value):
             self.funcs[key] = value
-        self.funcs = self.funcs
+        self.set_trait('funcs', self.funcs)
         return self
 
 

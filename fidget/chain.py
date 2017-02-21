@@ -12,7 +12,7 @@ from toolz.curried import first, last, compose, concatv, merge
 
 
 class ChainBase(object):
-    def __init__(self, obj=compose(type, list, range), *args, **kwargs):
+    def __init__(self, obj=[], *args, **kwargs):
         self.funcs = [obj]
         self.args = args
         self.kwargs = kwargs

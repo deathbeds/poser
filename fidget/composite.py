@@ -30,8 +30,8 @@ dispatcher = _condition_[OrderedDict([[
     partial(_check_types, slice), compose_slice
 ], [partial(_check_types, list), _list_.__getitem__], [
     partial(_check_types, dict), _dict_.__getitem__
-], [partial(_check_types, tuple), _tuple_.__getitem__]])][
-    isgenerator, _sequence_.__getitem__][identity, identity].compose
+], [partial(_check_types, tuple), _tuple_.__getitem__
+    ], [isgenerator, _sequence_.__getitem__], [identity, identity]])].compose
 
 
 class CompositeAttributes:
@@ -94,7 +94,7 @@ class Composite(CompositeSugarMixin, SequenceCallable):
         compose(Compose, list, map(dispatcher), reversed))
 
     def append(self, item):
-        self.funcs = list(concatv(self.funcs, (item, )))
+        self.set_trait('funcs', list(concatv(self.funcs, (item, ))))
         return self
 
 

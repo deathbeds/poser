@@ -9,6 +9,10 @@ from toolz.curried.operator import attrgetter
 from toolz.functoolz import Compose
 
 
+def flip(func, *args):
+    return func(*reversed(args))
+
+
 class functor(tlz_juxt):
     def __init__(self, value):
         self.funcs = value
@@ -67,10 +71,6 @@ class juxt(tlz_juxt):
                 func,
                 handler=functor(self.excepts)
                 if self.excepts is not None else raises)(*args, **kwargs)
-
-
-def flip(func, *args):
-    return func(*reversed(args))
 
 
 # def docify(klass, *args):

@@ -8,8 +8,7 @@ except:
     from recipes import juxt
 
 from collections import OrderedDict
-from traitlets import Any, List, Tuple, validate, Set
-import traitlets
+from traitlets import Any, List, Tuple, validate, Set, Callable as Callable_
 from toolz.curried import compose, concatv, identity, partial
 
 
@@ -17,7 +16,7 @@ class SequenceCallable(Callable):
     """Apply function composition to List objects.
     """
     funcs = Any(tuple())
-    generator = traitlets.Callable(juxt)
+    generator = Callable_(juxt)
 
     @property
     def coerce(self):
@@ -29,7 +28,7 @@ class SequenceCallable(Callable):
                      self).compose(self.generator(self.funcs or [identity]))
 
     def append(self, item):
-        self.funcs = self.coerce(concatv(self.funcs, (item, )))
+        self.set_trait('funcs', self.coerce(concatv(self.funcs, (item, ))))
         return self
 
 
@@ -63,7 +62,7 @@ class SetCallable(ListCallable):
 
     def append(self, item):
         self.funcs.add(item)
-        self.funcs = self.funcs
+        self.set_trait('funcs', self.funcs)
         return self
 
 
