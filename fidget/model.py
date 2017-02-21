@@ -5,10 +5,9 @@ try:
 except:
     from recipes import item_to_args, flip
 
-from collections import Sequence
 from copy import copy
 from inspect import isgenerator
-from toolz.curried import identity, merge, compose, partial, isiterable
+from toolz.curried import identity, compose, partial, isiterable
 from traitlets import HasTraits, Tuple, Dict, Callable as Callable_
 
 

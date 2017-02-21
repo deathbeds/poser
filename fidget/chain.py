@@ -1,12 +1,6 @@
 # coding: utf-8
 
-try:
-    from .recipes import juxt
-except:
-    from recipes import juxt
-
 from toolz.functoolz import Compose
-
 from toolz.curried.operator import attrgetter
 from toolz.curried import first, last, compose, concatv, merge
 

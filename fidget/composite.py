@@ -4,19 +4,18 @@ try:
     from .sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
     from .container import _dict_, _condition_
     from .model import CallableFactory
-    from .recipes import item_to_args, functor, compose_slice, juxt
+    from .recipes import item_to_args, functor, compose_slice
 except:
     from sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
     from container import _dict_, _condition_
     from model import CallableFactory
-    from recipes import item_to_args, functor, compose_slice, juxt
+    from recipes import item_to_args, functor, compose_slice
 
 from toolz.functoolz import Compose
 from toolz.curried import (compose, map, complement, reduce, groupby, do,
-                           excepts, filter, flip, identity, get, first, second,
-                           concatv, partial)
-from collections import Iterable, OrderedDict
-import traitlets
+                           excepts, filter, identity, get, concatv, partial)
+from collections import OrderedDict
+from traitlets import List, Callable as Callable_
 from inspect import isgenerator
 
 
@@ -89,9 +88,8 @@ class CompositeSugarMixin(CompositeAttributes):
 
 
 class Composite(CompositeSugarMixin, SequenceCallable):
-    funcs = traitlets.List(list())
-    generator = traitlets.Callable(
-        compose(Compose, list, map(dispatcher), reversed))
+    funcs = List(list())
+    generator = Callable_(compose(Compose, list, map(dispatcher), reversed))
 
     def append(self, item):
         self.set_trait('funcs', list(concatv(self.funcs, (item, ))))
