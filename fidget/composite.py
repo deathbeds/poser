@@ -38,14 +38,11 @@ class CompositeAttributes:
     def pipe(self, value):
         return self[value]
 
-    def map(self, value):
-        return self.pipe(map(dispatcher(value)))
+    def do(self, value):
+        return self.pipe(do(dispatcher(value)))
 
     def filter(self, value):
         return self.pipe(filter(dispatcher(value)))
-
-    def reduce(self, value):
-        return self.pipe(reduce(dispatcher(value)))
 
     def filterfalse(self, value):
         return self.pipe(filter(complement(dispatcher(value))))
@@ -53,8 +50,14 @@ class CompositeAttributes:
     def groupby(self, value):
         return self.pipe(groupby(dispatcher(value)))
 
-    def do(self, value):
-        return self.pipe(do(dispatcher(value)))
+    def identity(self, value):
+        return self.pipe(value)()
+
+    def map(self, value):
+        return self.pipe(map(dispatcher(value)))
+
+    def reduce(self, value):
+        return self.pipe(reduce(dispatcher(value)))
 
     def excepts(self, value):
         return self.__class__(

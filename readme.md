@@ -63,6 +63,14 @@ _x[:][range][add][list][', '.join](3)
 | _self | An chainable object.  |
 | _this | An chainable object with the value recursively evaluated. |
 
+# Tokens
+
+| key | desc |
+|----|------|
+| compose | Compose a higher-order function |
+| copy    | Copy a function |
+| identity | Reveal the identity of a composition. |
+
 ---
 
 `fidget` provides typographically dense interfaces to functional programming objects in Python.  `fidget` is inspired by literate programming, it attempts to reduce the text required to displayed programming logic in software & data-driven narratives.

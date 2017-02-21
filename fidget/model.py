@@ -44,14 +44,17 @@ class Base(HasTraits):
         if args:
             self.set_trait('args', args)
         if kwargs:
-            self.set_trait('kwargs', merge(self.kwargs, kwargs))
+            self.set_trait('kwargs', kwargs)
         return self
 
     def __copy__(self, *args, **kwargs):
         return self.__class__(
             funcs=list(self.funcs),
-            args=list(args or self.args),
-            kwargs=dict(kwargs or self.kwargs))
+            args=list(self.args),
+            kwargs=dict(self.kwargs))
+
+    def copy(self, *args, **kwargs):
+        return copy(self).update(*args).update(**kwargs)
 
     def __repr__(self):
         if self.args or self.kwargs:

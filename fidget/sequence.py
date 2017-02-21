@@ -26,7 +26,7 @@ class SequenceCallable(Callable):
     @property
     def compose(self):
         return super(SequenceCallable,
-                     self).compose(self.generator(self.funcs))
+                     self).compose(self.generator(self.funcs or [identity]))
 
     def append(self, item):
         self.funcs = self.coerce(concatv(self.funcs, (item, )))
