@@ -54,8 +54,8 @@ def raises(e):
 
 
 class juxt(tlz_juxt):
-    def __init__(self, *funcs, excepts=None):
-        self.excepts = excepts
+    def __init__(self, *funcs, **kwargs):
+        self.excepts = kwargs.pop('excepts', None)
         if isinstance(first(funcs), dict) and len(funcs) == 1:
             funcs = [iteritems(funcs)]
         super(juxt, self).__init__(*funcs)
@@ -67,6 +67,10 @@ class juxt(tlz_juxt):
                 func,
                 handler=functor(self.excepts)
                 if self.excepts is not None else raises)(*args, **kwargs)
+
+
+def flip(func, *args):
+    return func(*reversed(args))
 
 
 # def docify(klass, *args):

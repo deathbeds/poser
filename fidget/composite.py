@@ -1,32 +1,37 @@
 # coding: utf-8
 
 try:
-    from .sequence import _list_, _tuple_, SequenceCallable, _sequence_
-    from .container import _dict_, _conditional_, _set_
+    from .sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
+    from .container import _dict_, _condition_
     from .model import CallableFactory
     from .recipes import item_to_args, functor, compose_slice, juxt
 except:
-    from sequence import _list_, _tuple_, SequenceCallable, _sequence_
-    from container import _dict_, _conditional_, _set_
+    from sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
+    from container import _dict_, _condition_
     from model import CallableFactory
     from recipes import item_to_args, functor, compose_slice, juxt
 
 from toolz.functoolz import Compose
 from toolz.curried import (compose, map, complement, reduce, groupby, do,
                            excepts, filter, flip, identity, get, first, second,
-                           concatv)
+                           concatv, partial)
 from collections import Iterable, OrderedDict
 import traitlets
 from inspect import isgenerator
 
 
-dispatcher = _conditional_[OrderedDict(
-    map(
-        juxt(compose(flip(isinstance), first), second),
-        [[(str, int, float), get], [set, _set_.__getitem__],
-         [slice, compose_slice], [list, _list_.__getitem__],
-         [dict, _dict_.__getitem__], [tuple, _tuple_.__getitem__]]))][
-             isgenerator, _sequence_.__getitem__][identity, identity].compose
+def _check_types(types, value):
+    return isinstance(value, types)
+
+
+dispatcher = _condition_[OrderedDict([[
+    partial(_check_types, (str, int, float)), get
+], [partial(_check_types, set), _set_.__getitem__], [
+    partial(_check_types, slice), compose_slice
+], [partial(_check_types, list), _list_.__getitem__], [
+    partial(_check_types, dict), _dict_.__getitem__
+], [partial(_check_types, tuple), _tuple_.__getitem__]])][
+    isgenerator, _sequence_.__getitem__][identity, identity].compose
 
 
 class CompositeAttributes:
@@ -57,7 +62,7 @@ class CompositeAttributes:
                 Exception, self.compose, handler=functor(value))]
 
 
-class CompositeSugarMixin(CompositeAttr):
+class CompositeSugarMixin(CompositeAttributes):
     def __mul__(self, value):
         return self.map(value)
 
@@ -79,20 +84,11 @@ class CompositeSugarMixin(CompositeAttr):
     def __or__(self, value):
         return self.excepts(value)
 
-    def __and__(self, value):
-        return self.copy()[value]
-
 
 class Composite(CompositeSugarMixin, SequenceCallable):
     funcs = traitlets.List(list())
     generator = traitlets.Callable(
         compose(Compose, list, map(dispatcher), reversed))
-
-    def copy(self, *args, **kwargs):
-        return self.__class__(
-            funcs=list(self.funcs),
-            args=list(args or self.args),
-            kwargs=dict(kwargs or self.kwargs))
 
     def append(self, item):
         self.funcs = list(concatv(self.funcs, (item, )))

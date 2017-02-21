@@ -17,34 +17,27 @@
 #     * `compose` returns the function composition
 #     * Otherwise call the chain with the item as the file function.
 
-# In[2]:
+# In[1]:
 
 from fidget import *
-
 import pytest
 
 
-# In[ ]:
-
-iterable_params = [_list_, _tuple_, _chain_, _set_]
-container_params = [_dict_, _conditional_]
-
-
-# In[35]:
+# In[2]:
 
 parameters = pytest.mark.parametrize("_xx", [
-    _list_, _tuple_, _set_, _dict_, _chain_, _conditional_
+    _list_, _tuple_, _set_, _dict_, _comp_, _condition_
 ])
 
 
-# In[34]:
+# In[3]:
 
 @parameters
 def test_init(_xx):
     assert isinstance(_x[:], type(_x()))
 
 
-# In[37]:
+# In[ ]:
 
 from toolz.curried import merge
 

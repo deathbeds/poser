@@ -11,7 +11,7 @@ from toolz.curried.operator import attrgetter
 from toolz.curried import first, last, compose, concatv, merge
 
 
-class Chain(object):
+class ChainBase(object):
     def __init__(self, obj=compose(type, list, range), *args, **kwargs):
         self.funcs = [obj]
         self.args = args
@@ -33,8 +33,10 @@ class Chain(object):
             obj = first(self.funcs)
         for func in filter(bool, self.funcs[1:]):
             args, kwargs = last(func)
-            compose(Compose, list, reversed)(func[:-1])(obj)(
+            output = compose(Compose, list, reversed)(func[:-1])(obj)(
                 *concatv(self.args, args), **merge(self.kwargs, kwargs))
+            if self.recurse:
+                obj = output
         return obj
 
     @property
@@ -43,19 +45,31 @@ class Chain(object):
 
 
 class ChainFactory(object):
-    def __getattribute__(self, attr):
-        return getattr(Chain(None), attr)
+    def __init__(self, chain):
+        self.chain = chain
+
+    def __getattr__(self, attr):
+        return getattr(self.chain(None), attr)
 
     def __call__(self, obj):
-        return Chain(obj)
+        return self.chain(obj)
 
 
-_c = _chain_ = ChainFactory()
+class Self(ChainBase):
+    recurse = False
+
+
+class This(ChainBase):
+    recurse = True
+
+
+_self_ = ChainFactory(Self)
+_this_ = ChainFactory(This)
 
 
 # import pandas
 
 # df  = pandas.util.testing.makeDataFrame()
-# _c(df).sum().count()._
+# _this_(df).sum().count()._
 
 # __*fin*__

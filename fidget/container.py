@@ -65,6 +65,6 @@ class ConditionCallable(ContainerCallable):
 
 
 _d = _dict_ = CallableFactory(funcs=DictCallable)
-_f = _conditional_ = CallableFactory(funcs=ConditionCallable)
+_f = _condition_ = CallableFactory(funcs=ConditionCallable)
 
 # __*fin*__
