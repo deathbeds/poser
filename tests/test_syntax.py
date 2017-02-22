@@ -1,48 +1,27 @@
 
 # coding: utf-8
 
-# # Callables syntax
-# 
-# ## Generic Sugar
-# 
-# > In order of binding.
-# 
-# * Add normal or keyword arguments `**`
-#     * `_xx[:] ** dict()` defines keywords arguments, keywords are merged and keys are considered, immutable(not enforced)
-#     * `_xx[:] ** tuple()` defines normal arguments, arguments are replaced
-# * Append to value `>>`
-#     * `_xx[:][range] >> list == _xx[:][range][list] == _xx[range, list]` 
-# * Call a callable 
-#     * `identity` returns the evaluated callable from `_xx.args` and `_xx.kwargs`.
-#     * `compose` returns the function composition
-#     * Otherwise call the chain with the item as the file function.
-
-# In[1]:
+# In[3]:
 
 from fidget import *
 import pytest
 
 
-# In[2]:
+# In[14]:
 
-parameters = pytest.mark.parametrize("_xx", [
-    _list_, _tuple_, _set_, _dict_, _comp_, _condition_
-])
+list_parameters = [_list_, _tuple_, _set_, _comp_]
+container_parameters = [_dict_, _comp_, _condition_]
+parameters = pytest.mark.parametrize("_xx", concatv(list_parameters, container_parameters))
 
 
-# In[3]:
+# In[15]:
 
 @parameters
 def test_init(_xx):
     assert isinstance(_x[:], type(_x()))
 
 
-# In[ ]:
-
-from toolz.curried import merge
-
-
-# In[36]:
+# In[16]:
 
 @parameters
 def test_arguments(_xx):
@@ -72,14 +51,39 @@ def test_arguments(_xx):
 
 # In[18]:
 
-# def test_arguments():
-#     for callable in [
-#         _set_, _list_, _tuple_, _dict_, _chain_, _multipledispatch_, _conditional_
-#     ]:
-#         assert (callable[:] ** ('test', 42)).args == callable('test', 42).args
+@pytest.mark.parametrize("_xx", list_parameters)
+def test_pickle_sequence(_xx):
+    assert _xx[range, type]._pickable
+    
+@pytest.mark.parametrize("_xx", container_parameters)
+def test_pickle_container(_xx):
+    assert _xx[[str, range], [identity, type]]._pickable
 
 
-# In[ ]:
+# In[13]:
+
+@pytest.mark.parametrize("_xx", list_parameters)
+def test_copy(_xx):
+    composition = _xx[range, type]
+    assert composition is not composition.copy()
 
 
+# In[26]:
+
+@pytest.mark.parametrize("_xx", list_parameters)
+def test_context(_xx):
+    g = _xx(10)[range][type]
+    funcs = g.funcs
+    with g as F:
+        q = F >> str >> type >> str >> type
+    assert g.funcs == funcs
+    assert g is not q
+
+
+# In[19]:
+
+@pytest.mark.parametrize("_xx", list_parameters)
+def test_reverse(_xx):
+    composition = _xx[range, type]
+    assert reversed(composition)
 

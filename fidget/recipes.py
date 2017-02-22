@@ -2,18 +2,58 @@
 
 from toolz.curried import (isiterable, take, drop, take_nth, compose, filter,
                            interpose, identity, flip, concat, map, pipe, first,
-                           excepts)
-from toolz.functoolz import juxt as tlz_juxt
+                           excepts, concatv)
+from toolz.functoolz import juxt
 from six import iteritems
 from toolz.curried.operator import attrgetter
 from toolz.functoolz import Compose
+
+
+class Compose(Compose):
+    def __call__(self, *args, **kwargs):
+        for func in iter(self):
+            args, kwargs = (func(*args, **kwargs), ), {}
+        return args[0]
+
+    def __iter__(self):
+        for func in concatv([self.first], self.funcs):
+            if not callable(func):
+                func = functor(func)
+            yield func
+
+
+def compose(*funcs):
+    if not funcs:
+        return identity
+    if len(funcs) == 1:
+        return funcs[0]
+    else:
+        return Compose(funcs)
 
 
 def flip(func, *args):
     return func(*reversed(args))
 
 
-class functor(tlz_juxt):
+class juxt(juxt):
+    def __init__(self, *funcs, **kwargs):
+        self.excepts = kwargs.pop('excepts', None)
+        if isinstance(first(funcs), dict) and len(funcs) == 1:
+            funcs = [iteritems(funcs)]
+        super(juxt, self).__init__(*funcs)
+
+    def __call__(self, *args, **kwargs):
+        for func in iter(self):
+            yield func(*args, **kwargs)
+
+    def __iter__(self):
+        for func in self.funcs:
+            if not callable(func):
+                func = functor(func)
+            yield func
+
+
+class functor:
     def __init__(self, value):
         self.funcs = value
 
@@ -55,22 +95,6 @@ def compose_slice(slice):
 
 def raises(e):
     raise e
-
-
-class juxt(tlz_juxt):
-    def __init__(self, *funcs, **kwargs):
-        self.excepts = kwargs.pop('excepts', None)
-        if isinstance(first(funcs), dict) and len(funcs) == 1:
-            funcs = [iteritems(funcs)]
-        super(juxt, self).__init__(*funcs)
-
-    def __call__(self, *args, **kwargs):
-        for func in map(functor, self.funcs):
-            yield excepts(
-                Exception,
-                func,
-                handler=functor(self.excepts)
-                if self.excepts is not None else raises)(*args, **kwargs)
 
 
 # def docify(klass, *args):

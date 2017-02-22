@@ -1,14 +1,16 @@
 # coding: utf-8
 
 try:
-    from .recipes import item_to_args, flip
+    from .recipes import item_to_args, flip, compose
 except:
-    from recipes import item_to_args, flip
+    from recipes import item_to_args, flip, compose
 
+from collections import Sequence
 from copy import copy
 from inspect import isgenerator
-from toolz.curried import identity, compose, partial, isiterable
-from traitlets import HasTraits, Tuple, Dict, Callable as Callable_
+from toolz.curried import identity, partial, isiterable, complement
+from traitlets import HasTraits, Tuple, Dict, Callable as Callable_, Bool
+from pickle import dumps
 
 
 class CallableSugar:
@@ -22,12 +24,15 @@ class CallableSugar:
         # set keywords
         _xx ** {'foo': 42, 'bar': [0, 10]}"""
         args, kwargs = item_to_args(value)
-        return self.update(*args, **kwargs)
+        return self.update(*args).update(**kwargs)
 
     def __rshift__(self, value):
         """Append an object to the composition.
         """
         return self[value]
+
+    def __iter__(self):
+        return iter(self.compose)
 
 
 class Base(HasTraits):
@@ -35,6 +40,7 @@ class Base(HasTraits):
     """
     args = Tuple(tuple())
     kwargs = Dict(dict())
+    _complement = Bool(False)
     flip = False
 
     def update(self, *args, **kwargs):
@@ -72,6 +78,28 @@ class Base(HasTraits):
     def __setstate__(self):
         return self.compose.__setstate__
 
+    def __reversed__(self):
+        funcs = self.funcs
+        if not isinstance(self.funcs, Sequence):
+            funcs = tuple(funcs)
+        self.funcs = self.coerce(reversed(funcs))
+        return self
+
+    @property
+    def _pickable(self):
+        try:
+            composition = dumps(self.compose)
+            del composition
+            return True
+        except:
+            return False
+
+    def __enter__(self):
+        return self.copy()
+
+    def __exit__(self, type, value, traceback):
+        return
+
 
 class Callable(CallableSugar, Base):
     def compose(self, func):
@@ -80,6 +108,10 @@ class Callable(CallableSugar, Base):
         """
         if self.flip:
             func = partial(flip, func)
+
+        if self._complement:
+            func = complement(func)
+
         if self.args or self.kwargs:
             return partial(func, *self.args, **self.kwargs)
         return func
@@ -152,6 +184,9 @@ class CallableFactory(Callable):
         return self.funcs().do(value)
 
     def __pow__(self, value):
-        return self.funcs().update(value)
+        return self.funcs().__pow__(value)
+
+    def __copy__(self, *args, **kwargs):
+        return self.funcs(args=list(self.args), kwargs=dict(self.kwargs))
 
 # __*fin*__

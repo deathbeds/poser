@@ -2,16 +2,16 @@
 
 try:
     from .model import (Callable, CallableFactory)
-    from .recipes import functor, raises, juxt
+    from .recipes import functor, raises, juxt, compose
 except:
     from model import (Callable, CallableFactory)
-    from recipes import functor, raises, juxt
+    from recipes import functor, raises, juxt, compose
 
 from collections import OrderedDict
 from traitlets import Any, Dict, validate
 
 from six import iteritems
-from toolz.curried import excepts, first, filter, compose, partial
+from toolz.curried import excepts, first, filter, partial
 
 
 class ContainerCallable(Callable):
@@ -27,11 +27,12 @@ class ContainerCallable(Callable):
 
     @property
     def compose(self):
-        return super(ContainerCallable, self).compose(
-            juxt(
-                map(partial(
-                    juxt, excepts=self.excepts or raises),
-                    iteritems(self.funcs))))
+        return juxt(
+            map(compose(
+                super(ContainerCallable, self).compose,
+                partial(
+                    juxt, excepts=self.excepts or raises)),
+                iteritems(self.funcs)))
 
     def append(self, value):
         if not isinstance(value, dict):
@@ -57,11 +58,12 @@ class ConditionCallable(ContainerCallable):
 
     @property
     def compose(self):
-        return compose(
-            excepts(StopIteration,
-                    compose(first, first,
-                            filter(excepts(Exception, first, functor(False)))),
-                    functor(None)), super(ConditionCallable, self).compose)
+        return excepts(StopIteration,
+                       compose(
+                           first, first,
+                           filter(excepts(Exception, first, functor(False))),
+                           super(ConditionCallable, self).compose),
+                       functor(None))
 
 
 _d = _dict_ = CallableFactory(funcs=DictCallable)

@@ -4,19 +4,19 @@ try:
     from .sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
     from .container import _dict_, _condition_
     from .model import CallableFactory
-    from .recipes import item_to_args, functor, compose_slice
+    from .recipes import item_to_args, functor, compose_slice, Compose, compose
 except:
     from sequence import _list_, _tuple_, SequenceCallable, _sequence_, _set_
     from container import _dict_, _condition_
     from model import CallableFactory
-    from recipes import item_to_args, functor, compose_slice
+    from recipes import item_to_args, functor, compose_slice, Compose, compose
 
-from toolz.functoolz import Compose
-from toolz.curried import (compose, map, complement, reduce, groupby, do,
-                           excepts, filter, identity, get, concatv, partial)
+from toolz.curried import (map, complement, reduce, groupby, do, excepts,
+                           filter, identity, get, concatv, partial)
 from collections import OrderedDict
 from traitlets import List, Callable as Callable_
 from inspect import isgenerator
+from pickle import dumps
 
 
 def _check_types(types, value):
@@ -63,6 +63,18 @@ class CompositeAttributes:
             args=self.args, kwargs=self.kwargs)[excepts(
                 Exception, self.compose, handler=functor(value))]
 
+    def complement(self):
+        self._complement = not self._complement
+        return self
+
+    def pickle(self):
+        try:
+            s = dumps(self.compose)
+            del s
+            return True
+        except:
+            return False
+
 
 class CompositeSugarMixin(CompositeAttributes):
     def __mul__(self, value):
@@ -85,6 +97,9 @@ class CompositeSugarMixin(CompositeAttributes):
 
     def __or__(self, value):
         return self.excepts(value)
+
+    def __invert__(self):
+        return self.complement()
 
 
 class Composite(CompositeSugarMixin, SequenceCallable):

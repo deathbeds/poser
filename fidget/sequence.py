@@ -2,14 +2,14 @@
 
 try:
     from .model import Callable, CallableFactory
-    from .recipes import juxt
+    from .recipes import juxt, compose
 except:
     from model import Callable, CallableFactory
-    from recipes import juxt
+    from recipes import juxt, compose
 
 from collections import OrderedDict
 from traitlets import Any, List, Tuple, validate, Set, Callable as Callable_
-from toolz.curried import compose, concatv, identity, partial
+from toolz.curried import concatv, identity, partial
 
 
 class SequenceCallable(Callable):
@@ -70,5 +70,8 @@ _sequence_ = CallableFactory(funcs=SequenceCallable)
 _l = _list_ = CallableFactory(funcs=ListCallable)
 _t = _tuple_ = CallableFactory(funcs=TupleCallable)
 _s = _set_ = CallableFactory(funcs=SetCallable)
+
+
+_l[:][range][type].compose
 
 # __*fin*__

@@ -10,9 +10,19 @@ _x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.for
 ```
 
 
+```python
+from fidget import *
+```
 
 
-    'It is as easy as ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+```python
+(~_x[:]) ** True
+```
+
+
+
+
+    False
 
 
 
