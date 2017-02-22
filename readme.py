@@ -11,21 +11,6 @@ from fidget import _x
 _x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.format]
 
 
-# In[4]:
-
-from fidget import *
-
-
-# In[10]:
-
-(~_x[:]) ** True
-
-
-# In[2]:
-
-add = _x(_x[lambda x: x+1, str])[map]
-
-
 # In[5]:
 
 from jinja2 import Template

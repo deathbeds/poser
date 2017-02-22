@@ -11,28 +11,6 @@ _x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.for
 
 
 ```python
-from fidget import *
-```
-
-
-```python
-(~_x[:]) ** True
-```
-
-
-
-
-    False
-
-
-
-
-```python
-add = _x(_x[lambda x: x+1, str])[map]
-```
-
-
-```python
 from jinja2 import Template
 Template("""It is import to mix narrative and code for a {{
 _x[:][range][add][list][', '.join](3)
