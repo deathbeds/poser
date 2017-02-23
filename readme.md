@@ -10,6 +10,45 @@ _x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.for
 ```
 
 
+
+
+    'It is as easy as ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+
+
+```python
+from fidget import *
+```
+
+
+```python
+(_x(10) << str >> print >> compose)
+```
+
+
+
+
+    functools.partial(<fidget.recipes.Compose object at 0x106d0c438>, 10)
+
+
+
+
+```python
+_x(10) >> (_x << str >> type >> print) >> mul(42)
+```
+
+    <class 'str'>
+
+
+
+
+
+    420
+
+
+
+
 ```python
 from jinja2 import Template
 Template("""It is import to mix narrative and code for a {{

@@ -11,6 +11,21 @@ from fidget import _x
 _x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.format]
 
 
+# In[2]:
+
+from fidget import *
+
+
+# In[3]:
+
+(_x(10) << str >> print >> compose)
+
+
+# In[6]:
+
+_x(10) >> (_x << str >> type >> print) >> mul(42)
+
+
 # In[5]:
 
 from jinja2 import Template

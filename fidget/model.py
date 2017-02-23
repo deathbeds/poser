@@ -8,7 +8,7 @@ except:
 from collections import Sequence
 from copy import copy
 from inspect import isgenerator
-from toolz.curried import identity, partial, isiterable, complement
+from toolz.curried import identity, partial, isiterable, complement, do, partial
 from traitlets import HasTraits, Tuple, Dict, Callable as Callable_, Bool
 from pickle import dumps
 
@@ -33,42 +33,6 @@ class CallableSugar:
 
     def __iter__(self):
         return iter(self.compose)
-
-
-class Base(HasTraits):
-    """Base Traitlets Class for `fidget` Composite Functions.
-    """
-    args = Tuple(tuple())
-    kwargs = Dict(dict())
-    _complement = Bool(False)
-    flip = False
-
-    def update(self, *args, **kwargs):
-        """Update the compositions args & kwargs.
-        """
-        if args:
-            self.set_trait('args', args)
-        if kwargs:
-            self.set_trait('kwargs', kwargs)
-        return self
-
-    def __copy__(self, *args, **kwargs):
-        return self.__class__(
-            funcs=list(self.funcs),
-            args=list(self.args),
-            kwargs=dict(self.kwargs))
-
-    def copy(self, *args, **kwargs):
-        return copy(self).update(*args).update(**kwargs)
-
-    def __repr__(self):
-        if self.args or self.kwargs:
-            return repr(self())
-        return repr({
-            'args': self.args,
-            'kwargs': self.kwargs,
-            'funcs': self.funcs
-        })
 
     @property
     def __getstate__(self):
@@ -101,6 +65,48 @@ class Base(HasTraits):
         return
 
 
+class Base(HasTraits):
+    """Base Traitlets Class for `fidget` Composite Functions.
+    """
+    args = Tuple(tuple())
+    kwargs = Dict(dict())
+    _complement = Bool(False)
+    _do = Bool(False)
+    flip = False
+
+    def update(self, *args, **kwargs):
+        """Update the compositions args & kwargs.
+        """
+        if args:
+            self.set_trait('args', args)
+        if kwargs:
+            self.set_trait('kwargs', kwargs)
+        return self
+
+    def __copy__(self, *args, **kwargs):
+        return self.__class__(
+            funcs=list(self.funcs),
+            args=list(self.args),
+            kwargs=dict(self.kwargs))
+
+    def copy(self, *args, **kwargs):
+        return copy(self).update(*args).update(**kwargs)
+
+    def __repr__(self):
+        if self.args or self.kwargs:
+            return repr(self())
+        return repr({
+            'args': self.args,
+            'kwargs': self.kwargs,
+            'funcs': self.funcs
+        })
+
+
+def do(func, *args, **kwargs):
+    func(*args, **kwargs)
+    return args[0]
+
+
 class Callable(CallableSugar, Base):
     def compose(self, func):
         """Composition the functions in funcs and apply partial arguments
@@ -111,6 +117,9 @@ class Callable(CallableSugar, Base):
 
         if self._complement:
             func = complement(func)
+
+        if self._do:
+            func = partial(do, func)
 
         if self.args or self.kwargs:
             return partial(func, *self.args, **self.kwargs)
@@ -181,7 +190,9 @@ class CallableFactory(Callable):
         return self.funcs().pipe(value)
 
     def __lshift__(self, value):
-        return self.funcs().do(value)
+        funcs = self.funcs()
+        funcs._do = True
+        return funcs.pipe(value)
 
     def __pow__(self, value):
         return self.funcs().__pow__(value)
