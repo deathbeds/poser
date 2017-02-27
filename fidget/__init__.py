@@ -4,19 +4,19 @@ try:
     from .sequence import _s, _l, _t, _list_, _tuple_, _set_, _sequence_
     from .container import _d, _f, _dict_, _condition_
     from .composite import _x, stars, _comp_, _pmoc_, x_
-    from .chain import _this_, _self_
+    from .chain import self, this
     from .recipes import functor, juxt, compose, Compose
 except:
     from sequence import _s, _l, _t, _list_, _tuple_, _set_, _sequence_
     from container import _d, _f, _dict_, _condition_
     from composite import _x, stars, _comp_, _pmoc_, x_
-    from chain import _this_, _self_
+    from chain import self, this
     from recipes import functor, juxt, compose, Compose
 
 
 __all__ = [
     '_x', 'x_', '_s', '_d', '_l', '_t', '_f', 'stars', '_comp_', '_pmoc_',
-    '_dict_', '_list_', '_condition_', '_set_', '_tuple_', '_this_', '_self_',
+    '_dict_', '_list_', '_condition_', '_set_', '_tuple_', 'this', 'self',
     '_sequence_'
 ]
 

@@ -1,69 +1,84 @@
 # coding: utf-8
 
-from toolz.functoolz import Compose
-from toolz.curried.operator import attrgetter
-from toolz.curried import first, last, compose, concatv, merge
+try:
+    from .recipes import compose
+except:
+    from recipes import compose
+from toolz.curried import do, partial, last, get, pipe, filter, concatv
+from toolz.curried.operator import attrgetter, itemgetter
 
 
-class ChainBase(object):
-    def __init__(self, obj=[], *args, **kwargs):
-        self.funcs = [obj]
-        self.args = args
-        self.kwargs = kwargs
+class ChainGenerator(object):
+    """Generate This and Self compositions.
+    """
+
+    def __init__(self, func):
+        self.func = func  # Union[This, Self]
 
     def __getattr__(self, attr):
-        if callable(last(self.funcs)) or len(self.funcs) == 1:
-            self.funcs.append([])
+        # (str) -> Union[This, Self]
+        return getattr(self.func(), attr)
+
+    def __getitem__(self, attr):
+        # (str) -> Union[This, Self]
+        return self.func()[attr]
+
+
+def call(args, kwargs, obj):
+    return obj(*args, **kwargs)
+
+
+class This(object):
+    def __init__(
+            self,
+            funcs=[], ):
+        self.funcs = funcs.copy()
+        self.funcs.append([])
+
+    def __getattr__(self, attr):
         last(self.funcs).append(attrgetter(attr))
         return self
 
-    def __call__(self, *args, **kwargs):
-        last(self.funcs).append((args, kwargs))
-        self.funcs.append([])
-        return self
+    def __getitem__(self, item):
+        self.funcs[-1] = itemgetter(item)
+        return self.__class__(self.funcs)
 
-    def compose(self, obj=None):
-        if obj is None:
-            obj = first(self.funcs)
-        for func in filter(bool, self.funcs[1:]):
-            args, kwargs = last(func)
-            output = compose(Compose, list, reversed)(func[:-1])(obj)(
-                *concatv(self.args, args), **merge(self.kwargs, kwargs))
-            if self.recurse:
-                obj = output
-        return obj
+    def __call__(self, *args, **kwargs):
+        if last(self.funcs) == []:
+            return self.fn(args[0])
+        self.compose_func(*args, **kwargs)
+        if self.__class__ is Self:
+            self.funcs[-1] = do(self.funcs[-1])
+        return self.__class__(self.funcs)
+
+    def compose_object(self):
+        if isinstance(last(self.funcs), list):
+            self.funcs[-1] = compose(*reversed(last(self.funcs)))
+
+    def compose_func(self, *args, **kwargs):
+        if isinstance(last(self.funcs), list):
+            self.funcs[-1] = compose(*concatv(
+                [partial(call, args, kwargs)],
+                filter(bool, reversed(last(self.funcs)))))
 
     @property
-    def _(self):
-        return self.compose()
+    def fn(self):
+        self.compose_object()
+        return compose(*pipe(self.funcs, reversed, filter(bool)))
 
 
-class ChainFactory(object):
-    def __init__(self, chain):
-        self.chain = chain
-
-    def __getattr__(self, attr):
-        return getattr(self.chain(None), attr)
-
-    def __call__(self, obj):
-        return self.chain(obj)
+class Self(This):
+    pass
 
 
-class Self(ChainBase):
-    recurse = False
+this = ChainGenerator(This)
+self = ChainGenerator(Self)
 
 
-class This(ChainBase):
-    recurse = True
+# import pandas as pd
 
+# df = pd.util.testing.makeDataFrame()
 
-_self_ = ChainFactory(Self)
-_this_ = ChainFactory(This)
-
-
-# import pandas
-
-# df  = pandas.util.testing.makeDataFrame()
-# _this_(df).sum().count()._
+# this.sum( ).index.fn( df )
 
 # __*fin*__

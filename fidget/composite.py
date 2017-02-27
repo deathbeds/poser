@@ -16,7 +16,6 @@ from toolz.curried import (map, complement, reduce, groupby, do, excepts,
 from collections import OrderedDict
 from traitlets import List, Callable as Callable_
 from inspect import isgenerator
-from pickle import dumps
 
 
 def _check_types(types, value):
@@ -30,7 +29,7 @@ dispatcher = _condition_[OrderedDict([[
 ], [partial(_check_types, list), _list_.__getitem__], [
     partial(_check_types, dict), _dict_.__getitem__
 ], [partial(_check_types, tuple), _tuple_.__getitem__
-    ], [isgenerator, _sequence_.__getitem__], [identity, identity]])].compose
+    ], [isgenerator, _sequence_.__getitem__], [identity, identity]])].fn
 
 
 class CompositeAttributes:
@@ -61,19 +60,11 @@ class CompositeAttributes:
     def excepts(self, value):
         return self.__class__(
             args=self.args, kwargs=self.kwargs)[excepts(
-                Exception, self.compose, handler=functor(value))]
+                Exception, self.fn, handler=functor(value))]
 
     def complement(self):
         self._complement = not self._complement
         return self
-
-    def pickle(self):
-        try:
-            s = dumps(self.compose)
-            del s
-            return True
-        except:
-            return False
 
 
 class CompositeSugarMixin(CompositeAttributes):

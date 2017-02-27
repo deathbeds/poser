@@ -26,12 +26,12 @@ class ContainerCallable(Callable):
         return funcs
 
     @property
-    def compose(self):
+    def fn(self):
         return juxt(
-            map(compose(
-                super(ContainerCallable, self).compose,
-                partial(
-                    juxt, excepts=self.excepts or raises)),
+            map(
+                compose(
+                    super(ContainerCallable, self).fn,
+                    partial(juxt, excepts=self.excepts or raises)),
                 iteritems(self.funcs)))
 
     def append(self, value):
@@ -48,8 +48,8 @@ class DictCallable(ContainerCallable):
     """
 
     @property
-    def compose(self):
-        return compose(OrderedDict, super(DictCallable, self).compose)
+    def fn(self):
+        return compose(OrderedDict, super(DictCallable, self).fn)
 
 
 class ConditionCallable(ContainerCallable):
@@ -57,13 +57,12 @@ class ConditionCallable(ContainerCallable):
     """
 
     @property
-    def compose(self):
+    def fn(self):
         return excepts(StopIteration,
                        compose(
                            first, first,
                            filter(excepts(Exception, first, functor(False))),
-                           super(ConditionCallable, self).compose),
-                       functor(None))
+                           super(ConditionCallable, self).fn), functor(None))
 
 
 _d = _dict_ = CallableFactory(funcs=DictCallable)

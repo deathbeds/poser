@@ -32,15 +32,15 @@ class CallableSugar:
         return self[value]
 
     def __iter__(self):
-        return iter(self.compose)
+        return iter(self.fn)
 
     @property
     def __getstate__(self):
-        return self.compose.__getstate__
+        return self.fn.__getstate__
 
     @property
     def __setstate__(self):
-        return self.compose.__setstate__
+        return self.fn.__setstate__
 
     def __reversed__(self):
         funcs = self.funcs
@@ -52,7 +52,7 @@ class CallableSugar:
     @property
     def _pickable(self):
         try:
-            composition = dumps(self.compose)
+            composition = dumps(self.fn)
             del composition
             return True
         except:
@@ -108,7 +108,7 @@ def do(func, *args, **kwargs):
 
 
 class Callable(CallableSugar, Base):
-    def compose(self, func):
+    def fn(self, func):
         """Composition the functions in funcs and apply partial arguments
         and keywords.
         """
@@ -127,21 +127,21 @@ class Callable(CallableSugar, Base):
 
     @property
     def _(self):
-        """Shorthand for _xx.compose.
+        """Shorthand for _xx.fn .
         """
-        return self.compose
+        return self.fn
 
     def __call__(self, *args, **kwargs):
         """Call the composition, update the the keyword arguments
         and apply the arguments.
         """
-        return self.compose(*args, **kwargs)
+        return self.fn(*args, **kwargs)
 
     def __getitem__(self, item=None):
         """Append a new object to the current instance.
         """
         if item is compose:
-            return self.compose
+            return self.fn
         if item is identity:
             return self()
         if item is copy:

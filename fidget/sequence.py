@@ -23,9 +23,9 @@ class SequenceCallable(Callable):
         return getattr(self.traits()['funcs'], 'klass', identity)
 
     @property
-    def compose(self):
+    def fn(self):
         return super(SequenceCallable,
-                     self).compose(self.generator(self.funcs or [identity]))
+                     self).fn(self.generator(self.funcs or [identity]))
 
     def append(self, item):
         self.set_trait('funcs', self.coerce(concatv(self.funcs, (item, ))))
@@ -38,8 +38,8 @@ class ListCallable(SequenceCallable):
     funcs = List(list())
 
     @property
-    def compose(self):
-        composition = super(ListCallable, self).compose
+    def fn(self):
+        composition = super(ListCallable, self).fn
         return compose(self.coerce, composition)
 
 
@@ -55,10 +55,10 @@ class SetCallable(ListCallable):
     funcs = Set(set())
 
     @property
-    def compose(self):
+    def fn(self):
         return compose(OrderedDict,
                        partial(zip, list(self.funcs)),
-                       super(SetCallable, self).compose)
+                       super(SetCallable, self).fn)
 
     def append(self, item):
         self.funcs.add(item)
@@ -70,8 +70,5 @@ _sequence_ = CallableFactory(funcs=SequenceCallable)
 _l = _list_ = CallableFactory(funcs=ListCallable)
 _t = _tuple_ = CallableFactory(funcs=TupleCallable)
 _s = _set_ = CallableFactory(funcs=SetCallable)
-
-
-_l[:][range][type].compose
 
 # __*fin*__

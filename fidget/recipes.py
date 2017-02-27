@@ -70,13 +70,13 @@ def star_arguments(args, kwargs, function):
 def item_to_args(obj):
     """heuristics for converting an object to args & kwargs."""
     args, kwargs = tuple(), dict()
-    if bool(obj):
+    if obj is not None:
         if isinstance(obj, dict):
             kwargs = obj
-        elif isiterable(obj):
-            args = tuple(obj)
+        elif isinstance(obj, tuple):
+            args = obj
         else:
-            args = (obj, )
+            args = obj,
     return args, kwargs
 
 
