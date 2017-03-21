@@ -245,7 +245,7 @@ class Callable(StateMixin, object):
         return wraps(method)(call)
     
     def __len__(self):
-        return len(self.functions)
+        return len(self._functions)
 
     @property
     def __doc__(self):
@@ -338,6 +338,11 @@ Composition.__truediv__  = Composition.filter
 # In[192]:
 
 # _x([1, 2]).attrgetter('index').excepts(ValueError, handler=_x[_x<<print][type])()(10)
+
+
+# In[193]:
+
+# !jupyter nbconvert --to script fidget.ipynb
 
 
 # In[191]:
