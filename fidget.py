@@ -3,7 +3,7 @@
 
 # # Higher-order functions for interactive computing
 
-# In[20]:
+# In[209]:
 
 __all__ = ['_x', '_xx', 'call', 'stars', 'this', 'x_',]
 
@@ -12,23 +12,19 @@ from functools import wraps
 from importlib import import_module
 from collections import Generator
 from six import iteritems
-from toolz.curried import isiterable, first, last, identity, concatv, map, valfilter, keyfilter, merge, curry
+from toolz.curried import isiterable, first, excepts, flip, last, identity, concatv, map, valfilter, keyfilter, merge, curry
 from functools import partial
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
 
 # ## utilities
 
-# In[21]:
+# In[210]:
 
 def _do(function, *args, **kwargs):
     """Call function then return the first argument."""
     function(*args, **kwargs)
     return first(args)
-
-def _flip(function, *args, **kwargs):
-    """Flip arguments then apply them to function."""
-    return function(*reversed(args), **kwargs)
 
 @curry
 def call(args, function, **kwargs):
@@ -40,7 +36,7 @@ def call(args, function, **kwargs):
     return function(*args, **kwargs) 
 
 
-# In[22]:
+# In[211]:
 
 class FactoryMixin:
     """A mixin to generate new callables and compositions.
@@ -49,7 +45,7 @@ class FactoryMixin:
         return first(self._functions)(args=args, keywords=kwargs)
 
 
-# In[23]:
+# In[212]:
 
 class StateMixin:
     """Mixin to reproduce state from __slots__
@@ -63,7 +59,7 @@ class StateMixin:
 
 # ## composition
 
-# In[49]:
+# In[213]:
 
 class Compose(StateMixin, object):
     """Compose a higher-order function.  Recursively evaluate iterables.
@@ -112,7 +108,7 @@ class Compose(StateMixin, object):
         return len(self.functions)
 
 
-# In[159]:
+# In[287]:
 
 class Callable(StateMixin, object):
     _do = False
@@ -224,7 +220,7 @@ class Callable(StateMixin, object):
                 
         return all(
             i in annotations and (
-                partial(_flip, isinstance, annotations[i]) 
+                flip(isinstance)(annotations[i]) 
                 if isinstance(annotations[i], type) 
                 else annotations[i]
             )(arg) or False
@@ -275,7 +271,7 @@ class This(Callable):
 
 # ## types
 
-# In[160]:
+# In[288]:
 
 Composition = type('Composition', (Callable,), {'partial': Callable._partial_})
 Flipped = type('Flipped', (Composition,), {'_flip': True})
@@ -292,7 +288,7 @@ class Stars(Composition):
 
 # ## namespace
 
-# In[161]:
+# In[289]:
 
 _x, x_, _xx, this = (
     type('_{}_'.format(f.__name__), (FactoryMixin, f,), {})((f,)) for f in (Composition, Flipped, Stars, This)
@@ -302,7 +298,7 @@ stars = _xx
 
 # ## Append attributes for a chainable API
 
-# In[162]:
+# In[290]:
 
 This.__rshift__ = This.__getitem__
 Callable.__rshift__ = Callable.__getitem__
@@ -319,10 +315,12 @@ for imports in ('toolz', 'operator'):
     ):
         if getattr(Composition, name, None) is None:
             opts = {}
-            if function is contains or imports == 'toolz': 
-                pass                
-            elif function in (methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index):
+            if function == excepts.func:
+                function = partial(function, handler=_x)
+            if function in (methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index):
                 opts.update(_partial=False)
+            elif function in (contains, flip) or imports == 'toolz': 
+                pass
             else:
                 function = partial(_flip, function)
             setattr(Composition, name, getattr(
@@ -335,17 +333,17 @@ Composition.__mul__ = Composition.map
 Composition.__truediv__  = Composition.filter
 
 
-# In[192]:
+# In[293]:
 
-# _x([1, 2]).attrgetter('index').excepts(ValueError, handler=_x[_x<<print][type])()(10)
+# (_x([1, 2]).attrgetter('index').excepts(ValueError)>>call)(10)
 
 
-# In[193]:
+# In[252]:
 
 # !jupyter nbconvert --to script fidget.ipynb
 
 
-# In[191]:
+# In[253]:
 
 # import requests
 # from IPython.display import display, Image
@@ -368,7 +366,7 @@ Composition.__truediv__  = Composition.filter
 # ]].map(_x(source)[p.add_glyph])[list]()
 
 
-# In[58]:
+# In[254]:
 
 # f = this[['A', 'B']][
 #     _x<<len>>"The length of the dataframe is {}".format>>print
@@ -387,7 +385,17 @@ Composition.__truediv__  = Composition.filter
 
 
 
-# In[93]:
+# In[242]:
 
 _x()**(int)>>range>>call([10])
+
+
+# In[243]:
+
+_x[list].excepts(TypeError)
+
+
+# In[ ]:
+
+
 
