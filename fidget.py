@@ -3,7 +3,7 @@
 
 # # Higher-order functions for interactive computing
 
-# In[209]:
+# In[1]:
 
 __all__ = ['_x', '_xx', 'call', 'stars', 'this', 'x_',]
 
@@ -19,7 +19,7 @@ from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth
 
 # ## utilities
 
-# In[210]:
+# In[2]:
 
 def _do(function, *args, **kwargs):
     """Call function then return the first argument."""
@@ -36,7 +36,7 @@ def call(args, function, **kwargs):
     return function(*args, **kwargs) 
 
 
-# In[211]:
+# In[3]:
 
 class FactoryMixin:
     """A mixin to generate new callables and compositions.
@@ -45,7 +45,7 @@ class FactoryMixin:
         return first(self._functions)(args=args, keywords=kwargs)
 
 
-# In[212]:
+# In[4]:
 
 class StateMixin:
     """Mixin to reproduce state from __slots__
@@ -59,56 +59,56 @@ class StateMixin:
 
 # ## composition
 
-# In[213]:
+# In[87]:
 
-class Compose(StateMixin, object):
-    """Compose a higher-order function.  Recursively evaluate iterables.
+class FunctionsBase(StateMixin, object):
+    __slots__ = ('functions', 'codomain')
     
-    Compose([range, [type, list]])
-    """
-    __slots__ = ('functions', 'recursive', 'returns')
-    
-    def __init__(self, functions, **kwargs):
-        returns = isinstance(functions, Generator) and identity or type(functions)
-        
-        if not isiterable(functions) or isinstance(functions, str):
+    def __init__(self, functions):        
+        if not isiterable(functions) or isinstance(functions, (str, Callable)):
             functions = [functions]
         
         if isinstance(functions, dict):
             functions = iteritems(functions)
             
         self.functions = functions
-        self.recursive = kwargs.pop('recursive', True)
-        self.returns = self.recursive and last or kwargs.pop('returns', returns)
-        
-    def __call__(self, *args, **kwargs):
-        if not self.functions:
-            # default to an identity function
-            return args[0] if args else None
-        
-        # call the function 
-        return self.returns(self.__iter_call__(*args, **kwargs))
-    
-    def __iter_call__(self, *args, **kwargs):
-        for function in self:
-            result = call(args, function, **kwargs)            
-            yield result
-            if self.recursive: 
-                args, kwargs = ((result,), {})            
-        
+                    
     def __iter__(self):
         """Generator yielding each evaluated function.
         """
         for function in self.functions:
             if isiterable(function) and not isinstance(function, (str, Callable)):
-                function = Compose(function, recursive=False)                
+                function = Juxtapose(function)
             yield function
-            
+
     def __len__(self):
         return len(self.functions)
+    
+class Juxtapose(FunctionsBase):
+    def __init__(self, functions):
+        self.codomain = isinstance(functions, Generator) and identity or type(functions)
+        super(Juxtapose, self).__init__(functions)
+        
+    def __call__(self, *args, **kwargs):
+        return self.codomain(map(call(args, **kwargs), self))
+        
+class Compose(FunctionsBase):
+    def __init__(self, functions):
+        self.codomain = identity
+        super(Compose, self).__init__(functions)
+    
+    def __call__(self, *args, **kwargs):
+        for function in self:
+            args, kwargs = (call(args, function, **kwargs),), {}
+        return self.codomain(args[0])
 
 
-# In[287]:
+# In[88]:
+
+from inspect import getfullargspec
+
+
+# In[183]:
 
 class Callable(StateMixin, object):
     _do = False
@@ -121,17 +121,22 @@ class Callable(StateMixin, object):
         doc="""""", _strict=True
     ):
         self._annotations_ = _annotations_
-        self._args = args
         self._functions = functions 
-        self._keywords = keywords
         self._strict = _strict
         self._doc = doc
+        self._args, self._keywords = tuple(), {}
+        self._partial_(*args, **keywords)
         
     def _partial_(self, *args, **kwargs):
         """Update arguments and keywords of the current composition.
         """
-        args and setattr(self, '_args', args) 
-        kwargs and setattr(self, '_keywords', kwargs)
+        append = kwargs.pop('append', False)
+        args and setattr(self, '_args', tuple(
+            concatv(append and self._args or tuple(), args)
+        )) 
+        kwargs and setattr(self, '_keywords', merge(
+            append and self._keywords or {}, kwargs
+        ))
         return self
     
     def __getitem__(self, item=None):
@@ -140,7 +145,7 @@ class Callable(StateMixin, object):
         call is special flag to execute the function.
         """
         if not isinstance(item, This): 
-            if getattr(item, 'func', identity) == call.func:
+            if getattr(item, 'func', False) == call.func:
                 args = item._partial.args and item._partial.args[0] or tuple()
                 if not isinstance(args, (tuple, list)):
                     args = (args,)
@@ -148,9 +153,11 @@ class Callable(StateMixin, object):
         
         self = isinstance(self, FactoryMixin) and self() or self
         
-        return item and not(item==slice(None)) and setattr(
+        item != slice(None) and setattr(
             self, '_functions', tuple(concatv(self._functions, (item,)))
-        ) or self
+        )
+        
+        return self
         
     def __pow__(self, *args, **kwargs):
         """Append dispatching or annotation features.
@@ -164,15 +171,11 @@ class Callable(StateMixin, object):
         return self._validate_(*args, **kwargs)
 
     def _validate_(self, *args, **kwargs):
-        if callable(args[0]) and not isinstance(args[0], type):
+        if not isinstance(args[0], type):
             return setattr(self, '_annotations_', args[0]) or self
-            
+        annotations = self._annotations_ or {}
         return setattr(
-            self, '_annotations_', merge(
-                    isinstance(self._annotations_, dict) and self._annotations_ or {}, 
-                    isinstance(args[0], dict) and args[0] or
-                    dict(zip(range(len(args)), args))
-            )
+            self, '_annotations_', merge(annotations, dict(enumerate(args)), kwargs)
         ) or self 
     
     def __lshift__(self, value):
@@ -184,14 +187,20 @@ class Callable(StateMixin, object):
     def __call__(self, *args, **kwargs):
         """Call the composition with appending args and kwargs.
         """
-        composition = copy(self)._partial_(*(concatv(self._args, args)), **merge(self._keywords, kwargs))
-        return call(tuple(), (bool(composition) and self._strict) and composition.__func__)
+        composition = copy(self)._partial_(
+            *args, **kwargs, append=True
+        )
+        passes = self._strict and bool(composition)
+        return call(
+            tuple(), 
+            passes and composition.__func__
+        )
 
     @property
     def __func__(self):
         """Compose the composition.
         """
-        function, args = Compose(functions=self._functions), reversed(self._args) if self._flip else self._args
+        function, args = Compose(self._functions), reversed(self._args) if self._flip else self._args
         function = self._do and partial(_do, function) or function
         return partial(function, *args, **self._keywords)
             
@@ -211,32 +220,48 @@ class Callable(StateMixin, object):
     def __bool__(self):
         """Validate any annotations for the composition.
         """
-        annotations = self.__annotations__
-        
+        annotations = self._annotations_ or dict()
         if not annotations: return True
         
         if callable(annotations):
-            return bool(annotations(*self._args, **self._keywords))
+            return bool(
+                annotations(*self._args, **self._keywords)
+            ) if self._args or self._keywords else True
                 
         return all(
-            i in annotations and (
-                flip(isinstance)(annotations[i]) 
-                if isinstance(annotations[i], type) 
-                else annotations[i]
-            )(arg) or False
-            for i, arg in concatv(enumerate(self._args), self._keywords.items())
+            (
+                isinstance(annotations[i], type)
+                and flip(isinstance)(annotations[i]) 
+                or annotations[i]
+            )(arg) for i, arg in concatv(
+                enumerate(self._args), self._keywords.items()
+            ) if i in annotations
         )
+    
+    def __eq__(self, other):
+        return self._functions == other._functions and self._args == other._args
     
     @property
     def __annotations__(self):
-        return isinstance(self._annotations_, dict) and self._annotations_ or {}
+        kwargs = {}
+        if self._functions:
+            try:
+                argspec = getfullargspec(self._functions[0])
+                kwargs = {
+                    arg: argspec.annotations[arg]
+                    for arg in argspec.args
+                    if arg in argspec.annotations
+                }
+            except:
+                pass
+        return merge(kwargs, isinstance(self._annotations_, dict) and self._annotations_ or {})
 
     @staticmethod
     def _set_attribute_(method, _partial=True):
         """Decorator a append attributes to callable class"""
         def call(self, *args, **kwargs):    
             return (args or kwargs) and self[
-                partial(method, *args, **kwargs) if _partial else method(*args, **kwargs)
+                _partial and partial(method, *args, **kwargs) or method(*args, **kwargs)
             ] or self[method]
         return wraps(method)(call)
     
@@ -261,34 +286,46 @@ class This(Callable):
     
     def __call__(self, *args, **kwargs):
         if type(last(self._functions)) == attrgetter:
-            names = last(self._functions).__reduce__()[-1]
-            if len(names) == 1:
+            attrs = last(self._functions).__reduce__()[-1]
+            if len(attrs) == 1:
                 setattr(self, '_functions', tuple(self._functions[:-1])) 
-                self[methodcaller(names[0], *args, **kwargs)]  
+                self[methodcaller(attrs[0], *args, **kwargs)]  
             return self
         return super(This, self).__call__(*args, **kwargs)
 
 
 # ## types
 
-# In[288]:
+# In[184]:
 
-Composition = type('Composition', (Callable,), {'partial': Callable._partial_})
+class Composition(Callable): 
+    partial = Callable._partial_
+    
+    def __or__(self, item):
+        self = self[:]
+        return setattr(self, '_functions', [excepts(
+                item, Compose(self._functions), handler=partial(call, tuple())
+            )]) or self
+    
 Flipped = type('Flipped', (Composition,), {'_flip': True})
     
 class Stars(Composition):
-    @property
-    def __func__(self):
-        composition = super(Stars, self).__func__
-        args, kwargs = composition.args and composition.args[0] or tuple(), composition.keywords
-        if isinstance(args, dict):
-            args = kwargs.update(args) or tuple()
-        return partial(composition.func, *args, **kwargs)
+    def _partial_(self, *args, **kwargs):
+        """Update arguments and keywords of the current composition.
+        """
+        if len(args) > 1:
+            args = (args,)
+        elif args:
+            if isiterable(args[0]):
+                args = args[0] or tuple()
+                if isinstance(args[0], dict):
+                    args = kwargs.update(args) or tuple()
+        return super(Stars, self)._partial_(*args, **kwargs)
 
 
 # ## namespace
 
-# In[289]:
+# In[185]:
 
 _x, x_, _xx, this = (
     type('_{}_'.format(f.__name__), (FactoryMixin, f,), {})((f,)) for f in (Composition, Flipped, Stars, This)
@@ -298,14 +335,15 @@ stars = _xx
 
 # ## Append attributes for a chainable API
 
-# In[290]:
+# In[161]:
 
 This.__rshift__ = This.__getitem__
 Callable.__rshift__ = Callable.__getitem__
 Callable.__deepcopy__ = Callable.__copy__
 Callable._ = Callable.__call__
 Composition.call = Composition.__call__
-Composition.do = Composition.__lshift__ 
+Composition.do = Composition.__lshift__
+Composition.excepts = Composition.__or__
 Composition.partial = Composition._partial_
 Composition.pipe =  Composition.__getitem__
 
@@ -315,14 +353,12 @@ for imports in ('toolz', 'operator'):
     ):
         if getattr(Composition, name, None) is None:
             opts = {}
-            if function == excepts.func:
-                function = partial(function, handler=_x)
             if function in (methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index):
                 opts.update(_partial=False)
             elif function in (contains, flip) or imports == 'toolz': 
                 pass
             else:
-                function = partial(_flip, function)
+                function = flip(function)
             setattr(Composition, name, getattr(
                 Composition, name, Composition._set_attribute_(function, **opts)
             ))
@@ -333,17 +369,22 @@ Composition.__mul__ = Composition.map
 Composition.__truediv__  = Composition.filter
 
 
-# In[293]:
+# In[156]:
 
-# (_x([1, 2]).attrgetter('index').excepts(ValueError)>>call)(10)
+# _x**(_x[_x.gt(5), _x**float]>>all)>>[[identity]*3]>>call(10.)
 
 
-# In[252]:
+# In[158]:
+
+# _xx([10, 10, 30])>>range
+
+
+# In[592]:
 
 # !jupyter nbconvert --to script fidget.ipynb
 
 
-# In[253]:
+# In[81]:
 
 # import requests
 # from IPython.display import display, Image
@@ -356,6 +397,9 @@ Composition.__truediv__  = Composition.filter
 
 # }
 
+
+# In[82]:
+
 # from bokeh import plotting, models
 # import pandas as pd
 # df = pd.util.testing.makeDataFrame()
@@ -364,9 +408,10 @@ Composition.__truediv__  = Composition.filter
 #     models.Circle(x='A', y='B'),
 #     models.Square(x='A', y='B')
 # ]].map(_x(source)[p.add_glyph])[list]()
+# renderers
 
 
-# In[254]:
+# In[83]:
 
 # f = this[['A', 'B']][
 #     _x<<len>>"The length of the dataframe is {}".format>>print
@@ -380,22 +425,17 @@ Composition.__truediv__  = Composition.filter
 # f(pd.concat([pd.util.testing.makeDataFrame() for i in range(3)]))
 
 
-# In[ ]:
+# In[84]:
+
+# _x()**(int)>>range>>call([10])
 
 
+# In[85]:
+
+# _x[list].excepts(TypeError)([10])
 
 
-# In[242]:
+# In[86]:
 
-_x()**(int)>>range>>call([10])
-
-
-# In[243]:
-
-_x[list].excepts(TypeError)
-
-
-# In[ ]:
-
-
+# (_x[list] | TypeError) >> call(10)
 
