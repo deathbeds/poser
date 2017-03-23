@@ -3,7 +3,7 @@
 
 # # Higher-order functions for interactive computing
 
-# In[1]:
+# In[224]:
 
 __all__ = ['_x', '_xx', 'call', 'stars', 'this', 'x_',]
 
@@ -19,7 +19,7 @@ from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth
 
 # ## utilities
 
-# In[2]:
+# In[225]:
 
 def _do(function, *args, **kwargs):
     """Call function then return the first argument."""
@@ -36,7 +36,7 @@ def call(args, function, **kwargs):
     return function(*args, **kwargs) 
 
 
-# In[3]:
+# In[226]:
 
 class FactoryMixin:
     """A mixin to generate new callables and compositions.
@@ -45,7 +45,7 @@ class FactoryMixin:
         return first(self._functions)(args=args, keywords=kwargs)
 
 
-# In[4]:
+# In[227]:
 
 class StateMixin:
     """Mixin to reproduce state from __slots__
@@ -59,7 +59,7 @@ class StateMixin:
 
 # ## composition
 
-# In[87]:
+# In[228]:
 
 class FunctionsBase(StateMixin, object):
     __slots__ = ('functions', 'codomain')
@@ -77,7 +77,7 @@ class FunctionsBase(StateMixin, object):
         """Generator yielding each evaluated function.
         """
         for function in self.functions:
-            if isiterable(function) and not isinstance(function, (str, Callable)):
+            if isinstance(function, (dict, set, list, tuple)):
                 function = Juxtapose(function)
             yield function
 
@@ -103,12 +103,12 @@ class Compose(FunctionsBase):
         return self.codomain(args[0])
 
 
-# In[88]:
+# In[229]:
 
 from inspect import getfullargspec
 
 
-# In[183]:
+# In[230]:
 
 class Callable(StateMixin, object):
     _do = False
@@ -239,7 +239,9 @@ class Callable(StateMixin, object):
         )
     
     def __eq__(self, other):
-        return self._functions == other._functions and self._args == other._args
+        if isinstance(other, Callable):
+            return self._functions == other._functions and self._args == other._args
+        return False
     
     @property
     def __annotations__(self):
@@ -296,7 +298,7 @@ class This(Callable):
 
 # ## types
 
-# In[184]:
+# In[231]:
 
 class Composition(Callable): 
     partial = Callable._partial_
@@ -316,16 +318,16 @@ class Stars(Composition):
         if len(args) > 1:
             args = (args,)
         elif args:
-            if isiterable(args[0]):
-                args = args[0] or tuple()
+            if isinstance(args[0], (dict, list, tuple)):
                 if isinstance(args[0], dict):
-                    args = kwargs.update(args) or tuple()
+                    args = kwargs.update(**args[0]) or (None,)
+                args = args[0] or tuple()
         return super(Stars, self)._partial_(*args, **kwargs)
 
 
 # ## namespace
 
-# In[185]:
+# In[232]:
 
 _x, x_, _xx, this = (
     type('_{}_'.format(f.__name__), (FactoryMixin, f,), {})((f,)) for f in (Composition, Flipped, Stars, This)
@@ -335,7 +337,7 @@ stars = _xx
 
 # ## Append attributes for a chainable API
 
-# In[161]:
+# In[233]:
 
 This.__rshift__ = This.__getitem__
 Callable.__rshift__ = Callable.__getitem__
@@ -369,12 +371,12 @@ Composition.__mul__ = Composition.map
 Composition.__truediv__  = Composition.filter
 
 
-# In[156]:
+# In[234]:
 
 # _x**(_x[_x.gt(5), _x**float]>>all)>>[[identity]*3]>>call(10.)
 
 
-# In[158]:
+# In[235]:
 
 # _xx([10, 10, 30])>>range
 
@@ -384,7 +386,12 @@ Composition.__truediv__  = Composition.filter
 # !jupyter nbconvert --to script fidget.ipynb
 
 
-# In[81]:
+# In[243]:
+
+# (_x[range] | TypeError)(10.)
+
+
+# In[240]:
 
 # import requests
 # from IPython.display import display, Image
