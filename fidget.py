@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[14]:
+# In[7]:
 
 __all__ = ['_x', '_xx', 'call', 'defaults', 'ifthen', 'this', 'x_',]
 
@@ -15,9 +15,9 @@ from functools import partial
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
 
-# In[15]:
+# In[8]:
 
-class StateMixin:
+class StateMixin(object):
     """Mixin to reproduce state from __slots__
     """
     def __getstate__(self):
@@ -66,7 +66,7 @@ class StateMixin:
         return copy.__setstate__(self.__getstate__()) or copy
 
 
-# In[18]:
+# In[9]:
 
 def functor(function):
     def caller(*args, **kwargs):
@@ -78,7 +78,7 @@ def functor(function):
     except (TypeError, AttributeError):
         return caller
         
-class call(StateMixin, object):
+class call(StateMixin):
     __slots__ = ('args', 'kwargs')
     def __init__(self, *args, **kwargs):
         self.args, self.kwargs = args, kwargs
@@ -133,11 +133,11 @@ def ifthen(condition):
     return caller
 
 
-# In[19]:
+# In[10]:
 
 
 
-class Functions(StateMixin, object):
+class Functions(StateMixin):
     __slots__ = ('_functions', '_codomain')
     
     def __init__(self, functions=tuple()):        
@@ -171,7 +171,7 @@ class Functions(StateMixin, object):
     
 class Juxtapose(Functions):
     def __init__(self, functions=tuple()):
-        self._codomain = isinstance(functions, Generator) and identity or type(functions)
+        self._codomain = isinstance(functions, GeneratorType) and identity or type(functions)
         super(Juxtapose, self).__init__(functions)
         
     def __call__(self, *args, **kwargs):
