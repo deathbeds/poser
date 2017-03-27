@@ -1,21 +1,21 @@
 
 # coding: utf-8
 
-# In[793]:
+# In[14]:
 
-__all__ = ['_x', '_xx', 'call', 'stars', 'this', 'x_',]
+__all__ = ['_x', '_xx', 'call', 'defaults', 'ifthen', 'this', 'x_',]
 
 from copy import copy
 from functools import wraps
 from importlib import import_module
-from collections import Generator
+from types import GeneratorType
 from six import iteritems
 from toolz.curried import isiterable, first, excepts, flip, last, identity, concatv, map, valfilter, keyfilter, merge, curry
 from functools import partial
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
 
-# In[ ]:
+# In[15]:
 
 class StateMixin:
     """Mixin to reproduce state from __slots__
@@ -66,7 +66,7 @@ class StateMixin:
         return copy.__setstate__(self.__getstate__()) or copy
 
 
-# In[803]:
+# In[18]:
 
 def functor(function):
     def caller(*args, **kwargs):
@@ -75,7 +75,7 @@ def functor(function):
         return function
     try:
         return wraps(function)(caller)
-    except TypeError:
+    except (TypeError, AttributeError):
         return caller
         
 class call(StateMixin, object):
@@ -133,7 +133,7 @@ def ifthen(condition):
     return caller
 
 
-# In[827]:
+# In[19]:
 
 
 
