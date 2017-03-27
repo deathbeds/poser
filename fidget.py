@@ -15,6 +15,57 @@ from functools import partial
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
 
+# In[ ]:
+
+class StateMixin:
+    """Mixin to reproduce state from __slots__
+    """
+    def __getstate__(self):
+        return tuple(map(partial(getattr, self), self.__slots__))
+
+    def __setstate__(self, state):
+        [setattr(self, key, value) for key, value in zip(self.__slots__, state)]
+        
+    def __hash__(self):
+        return hash(self._functions)
+    
+    def __len__(self):
+        return len(self._functions)
+    
+    def __bool__(self):
+        return True
+    
+    def __eq__(self, other):
+        if isinstance(other, type(self)):
+            return hash(self) == hash(other)
+        return False
+
+    def __ne__(self, other):
+        return not(self == other)
+
+    def __lt__(self, other):
+        if isinstance(other, Functions):
+            return self <= other and len(self) != len(other)
+        return True
+
+    def __le__(self, other):
+        if isinstance(other, type(self)):
+            return len(self) <= len(other) and self == copy(other)[:len(self)]
+        return True
+
+    def __gt__(self, other):
+        return other < self
+
+    def __ge__(self, other):
+        return other <= self
+    
+    def __copy__(self):
+        """Copy the composition.
+        """
+        copy = self.__class__()
+        return copy.__setstate__(self.__getstate__()) or copy
+
+
 # In[803]:
 
 def functor(function):
@@ -84,53 +135,7 @@ def ifthen(condition):
 
 # In[827]:
 
-class StateMixin:
-    """Mixin to reproduce state from __slots__
-    """
-    def __getstate__(self):
-        return tuple(map(partial(getattr, self), self.__slots__))
 
-    def __setstate__(self, state):
-        [setattr(self, key, value) for key, value in zip(self.__slots__, state)]
-        
-    def __hash__(self):
-        return hash(self._functions)
-    
-    def __len__(self):
-        return len(self._functions)
-    
-    def __bool__(self):
-        return True
-    
-    def __eq__(self, other):
-        if isinstance(other, type(self)):
-            return hash(self) == hash(other)
-        return False
-
-    def __ne__(self, other):
-        return not(self == other)
-
-    def __lt__(self, other):
-        if isinstance(other, Functions):
-            return self <= other and len(self) != len(other)
-        return True
-
-    def __le__(self, other):
-        if isinstance(other, type(self)):
-            return len(self) <= len(other) and self == copy(other)[:len(self)]
-        return True
-
-    def __gt__(self, other):
-        return other < self
-
-    def __ge__(self, other):
-        return other <= self
-    
-    def __copy__(self):
-        """Copy the composition.
-        """
-        copy = self.__class__()
-        return copy.__setstate__(self.__getstate__()) or copy
 
 class Functions(StateMixin, object):
     __slots__ = ('_functions', '_codomain')
