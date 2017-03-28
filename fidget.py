@@ -162,7 +162,7 @@ class Callables(Partials, Functions):
     __slots__ = ('_functions', '_args', '_keywords')
 
     def __init__(self, *args, **kwargs):
-        self._functions = kwargs.pop('functions', False) or Compose()
+        self._functions = kwargs.pop('functions', Compose()) 
         self._args, self._keywords = args, kwargs    
     
     def __getitem__(self, item=None):
@@ -194,7 +194,7 @@ class Callables(Partials, Functions):
                 
 class This(Callables):
     def __getattr__(self, attr):
-        if any(attr.startswith(key) for key in ('_repr_', '_ipython_')):
+        if any(attr.startswith(key) for key in ('__' , '_repr_', '_ipython_')):
             return self
         return super(This, self).__getitem__(callable(attr) and attr or attrgetter(attr))
     
