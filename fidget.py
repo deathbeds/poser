@@ -230,16 +230,17 @@ class Composition(Callables):
     
     def __getitem__(self, item=None, *args, **kwargs):
         return super(Composition, self).__getitem__((args or kwargs) and partial(item, *args, **kwargs)  or item)   
+    
+class Flipped(Composition):
+    _func_ = staticmethod(flipped)
+    
+class Stars(Composition):
+    _func_ = staticmethod(stars)
 
 _y, _x, this, x_, _xx,  = tuple( 
     type('_{}_'.format(f.__name__), (f,), {
         '_factory_': True,
-    })(functions=Compose([f])) for f in (
-        Callables, Composition, This, 
-        type('Flipped', (Composition,),  {'_func_': staticmethod(flipped)}),
-        type('Stars', (Composition,),  {'_func_': staticmethod(stars)}),
-    ) 
-)
+    })(functions=Compose([f])) for f in (Callables, Composition, This, Flipped, Stars))
 
 for imports in ('toolz', 'operator'):
     for attr, method in iteritems(
