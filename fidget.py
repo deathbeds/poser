@@ -14,7 +14,7 @@ from six import iteritems
 from toolz.curried import isiterable, first, excepts, flip, last, identity, concatv, map, valfilter, keyfilter, merge, curry, groupby, concat, get
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
-class State:
+class State(object):
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))
 
@@ -27,8 +27,8 @@ class State:
     
 State.__deepcopy__ = State.__copy__
 
-def _wrapper(function, caller):
-    for wrap in (curry(decorate), wraps):
+def _wrapper(function, caller, *args):
+    for wrap in concatv((wraps,), args):
         try: return wrap(function)(caller)
         except: pass
     return caller
@@ -38,7 +38,7 @@ def functor(function):
         if callable(function):
             return function(*args, **kwargs)
         return function
-    return callable(function) and wraps(function)(caller) or caller
+    return callable(function) and _wrapper(function, caller) or caller
         
 class call(State):
     __slots__ = ('args', 'kwargs')
@@ -48,18 +48,18 @@ class call(State):
     def __call__(self, function=identity):
         def caller(*args, **kwargs):
             return functor(function)(*concatv(self.args, args), **merge(self.kwargs, kwargs))
-        return callable(function) and wraps(function)(caller) or caller
+        return callable(function) and _wrapper(function,caller) or caller
 
 def do(function):
     def caller(*args, **kwargs):
         function(*args, **kwargs)
         return args[0] if len(args) else tuple()
-    return _wrapper(function, caller)
+    return _wrapper(function, caller, curry(decorate))
 
 def flipped(function):
     def caller(*args, **kwargs):
         return call(*reversed(args), **kwargs)(function)()
-    return _wrapper(function, caller)
+    return _wrapper(function, caller, curry(decorate))
 
 def stars(function):
     def caller(*args, **kwargs):
@@ -69,20 +69,20 @@ def stars(function):
             kwargs = merge(kwargs, *get(True, combined, {}))
             return call(*args)(function)(**kwargs)
         return call(args)(function)(**kwargs)
-    return _wrapper(function, caller)
+    return _wrapper(function, caller, curry(decorate))
 
 def defaults(default):
     def caller(function):
         def defaults(*args, **kwargs):
             return call(*args, **kwargs)(function)() or call(*args, **kwargs)(default)()
-        return _wrapper(function, defaults)
+        return _wrapper(function, defaults, curry(decorate))
     return caller
 
 def ifthen(condition):
     def caller(function):
         def ifthen(*args, **kwargs):
             return call(*args, **kwargs)(condition)() and call(*args, **kwargs)(function)()
-        return _wrapper(function, ifthen)
+        return _wrapper(function, ifthen, curry(decorate))
     return caller
 
 @total_ordering
