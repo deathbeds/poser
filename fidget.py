@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[26]:
+# In[79]:
 
 __all__ = ['_x', '_xx', 'call', 'defaults', 'ifthen', 'copy', 'x_', '_y']
 
@@ -19,13 +19,12 @@ class State(object):
         return tuple(map(partial(getattr, self), self.__slots__))
 
     def __setstate__(self, state):
-        [setattr(self, key, value) for key, value in zip(self.__slots__, state)]
+        for key, value in zip(self.__slots__, state):
+            setattr(self, key, value)
         
     def __copy__(self, *args):
-        copy = self.__class__()
-        return copy.__setstate__(
-            tuple(map(copy, self.__getstate__()))
-        ) or copy
+        new = self.__class__()
+        return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
     
 State.__deepcopy__ = State.__copy__
 
@@ -89,7 +88,7 @@ def ifthen(condition):
 
 @total_ordering
 class Functions(State):
-    __slots__ = ('_functions')
+    __slots__ = ('_functions',)
     def __init__(self, functions=tuple()):        
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions,)
@@ -284,7 +283,6 @@ if PY34:
     __all__ += ['this']
     
 del imports, attr, method, opts, PY34
-
 
 
 # In[12]:
