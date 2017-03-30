@@ -1,16 +1,16 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[26]:
 
-__all__ = ['_x', '_xx', 'call', 'defaults', 'ifthen', 'this', 'copy', 'x_', '_y']
+__all__ = ['_x', '_xx', 'call', 'defaults', 'ifthen', 'copy', 'x_', '_y']
 
 from copy import copy
 from functools import wraps, total_ordering, partial
 from importlib import import_module
-from types import GeneratorType
 from decorator import decorate
-from six import iteritems
+from types import GeneratorType
+from six import iteritems, PY34
 from toolz.curried import isiterable, first, excepts, flip, last, complement, identity, concatv, map, valfilter, keyfilter, merge, curry, groupby, concat, get
 from operator import contains, methodcaller, itemgetter, attrgetter, not_, truth, abs, invert, neg, pos, index
 
@@ -23,7 +23,9 @@ class State(object):
         
     def __copy__(self, *args):
         copy = self.__class__()
-        return copy.__setstate__(self.__getstate__()) or copy
+        return copy.__setstate__(
+            tuple(map(copy, self.__getstate__()))
+        ) or copy
     
 State.__deepcopy__ = State.__copy__
 
@@ -40,7 +42,6 @@ def functor(function):
         return function
     return callable(function) and _wrapper(function, caller) or caller
         
-@total_ordering
 class call(State):
     __slots__ = ('args', 'kwargs')
     def __init__(self, *args, **kwargs):
@@ -49,17 +50,7 @@ class call(State):
     def __call__(self, function=identity):
         def caller(*args, **kwargs):
             return functor(function)(*concatv(self.args, args), **merge(self.kwargs, kwargs))
-        return callable(function) and _wrapper(function, caller) or caller
-    
-    def __eq__(self, other):
-        if isinstance(other, call):
-            return self.args == other.args
-        return False
-    
-    def __le__(self, other):
-        if isinstance(other, call):
-            return self.args == other.args[:len(self.args)]
-        return False
+        return callable(function) and _wrapper(function,caller) or caller
 
 def do(function):
     def caller(*args, **kwargs):
@@ -74,7 +65,7 @@ def flipped(function):
 
 def stars(function):
     def caller(*args, **kwargs):
-        if all(map(isiterable, args)) and not any(map(flip(isinstance)(str), args)):
+        if all(map(isiterable, args)):
             combined = groupby(flip(isinstance)(dict), args)
             args = concat(get(False, combined, tuple()))
             kwargs = merge(kwargs, *get(True, combined, {}))
@@ -98,13 +89,12 @@ def ifthen(condition):
 
 @total_ordering
 class Functions(State):
-    __slots__ = ('_functions', '_codomain')
-        
+    __slots__ = ('_functions')
     def __init__(self, functions=tuple()):        
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions,)
             
-        self._functions = tuple((isinstance(functions, dict) and iteritems or identity)(functions))
+        self._functions = (isinstance(functions, dict) and iteritems or identity)(functions)
 
     def __getitem__(self, item):
         if isinstance(item, slice): 
@@ -116,7 +106,9 @@ class Functions(State):
 
     def __iter__(self):
         for function in self._functions:
-            yield (isinstance(function, (dict, set, list, tuple)) and Juxtapose or identity)(function)
+            yield (
+                isinstance(function, (dict, set, list, tuple)) and call(codomain=type(function))(Juxtapose) or identity
+            )(function)
 
     def __len__(self):
         return len(self._functions)
@@ -142,25 +134,23 @@ class Functions(State):
         return "{}{}".format(self.__class__.__name__, str(self._functions))
     
 class Juxtapose(Functions):
-    def __init__(self, functions=tuple()):
-        self._codomain = isinstance(functions, GeneratorType) and identity or type(functions)
+    __slots__ = ('_functions', '_codomain')
+    def __init__(self, functions=tuple(), codomain=identity):
+        self._codomain = codomain
         super(Juxtapose, self).__init__(functions)
         
     def __call__(self, *args, **kwargs):
-        _call = call(*args, **kwargs)
-        return self._codomain(_call(function)() for function in self)
+        return self._codomain(call(*args)(function)(**kwargs) for function in self)
         
 class Compose(Functions):
-    def __init__(self, functions=tuple()):
-        self._codomain = identity
-        super(Compose, self).__init__(functions)
-    
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call()(function)(*args, **kwargs),), {}
-        return self._codomain(args[0])
+        return args[0]
+    
     
 class Callables(Functions):
+    _functions_default_ = Compose
     _factory_, _do, _func_ = None, False, staticmethod(identity)
     __slots__ = ('_functions', '_args', '_keywords')
 
@@ -198,33 +188,11 @@ class Callables(Functions):
         self = self[:]
         self._functions = reversed(self._functions)
         return self
-            
-for attr in ('and', 'add', 'rshift', 'sub'): 
-    setattr(Callables, "__{}__".format(attr), getattr(Callables, '__getitem__'))
-                
-class This(Functions):
-    def __getattr__(self, attr):
-        if any(attr.startswith(key) for key in ('__' , '_repr_', '_ipython_')):
-            return self
-        return super(This, self).__getitem__(callable(attr) and attr or attrgetter(attr))
-    
-    def __getitem__(self, item):
-        return super(This, self).__getitem__(callable(item) and item or itemgetter(item))
-    
-    def __call__(self, *args, **kwargs):
-        previous = last(self._functions._functions)
-        if type(previous) == attrgetter:
-            attrs = previous.__reduce__()[-1]
-            if len(attrs) == 1:
-                self._functions = self._functions[:-1]
-            return self[methodcaller(attrs[0], *args, **kwargs)]  
-        return super(This, self).__call__(*args, **kwargs)
-
+                            
 class Juxtaposition(Callables): 
     _functions_default_ = Juxtapose
     
 class Composition(Callables): 
-    _functions_default_ = Compose
     @staticmethod
     def _add_attribute_(method, _partial=True):
         def caller(self, *args, **kwargs):    
@@ -234,14 +202,16 @@ class Composition(Callables):
         return wraps(method)(caller)
 
     def __getitem__(self, item=None, *args, **kwargs):
-        return super(Composition, self).__getitem__((args or kwargs) and partial(item, *args, **kwargs)  or item)   
+        return super(Composition, self).__getitem__(
+            (args or kwargs) and call(*args, **kwargs)(item)  or item)   
     
     def __pow__(self, item, method=ifthen):
         self = self[:]
-        if isinstance(item, type) or isiterable(item) and all(map(flip(isinstance)(type), item)):
-            item = flip(isinstance)(item)
-        elif isinstance(item, Exception) or isiterable(item) and all(map(flip(isinstance)(Exception), item)):
-            method = excepts
+        if isinstance(item, type):
+            if issubclass(item, Exception) or isiterable(item) and all(map(flip(isinstance)(Exception), item)):
+                method = excepts
+            elif isiterable(item) and all(map(flip(isinstance)(type), item)):
+                item = flip(isinstance)(item)
         self._functions = Compose([method(item)(self._functions)])
         return self
 
@@ -256,16 +226,18 @@ class Composition(Callables):
     def __neg__(self):
         return self[complement(bool)]
 
-    
+for attr in ('and', 'add', 'rshift', 'sub'): 
+    setattr(Callables, "__{}__".format(attr), getattr(Callables, '__getitem__'))
+
 class Flipped(Composition):
     _func_ = staticmethod(flipped)
     
-class Stars(Composition):
+class Starred(Composition):
     _func_ = staticmethod(stars)
 
-_y, _x, this, x_, _xx,  = tuple( 
+_y, _x, x_, _xx = tuple( 
     type('_{}_'.format(f.__name__), (f,), {'_factory_': True,})(functions=Compose([f])) 
-    for f in (Juxtaposition, Composition, This, Flipped, Stars))
+    for f in (Juxtaposition, Composition, Flipped, Starred))
 
 for imports in ('toolz', 'operator'):
     for attr, method in iteritems(
@@ -288,10 +260,36 @@ for attr, method in (
     ('__matmul__', 'groupby'), ('__mul__', 'map'), ('__truediv__ ', 'filter'), 
 ): setattr(Composition, attr, getattr(Composition, method))
 
-del imports, attr, method, opts
+if PY34:
+    class This(Callables):
+        def __getattr__(self, attr):
+            if any(attr.startswith(key) for key in ('__' , '_repr_', '_ipython_')):
+                return self
+            return super(This, self).__getitem__(callable(attr) and attr or attrgetter(attr))
+
+        def __getitem__(self, item):
+            return super(This, self).__getitem__(callable(item) and item or itemgetter(item))
+
+        def __call__(self, *args, **kwargs):
+            previous = last(self._functions._functions)
+            if type(previous) == attrgetter:
+                attrs = previous.__reduce__()[-1]
+                if len(attrs) == 1:
+                    self._functions = self._functions[:-1]
+                return self[methodcaller(attrs[0], *args, **kwargs)]  
+            return super(This, self).__call__(*args, **kwargs)
+        
+    this = type('_This_', (This,), {'_factory_': True})
+    
+    __all__ += ['this']
+    
+del imports, attr, method, opts, PY34
 
 
-# In[154]:
+
+# In[12]:
+
+# from collections import OrderedDict
 
 # ip = get_ipython()
 
@@ -324,6 +322,7 @@ del imports, attr, method, opts
 # _x(2)[_x(3, 10)[range]]>>list>>call
 
 # _x[_x[_x[_x[str.upper]]]] >> call('asdf')
+
 
 # _xx([10, 20],)>>range>>call
 
