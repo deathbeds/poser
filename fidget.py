@@ -357,20 +357,6 @@ class Starred(Composition):
     _func_ = staticmethod(stars)
 
 
-# Assign factories for each composition.
-# 
-# |object|type           |
-# |------|---------------|
-# | _y   | Juxtaposition |
-# | _x   | Composition   |
-# | x_   | Flipped       |
-# | _xx  | Starred       |
-
-_y, _x, x_, _xx = tuple(
-    type('_{}_'.format(f.__name__),
-         (f, ), {'_factory_': True, })(functions=Compose([f]))
-    for f in (Juxtaposition, Composition, Flipped, Starred))
-
 # Introduce redundant attributes for composing functions using `&`, `+`, `>>`,
 # `-`; each symbol will append a function to the composition.
 
@@ -404,14 +390,11 @@ for imports in ('toolz', 'operator'):
 
 # Attributes and symbols to compose functions.
 
-for attr, method in (
-    ('call', '__call__'),
-    ('do', '__lshift__'),
-    ('pipe', '__getitem__'),
-    ('__xor__', '__pow__'),
-    ('__matmul__', 'groupby'),
-    ('__mul__', 'map'),
-    ('__truediv__ ', 'filter'), ):
+for attr, method in (('call', '__call__'), ('do', '__lshift__'),
+                     ('pipe', '__getitem__'), ('__xor__', '__pow__'),
+                     ('__matmul__', 'groupby'), ('__mul__', 'map'),
+                     ('__div__', 'filter'), ('__truediv__', 'filter'),
+                     ('__floordiv__', 'reduce')):
     setattr(Composition, attr, getattr(Composition, method))
 
 from six import PY34
@@ -449,3 +432,17 @@ if PY34:
     __all__ += ['this']
 
 del imports, attr, method, opts, PY34
+
+# Assign factories for each composition.
+# 
+# |object|type           |
+# |------|---------------|
+# | _y   | Juxtaposition |
+# | _x   | Composition   |
+# | x_   | Flipped       |
+# | _xx  | Starred       |
+
+_y, _x, x_, _xx = tuple(
+    type('_{}_'.format(f.__name__),
+         (f, ), {'_factory_': True, })(functions=Compose([f]))
+    for f in (Juxtaposition, Composition, Flipped, Starred))
