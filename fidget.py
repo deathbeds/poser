@@ -374,8 +374,8 @@ class Composition(Callables):
     def __neg__(self):
         return self[complement(bool)]
 
-
-Composition.__abs__ = Composition.__call__
+    def __abs__(self):
+        return self.__call__
 
 
 class Flipped(Composition):
