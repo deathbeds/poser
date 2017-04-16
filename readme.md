@@ -1,41 +1,47 @@
 
-# `fidget` - A Python and Functional Programming Pidgin Syntax
+# `fidget` - A literate syntax for functional programming
 
-`fidget` helps you get started.
+`fidget` provides symbollic & pythonic to composing functions.  It uses Python data model * [operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) to quickly prototype literate code, _no `AST` was harmed in the making of `fidget`_. Markdown is our primary styleguide for monospaced type.  With `fidget`, Markdown styled lists can also execute code, even executing a `fidget` resembles a link `__x__ [requests.get](url)` - __x__ [requests.get](url).
 
 
 ```python
-from fidget import _x
-_x(97, 97+26)[range][_x(chr)[map]][''.join][str.upper]['It is as easy as {}'.format]
+from fidget import _x as __x__
+
+(__x__
+ * range
+ * [len, sum, 
+    __x__
+    .filter(__x__.mod(2))
+    [__x__.count(), sum]
+   ]
+)(100)
 ```
 
 
 
 
-    'It is as easy as ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    [100, 4950, (50, 0)]
 
 
+
+`fidget` includes _most_ of the Python model attributes to provide a flexible symbollic syntax 
+to compose functions.  It is also loaded with function programming attributes from `toolz` and `operator` including:
 
 
 ```python
-from fidget import *
+__x__[dir].filter(-__x__.first().eq('_')).random_sample(.1)[list][str](__x__)
 ```
 
 
-```python
-(_x(10) << str >> print >> compose)
-```
 
 
-
-
-    functools.partial(<fidget.recipes.Compose object at 0x106d0c438>, 10)
+    "['dissoc', 'get_in', 'iand', 'irshift', 'matmul', 'merge_sorted', 'mod', 'partial', 'random_sample', 'reduceby', 'sliding_window']"
 
 
 
 
 ```python
-_x(10) >> (_x << str >> type >> print) >> mul(42)
+_x(10) >> (_x << str >> type >> print) >> __x__.mul(42) >> call()
 ```
 
     <class 'str'>
@@ -48,67 +54,15 @@ _x(10) >> (_x << str >> type >> print) >> mul(42)
 
 
 
-
-```python
-from jinja2 import Template
-Template("""It is import to mix narrative and code for a {{
-_x[:][range][add][list][', '.join](3)
-}} 👊.""").render(
-    list=list, **globals()
-)
-```
-
-
-
-
-    'It is import to mix narrative and code for a 1, 2, 3 👊.'
-
-
-
-## Composite Functions
-
-|short|long|desc|
-|------|--------------|------------------------|
-|  _x  | _comp_       |  A composite function. |
-|  x_  | _pmoc_       |  A composite function with the argument order reversed. | 
-
-## Juxtapose Functions
-
-|short|long|desc|
-|------|--------------|------------------------|
-| none | _sequence_   |  A composition from a generator that yields a generator. |
-|  _t  | _tuple_      |  A composition from a tuple that yields a tuple. |
-|  _l  | _list_       |  A composition from a list that yields a list. | 
-|  _s  | _set_        |  A composition from a set that yields a dict with the set functions as keys. |
-|  _d  | _dict_       |  A composition from a dict that yields a dict with the keys and values evaluated. |
-|  _f  | _condition_  |  A composition that can handle logic.
-
-# Object Functions
-
-|long|desc|
-|------|--------------|------------------------|
-| _self | An chainable object.  |
-| _this | An chainable object with the value recursively evaluated. |
-
-# Tokens
-
-| key | desc |
-|----|------|
-| compose | Compose a higher-order function |
-| copy    | Copy a function |
-| identity | Reveal the identity of a composition. |
+## [Examples](https://github.com/tonyfast/fidget/blob/master/test/data_model.ipynb)
 
 ---
 
-`fidget` provides typographically dense interfaces to functional programming objects in Python.  `fidget` is inspired by literate programming, it attempts to reduce the text required to displayed programming logic in software & data-driven narratives.
+## More
 
-All `fidget` objects, or `fidgets`, are pure python objects that do not modify the Abstract Syntax Tree.  All of the typographic features of `fidget` are extended from the Python Data Model.  The syntactic sugar for each `fidget` is designed with the [Operator Precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) in mind. 
+`toolz` provides a python 2 and 3 compatible interface to functional programmming in pure Python.  `fidget` objects can be pickled and used in parallel computing tasks like `joblib`, `luigi`, or `dask`.  
 
-`fidget` relies on `toolz` and `traitlets`.  `toolz` provides a python 2 and 3 compatible interface to functional programmming in pure Python.  `toolz` was designed with parallel computing in mind.  Consequently, `fidget` objects can be pickled and used in parallel computing tasks like `joblib`, `luigi`, or `dask`.  `traitlets` provides an method to interactively type check composite functions.
-
-The `fidget` namespace is design for a "programming as UI" experience.  In the minimal namespace, function methods and type can be modified with a single text character.  For example, `_l`, `_t`, and `_s` produce a `list`, `tuple`, and `set`, respectively.
-
-
+The `fidget` namespace is design for a "programming as UI" experience.  In the minimal namespace, function methods and type can be modified with a single text character.  
 
 
 Other notes:
@@ -120,3 +74,67 @@ Other notes:
 More later:
 * interactive type checking
 * extensions
+
+
+```python
+%%bash 
+jupyter nbconvert --to custom --Exporter.file_extension .py --TemplateExporter.template_file docify.tpl fidget.ipynb
+yapf -i fidget.py
+```
+
+    [NbConvertApp] Converting notebook fidget.ipynb to custom
+    [NbConvertApp] Writing 14881 bytes to fidget.py
+
+
+
+```python
+%%bash
+cd test
+coverage erase
+coverage run -a testing.py
+coverage run -a data_model.py
+coverage report
+```
+
+    <class 'NoneType'>
+    <class 'range'>
+    <class 'range'>
+    <class 'NoneType'>
+    <class 'str'>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    attributes for [<class 'fidget.Juxtaposition'>]
+    <IPython.core.display.HTML object>
+    attributes for [<class 'fidget.Composition'>]
+    <IPython.core.display.HTML object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    [10, 45]
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    <IPython.core.display.Markdown object>
+    [10, 45, '0.001268148422241211 sec']
+    Name                               Stmts   Miss  Cover
+    ------------------------------------------------------
+    /Users/tonyfast/fidget/fidget.py     241      8    97%
+    data_model.py                         69      0   100%
+    testing.py                            86      0   100%
+    ------------------------------------------------------
+    TOTAL                                396      8    98%
+
+
+
+```python
+%%bash 
+jupyter nbconvert --to markdown readme.ipynb
+```
+
+
+```python
+
+```

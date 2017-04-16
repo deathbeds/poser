@@ -93,8 +93,8 @@ class call(State):
 
     def __call__(self, function=identity):
         def caller(*args, **kwargs):
-            return functor(function)(*concatv(self.args, args),
-                                     **merge(self.kwargs, kwargs))
+            return functor(function)(*concatv(self.args, args), **merge(
+                self.kwargs, kwargs))
 
         return callable(function) and _wrapper(function, caller) or caller
 
@@ -465,8 +465,8 @@ if PY34:
                 return self[methodcaller(first(attrs), *args, **kwargs)]
             return super(This, self).__call__(*args, **kwargs)
 
-    this = type('_This_', (This, ),
-                {'_factory_': True})(functions=Compose([This]))
+    this = type('_This_',
+                (This, ), {'_factory_': True})(functions=Compose([This]))
 
     __all__ += ['this']
 
@@ -482,6 +482,6 @@ del imports, attr, method, opts, PY34
 # | _xx  | Starred       |
 
 _y, _x, x_, _xx = tuple(
-    type('_{}_'.format(f.__name__), (f, ),
-         {'_factory_': True, })(functions=Compose([f]))
+    type('_{}_'.format(f.__name__),
+         (f, ), {'_factory_': True, })(functions=Compose([f]))
     for f in (Juxtaposition, Composition, Flipped, Starred))
