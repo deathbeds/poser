@@ -60,6 +60,8 @@ _x(10) >> (_x << str >> type >> print) >> __x__.mul(42) >> call()
 
 ## More
 
+This project is developed for interactive computing & uses the Jupyter notebooks to derive formatted Python code.
+
 `toolz` provides a python 2 and 3 compatible interface to functional programmming in pure Python.  `fidget` objects can be pickled and used in parallel computing tasks like `joblib`, `luigi`, or `dask`.  
 
 The `fidget` namespace is design for a "programming as UI" experience.  In the minimal namespace, function methods and type can be modified with a single text character.  
@@ -135,5 +137,10 @@ jupyter nbconvert --to markdown readme.ipynb
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3694 bytes to readme.md
+    [NbConvertApp] Writing 3847 bytes to readme.md
 
+
+
+```python
+
+```
