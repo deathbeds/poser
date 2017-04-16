@@ -171,6 +171,7 @@ class Functions(State):
     New functions are added to the compositions using the `__getitem__` attribute.
     """
     __slots__ = ('_functions', )
+    _log = None
 
     def __init__(self, functions=tuple()):
         if not isiterable(functions) or isinstance(functions, (str, )):
@@ -236,6 +237,9 @@ class Functions(State):
         self._functions = tuple(value if fn == key else fn for fn in self)
         return self
 
+    def __abs__(self):
+        return self.__call__
+
 
 class Juxtapose(Functions):
     """`Juxtapose` applies the same arguments and keywords to many functions.
@@ -272,9 +276,6 @@ class Callables(Functions):
         if self._factory_:
             self = self()
         if item is call:
-            item = call()
-
-        if item is callable:
             return abs(self)
 
         if isinstance(item, call):
@@ -373,9 +374,6 @@ class Composition(Callables):
 
     def __neg__(self):
         return self[complement(bool)]
-
-    def __abs__(self):
-        return self.__call__
 
 
 class Flipped(Composition):
