@@ -1,7 +1,7 @@
 
 # `fidget` - A literate syntax for functional programming
 
-`fidget` provides symbollic & pythonic to composing functions.  It uses Python data model * [operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) to quickly prototype literate code, _no `AST` was harmed in the making of `fidget`_. Markdown is our primary styleguide for monospaced type.  With `fidget`, Markdown styled lists can also execute code, even executing a `fidget` resembles a link `__x__ [requests.get](url)` - __x__ [requests.get](url).
+`fidget` provides symbollic & pythonic expressions that compose complex functions.  It uses the Python data model & [operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) to quickly prototype literate code with flexible design choices, _no `AST` was harmed in the making of `fidget`_. Markdown is our primary styleguide for monospaced type.  With `fidget`, Markdown styled lists can also execute code, even executing a `fidget` resembles a link `__x__ [requests.get](url)` - __x__ [requests.get](url).
 
 
 ```python
@@ -134,7 +134,6 @@ coverage report
 jupyter nbconvert --to markdown readme.ipynb
 ```
 
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 3694 bytes to readme.md
 
-```python
-
-```
