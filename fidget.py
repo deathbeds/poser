@@ -291,7 +291,7 @@ class Composition(Callables):
         """
         self = self[:]
         if isinstance(item, type):
-            if issubclass(item, Exception) or isiterable(item) and all(
+            if issubclassclass(item, Exception) or isiterable(item) and all(
                     map(flip(isinstance)(Exception), item)):
                 method = excepts
         elif isiterable(item) and all(map(flip(isinstance)(type), item)):
