@@ -1,9 +1,5 @@
 # coding: utf-8
 
-# > `fidget` exports composition objects and useful `callable` decorators.
-# 
-# ---
-
 from copy import copy
 from functools import wraps, total_ordering, partial
 from importlib import import_module
@@ -15,19 +11,15 @@ from toolz.curried import (isiterable, first, excepts, flip, last, complement,
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-# ## exported namespaces
-
 __all__ = ['_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy']
 
 
 class State(object):
-    """`State` defines the data model attributes that copy and pickle objects.
-    """
-
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))
 
     def __setstate__(self, state):
+        # (Tuple) -> None
         for key, value in zip(self.__slots__, state):
             setattr(self, key, value)
 
@@ -39,11 +31,9 @@ class State(object):
 State.__deepcopy__ = State.__copy__
 
 
-def _wrapper(function, caller, *args):
-    """`_wrapper` is used to decorate objects with `itertools.wraps`, `identity`, or
-    sometimes `decorate`.
-    """
-    for wrap in concatv((wraps, ), args):
+def _wrapper(function, caller, *other_decorators):
+
+    for wrap in concatv(other_decorators, (wraps, )):
         try:
             return wrap(function)(caller)
         except:
@@ -52,12 +42,6 @@ def _wrapper(function, caller, *args):
 
 
 def functor(function):
-    """`functor` will return the called `function` if it is `callable` or `function`.
-    
-            functor(range)(10)
-            functor(3)(10)
-    """
-
     def caller(*args, **kwargs):
         if callable(function):
             return function(*args, **kwargs)
@@ -67,25 +51,7 @@ def functor(function):
 
 
 class call(State):
-    """`call` creates a `callable` with `partial` arguments.  Arguments are immutable,
-    keywords are mutable.
-    
-            f = call(10, 20)(range)
-            f(3)
-            f(2)
-    
-    `call` applies `functor` by default
-    
-            call(10, 20)(3)()
-    
-    polymorphisms
-    
-            f(*args, **kwargs)(func)()
-            f(*args)(func)(**kwargs)
-            f()(func)(*args, **kwargs)
-    
-    `fidget` relies heavily on call through the composition process.
-    """
+
     __slots__ = ('args', 'kwargs')
 
     def __init__(self, *args, **kwargs):
@@ -100,9 +66,6 @@ class call(State):
 
 
 def do(function):
-    """`do` calls a function & returns the `first` argument
-    """
-
     def caller(*args, **kwargs):
         function(*args, **kwargs)
         return first(args) if len(args) else tuple()
@@ -111,11 +74,6 @@ def do(function):
 
 
 def flipped(function):
-    """call a `function` with the argument order `flipped`.
-    
-    > `flip` only works with binary operations.
-    """
-
     def caller(*args, **kwargs):
         return call(*reversed(args), **kwargs)(function)()
 
@@ -123,9 +81,6 @@ def flipped(function):
 
 
 def stars(function):
-    """`stars` converts iterables to starred arguments, and vice versa.
-    """
-
     def caller(*args, **kwargs):
         if all(map(isiterable, args)):
             combined = groupby(flip(isinstance)(dict), args)
@@ -138,9 +93,6 @@ def stars(function):
 
 
 def defaults(default):
-    """`defaults` to another operation if `bool(function) is False`
-    """
-
     def caller(function):
         def defaults(*args, **kwargs):
             return call(*args)(function)(**kwargs) or call(*args)(default)(
@@ -152,9 +104,6 @@ def defaults(default):
 
 
 def ifthen(condition):
-    """`ifthen` requires a `condition` to be true before executing `function`.
-    """
-
     def caller(function):
         def ifthen(*args, **kwargs):
             return call(*args)(condition)(**kwargs) and call(*args)(function)(
@@ -167,9 +116,7 @@ def ifthen(condition):
 
 @total_ordering
 class Functions(State):
-    """`Functions` is the base class for `map` and `flatmap` function compositions.
-    New functions are added to the compositions using the `__getitem__` attribute.
-    """
+
     __slots__ = ('_functions', )
     _log = None
 
@@ -242,8 +189,7 @@ class Functions(State):
 
 
 class Juxtapose(Functions):
-    """`Juxtapose` applies the same arguments and keywords to many functions.
-    """
+
     __slots__ = ('_functions', '_codomain')
 
     def __init__(self, functions=tuple(), codomain=identity):
@@ -256,9 +202,6 @@ class Juxtapose(Functions):
 
 
 class Compose(Functions):
-    """`Compose` chains functions together.
-    """
-
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call(*args)(function)(**kwargs), ), {}
@@ -266,8 +209,7 @@ class Compose(Functions):
 
 
 class Callables(Functions):
-    """`Callables` are `Functions` that store partial `argument` & `keyword` states.
-    """
+
     _functions_default_ = Compose
     _factory_, _do, _func_ = None, False, staticmethod(identity)
     __slots__ = ('_functions', '_args', '_keywords')
@@ -311,22 +253,17 @@ class Callables(Functions):
 
 
 class Juxtaposition(Callables):
-    """`Juxtaposition` is `Juxtapose` with arguments.
-    """
+
     _functions_default_ = Juxtapose
 
 
 class Composition(Callables):
-    """`Composition` is `Compose` with arguments.
-    """
-
     @staticmethod
     def _add_attribute_(method, _partial=True):
         def caller(self, *args, **kwargs):
-            return (args or
-                    kwargs) and self[_partial and
-                                     partial(method, *args, **kwargs) or
-                                     method(*args, **kwargs)] or self[method]
+            return (args or kwargs
+                    ) and self[_partial and partial(method, *args, **kwargs) or
+                               method(*args, **kwargs)] or self[method]
 
         return wraps(method)(caller)
 
@@ -357,8 +294,8 @@ class Composition(Callables):
             if issubclass(item, Exception) or isiterable(item) and all(
                     map(flip(isinstance)(Exception), item)):
                 method = excepts
-            elif isiterable(item) and all(map(flip(isinstance)(type), item)):
-                item = flip(isinstance)(item)
+        elif isiterable(item) and all(map(flip(isinstance)(type), item)):
+            item = flip(isinstance)(item)
         self._functions = Compose([method(item)(self._functions)])
         return self
 
@@ -377,29 +314,18 @@ class Composition(Callables):
 
 
 class Flipped(Composition):
-    """`Flipped` is a `Composition` with the arguments reversed; keywords have no
-    ordering.
-    """
+
     _func_ = staticmethod(flipped)
 
 
 class Starred(Composition):
-    """`Starred` is a `Composition` that applies an iterable as starred arguments.
-    
-            _xx([10, 20, 3]) == _x(10, 20, 3)
-    """
+
     _func_ = staticmethod(stars)
 
-
-# Introduce redundant attributes for composing functions using `&`, `+`, `>>`, `-`; each symbol will append a function to the composition.
 
 for attr in ('and', 'add', 'rshift', 'sub'):
     setattr(Callables, "__{}__".format(attr), getattr(Callables,
                                                       '__getitem__'))
-
-# Create attributes that apply function programming methods from `toolz` and `operator`.
-# 
-#         _x.map(_x.add(10)).filter(_x.gt(4)).pipe(list)(range(20))
 
 for imports in ('toolz', 'operator'):
     for attr, method in iteritems(
@@ -420,13 +346,11 @@ for imports in ('toolz', 'operator'):
                     getattr(Composition, attr,
                             Composition._add_attribute_(method, **opts)))
 
-# Attributes and symbols to compose functions.
-
-for attr, method in (
-    ('call', '__call__'), ('do', '__lshift__'), ('pipe', '__getitem__'),
-    ('__pow__', '__xor__'), ('__mul__', '__getitem__'), ('__div__', 'map'),
-    ('__truediv__', 'map'), ('__floordiv__', 'filter'), ('__mod__', 'reduce'),
-    ('__matmul__', 'groupby')):
+for attr, method in (('call', '__call__'), ('do', '__lshift__'),
+                     ('pipe', '__getitem__'), ('__pow__', '__xor__'),
+                     ('__mul__', '__getitem__'), ('__div__', 'map'), (
+                         '__truediv__', 'map'), ('__floordiv__', 'filter'), (
+                             '__mod__', 'reduce'), ('__matmul__', 'groupby')):
     setattr(Composition, attr, getattr(Composition, method))
 
 for attr in [
@@ -465,23 +389,15 @@ if PY34:
                 return self[methodcaller(first(attrs), *args, **kwargs)]
             return super(This, self).__call__(*args, **kwargs)
 
-    this = type('_This_',
-                (This, ), {'_factory_': True})(functions=Compose([This]))
+    this = type('_This_', (This, ), {'_factory_':
+                                     True})(functions=Compose([This]))
 
     __all__ += ['this']
 
 del imports, attr, method, opts, PY34
 
-# Assign factories for each composition.
-# 
-# |object|type           |
-# |------|---------------|
-# | _y   | Juxtaposition |
-# | _x   | Composition   |
-# | x_   | Flipped       |
-# | _xx  | Starred       |
-
 _y, _x, x_, _xx = tuple(
-    type('_{}_'.format(f.__name__),
-         (f, ), {'_factory_': True, })(functions=Compose([f]))
+    type('_{}_'.format(f.__name__), (f, ), {
+        '_factory_': True,
+    })(functions=Compose([f]))
     for f in (Juxtaposition, Composition, Flipped, Starred))
