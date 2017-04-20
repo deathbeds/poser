@@ -11,7 +11,9 @@ from toolz.curried import (isiterable, first, excepts, flip, last, complement,
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ['_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy']
+__all__ = [
+    '_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy', 'extension'
+]
 
 
 class State(object):
@@ -19,7 +21,6 @@ class State(object):
         return tuple(map(partial(getattr, self), self.__slots__))
 
     def __setstate__(self, state):
-        # (Tuple) -> None
         for key, value in zip(self.__slots__, state):
             setattr(self, key, value)
 
@@ -262,34 +263,6 @@ class Juxtaposition(Callables):
     _functions_default_ = Juxtapose
 
 
-def _rattribute_(attr):
-
-    attr = """__{}__""".format(attr)
-
-    def caller(self, other):
-        self = self[:]
-        if isinstance(other, call):
-            other = self.__class__(*other.args, **other.kwargs)
-        else:
-            other = self.__class__()[other]
-        return methodcaller(attr, copy(self))(other) if self else other
-
-    return wraps(getattr(Composition, attr))(caller)
-
-
-def _attribute_(method):
-    _impartial = not isinstance(method, partial)
-    method = not _impartial and method.func or method
-
-    def caller(self, *args, **kwargs):
-        return (
-            args or
-            kwargs) and self[_impartial and partial(method, *args, **kwargs) or
-                             method(*args, **kwargs)] or self[method]
-
-    return wraps(method)(caller)
-
-
 class Composition(Callables):
     def __getitem__(self, item=None, *args, **kwargs):
         return super(Composition, self).__getitem__(
@@ -323,26 +296,52 @@ class Composition(Callables):
 
     __pow__ = __xor__
     __mul__ = __getitem__
-    __matmul__ = _attribute_(groupby)
-    __div__ = __truediv__ = _attribute_(map)
-    __floordiv__ = _attribute_(filter)
-    __mod__ = _attribute_(reduce)
+
+
+def extension(attr, method, type=Composition):
+
+    _impartial = not isinstance(method, partial)
+    method = not _impartial and method.func or method
+
+    def caller(self, *args, **kwargs):
+        return (
+            args or
+            kwargs) and self[_impartial and partial(method, *args, **kwargs) or
+                             method(*args, **kwargs)] or self[method]
+
+    setattr(type, attr, getattr(type, attr, wraps(method)(caller)))
+
+
+for attr, method in [('__matmul__', groupby), ('__div__', map), (
+        '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
+    extension(attr, method)
+
+
+def _rattribute_(attr):
+
+    attr = """__{}__""".format(attr)
+
+    def caller(self, other):
+        self = self[:]
+        if isinstance(other, call):
+            other = self.__class__(*other.args, **other.kwargs)
+        else:
+            other = self.__class__()[other]
+        return methodcaller(attr, copy(self))(other) if self else other
+
+    return wraps(getattr(Composition, attr))(caller)
 
 
 s = "__{}{}__".format
-
 for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
         'lshift', 'rshift', 'and', 'xor', 'or'
 ]:
     setattr(Composition, s('i', attr), getattr(Composition, s('', attr)))
     setattr(Composition, s('r', attr), _rattribute_(attr))
+del _rattribute_
 
-for attr, method in [
-    ['call'] * 2,
-    ['do', 'lshift'],
-    ['pipe', 'getitem'],
-]:
+for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
     setattr(Composition, attr, getattr(Composition, s('', method)))
 
 for imports in ('toolz', 'operator'):
@@ -351,15 +350,12 @@ for imports in ('toolz', 'operator'):
                       keyfilter(
                           compose(str.islower, first),
                           vars(import_module(imports))))):
-        if getattr(Composition, attr, None) is None:
-            method = (identity
-                      if method in (flip, ) or imports == 'toolz' else partial
-                      if method in (methodcaller, itemgetter, attrgetter, not_,
-                                    truth, abs, invert, neg, pos, index) else
-                      flip)(method)
-
-            setattr(Composition, attr,
-                    getattr(Composition, attr, _attribute_(method)))
+        extension(attr,
+                  (identity
+                   if method in (flip, ) or imports == 'toolz' else partial
+                   if method in (methodcaller, itemgetter, attrgetter, not_,
+                                 truth, abs, invert, neg, pos, index) else
+                   flip)(method), Composition)
 
 
 class Flipped(Composition):
