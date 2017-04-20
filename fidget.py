@@ -6,8 +6,8 @@ from importlib import import_module
 from decorator import decorate
 from six import iteritems, PY34
 from toolz.curried import (isiterable, first, excepts, flip, last, complement,
-                           map, identity, concatv, valfilter, keyfilter, merge,
-                           curry, groupby, concat, get, compose, reduce)
+                           map, identity, concatv, valfilter, merge, curry,
+                           groupby, concat, get, compose, reduce, juxt)
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
@@ -343,10 +343,9 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
 
 for imports in ('toolz', 'operator'):
     for attr, method in iteritems(
-            valfilter(callable,
-                      keyfilter(
-                          compose(str.islower, first),
-                          vars(import_module(imports))))):
+            valfilter(
+                compose(all, juxt(callable, complement(flip(
+                    isinstance, type)))), vars(import_module(imports)))):
         extension(attr,
                   (identity
                    if method in (flip, ) or imports == 'toolz' else partial
