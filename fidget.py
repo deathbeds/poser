@@ -252,10 +252,7 @@ class Callables(Functions):
         self._functions = reversed(self._functions)
         return self
 
-
-for attr in ('and', 'add', 'rshift', 'sub'):
-    setattr(Callables, "__{}__".format(attr), getattr(Callables,
-                                                      '__getitem__'))
+    __and__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 
 class Juxtaposition(Callables):
