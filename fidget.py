@@ -6,8 +6,8 @@ from importlib import import_module
 from decorator import decorate
 from six import iteritems, PY34
 from toolz.curried import (isiterable, first, excepts, flip, last, complement,
-                           identity, concatv, map, valfilter, keyfilter, merge,
-                           curry, groupby, concat, get, compose)
+                           map, identity, concatv, valfilter, keyfilter, merge,
+                           curry, groupby, concat, get, compose, reduce)
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
@@ -252,36 +252,45 @@ class Callables(Functions):
         return self
 
 
+for attr in ('and', 'add', 'rshift', 'sub'):
+    setattr(Callables, "__{}__".format(attr), getattr(Callables,
+                                                      '__getitem__'))
+
+
 class Juxtaposition(Callables):
 
     _functions_default_ = Juxtapose
 
 
+def _rattribute_(attr):
+
+    attr = """__{}__""".format(attr)
+
+    def caller(self, other):
+        self = self[:]
+        if isinstance(other, call):
+            other = self.__class__(*other.args, **other.kwargs)
+        else:
+            other = self.__class__()[other]
+        return methodcaller(attr, copy(self))(other) if self else other
+
+    return wraps(getattr(Composition, attr))(caller)
+
+
+def _attribute_(method):
+    _impartial = not isinstance(method, partial)
+    method = not _impartial and method.func or method
+
+    def caller(self, *args, **kwargs):
+        return (
+            args or
+            kwargs) and self[_impartial and partial(method, *args, **kwargs) or
+                             method(*args, **kwargs)] or self[method]
+
+    return wraps(method)(caller)
+
+
 class Composition(Callables):
-    @staticmethod
-    def _add_attribute_(method, _partial=True):
-        def caller(self, *args, **kwargs):
-            return (args or kwargs
-                    ) and self[_partial and partial(method, *args, **kwargs) or
-                               method(*args, **kwargs)] or self[method]
-
-        return wraps(method)(caller)
-
-    @staticmethod
-    def _rattr_(attr):
-        right = """__{}__""".format('r' + attr)
-        attr = """__{}__""".format(attr)
-
-        def caller(self, other):
-            self = self[:]
-            if isinstance(other, call):
-                other = self.__class__(*other.args, **other.kwargs)
-            else:
-                other = self.__class__()[other]
-            return methodcaller(attr, copy(self))(other) if self else other
-
-        setattr(Composition, right, wraps(getattr(Composition, attr))(caller))
-
     def __getitem__(self, item=None, *args, **kwargs):
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(item) or item)
@@ -291,7 +300,7 @@ class Composition(Callables):
         """
         self = self[:]
         if isinstance(item, type):
-            if issubclassclass(item, Exception) or isiterable(item) and all(
+            if issubclass(item, Exception) or isiterable(item) and all(
                     map(flip(isinstance)(Exception), item)):
                 method = excepts
         elif isiterable(item) and all(map(flip(isinstance)(type), item)):
@@ -312,6 +321,46 @@ class Composition(Callables):
     def __neg__(self):
         return self[complement(bool)]
 
+    __pow__ = __xor__
+    __mul__ = __getitem__
+    __matmul__ = _attribute_(groupby)
+    __div__ = __truediv__ = _attribute_(map)
+    __floordiv__ = _attribute_(filter)
+    __mod__ = _attribute_(reduce)
+
+
+s = "__{}{}__".format
+
+for attr in [
+        'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
+        'lshift', 'rshift', 'and', 'xor', 'or'
+]:
+    setattr(Composition, s('i', attr), getattr(Composition, s('', attr)))
+    setattr(Composition, s('r', attr), _rattribute_(attr))
+
+for attr, method in [
+    ['call'] * 2,
+    ['do', 'lshift'],
+    ['pipe', 'getitem'],
+]:
+    setattr(Composition, attr, getattr(Composition, s('', method)))
+
+for imports in ('toolz', 'operator'):
+    for attr, method in iteritems(
+            valfilter(callable,
+                      keyfilter(
+                          compose(str.islower, first),
+                          vars(import_module(imports))))):
+        if getattr(Composition, attr, None) is None:
+            method = (identity
+                      if method in (flip, ) or imports == 'toolz' else partial
+                      if method in (methodcaller, itemgetter, attrgetter, not_,
+                                    truth, abs, invert, neg, pos, index) else
+                      flip)(method)
+
+            setattr(Composition, attr,
+                    getattr(Composition, attr, _attribute_(method)))
+
 
 class Flipped(Composition):
 
@@ -322,44 +371,6 @@ class Starred(Composition):
 
     _func_ = staticmethod(stars)
 
-
-for attr in ('and', 'add', 'rshift', 'sub'):
-    setattr(Callables, "__{}__".format(attr), getattr(Callables,
-                                                      '__getitem__'))
-
-for imports in ('toolz', 'operator'):
-    for attr, method in iteritems(
-            valfilter(callable,
-                      keyfilter(
-                          compose(str.islower, first),
-                          vars(import_module(imports))))):
-        opts = {}
-        if getattr(Composition, attr, None) is None:
-            if method in (flip, ) or imports == 'toolz':
-                pass
-            elif method in (methodcaller, itemgetter, attrgetter, not_, truth,
-                            abs, invert, neg, pos, index):
-                opts.update(_partial=False)
-            else:
-                method = flip(method)
-            setattr(Composition, attr,
-                    getattr(Composition, attr,
-                            Composition._add_attribute_(method, **opts)))
-
-for attr, method in (('call', '__call__'), ('do', '__lshift__'),
-                     ('pipe', '__getitem__'), ('__pow__', '__xor__'),
-                     ('__mul__', '__getitem__'), ('__div__', 'map'), (
-                         '__truediv__', 'map'), ('__floordiv__', 'filter'), (
-                             '__mod__', 'reduce'), ('__matmul__', 'groupby')):
-    setattr(Composition, attr, getattr(Composition, method))
-
-for attr in [
-        'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
-        'lshift', 'rshift', 'and', 'xor', 'or'
-]:
-    s = "__{}{}__".format
-    setattr(Composition, s('i', attr), getattr(Composition, s('', attr)))
-    Composition._rattr_(attr)
 
 if PY34:
 
@@ -394,7 +405,7 @@ if PY34:
 
     __all__ += ['this']
 
-del imports, attr, method, opts, PY34
+del imports, attr, method, PY34
 
 _y, _x, x_, _xx = tuple(
     type('_{}_'.format(f.__name__), (f, ), {
