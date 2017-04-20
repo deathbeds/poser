@@ -4,8 +4,7 @@ from fidget import *
 from toolz.curried import *
 from collections import OrderedDict
 from six import PY34
-# from IPython import get_ipython
-# get_ipython().ast_node_interactivity = 'all'
+get_ipython().ast_node_interactivity = 'all'
 
 _x(10, 20) != _x(10)
 _x(10, 20) == _x(10, 20)
@@ -68,8 +67,8 @@ import random
 
 if PY34:
     _x >> {
-        'data': _x[range].map(_x[[]][_xx >> random.random]) >> enumerate
-        >> list,
+        'data':
+        _x[range].map(_x[[]][_xx >> random.random]) >> enumerate >> list,
         'index': _x[range][reversed][list],
         'columns': ['i', 'value'],
     } >> (_xx[pd.DataFrame]) >> call(3)
@@ -101,8 +100,6 @@ Maybe this could be literate programming?
 """)
 
 _x(i=3, title='fidget') >> tpl.render >> Markdown >> call
-
-# ### polymorphisms
 
 (_x + range + (_x + [list, len, type]) + list)(10)
 

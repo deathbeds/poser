@@ -1,12 +1,11 @@
 # coding: utf-8
 
 from fidget import _x as leΨ, this, _x, call, _y, x_, _xx
-
 from IPython import display
-
+from copy import copy
+from time import time
 import pandas
-
-# `a minimalist syntax`
+get_ipython().ast_node_interactivity = 'all'
 
 (range - _x - [len] * 10 - [type, _x.first()[type]] - call)(10)
 
@@ -66,8 +65,6 @@ df.iloc[2].apply('~~{}~~'.format).pipe(about)
 
 df.iloc[3].pipe(about)
 
-# > Only execute a statement when the exponent is true.
-
 # _x[range][list] >> call('asdf')
 _x[range][list]**x_(int)[isinstance] >> call('asdf')
 (_x[range][list]**x_(int)[isinstance] | str.upper) >> call('asdf')
@@ -79,37 +76,23 @@ df.iloc[4].pipe(about)
 (-_x[range])(0)
 (-_x[range])(1)
 
-# reverse direction of the functions.
-
 ~_x[range][list]
 
 df.iloc[5].pipe(about)
 
-# Use `*` to append function because it is markdowny
-
 (_x * range * list)(10)
 
-# groupby
-
-_x * range @_x.mod(2) & call(10)
-
-# map
+_x * range @ _x.mod(2) & call(10)
 
 _x * range / _x.mod(2) >> list & call(10)
 
-# filter
-
 _x * range // _x.mod(2) >> list & call(10)
-
-# reduce
 
 _x * range % _x.add() & call(10)
 
 _x * range / str % _x.add() & call(10)
 
 df.iloc[6].pipe(about)
-
-# append functions in a markdowny way
 
 _x + range - list + len
 
@@ -166,8 +149,6 @@ with sumpin**"like an 💡" as such:
     such.first()
 such
 
-# > logging
-
 from copy import copy
 
 from time import time
@@ -178,5 +159,5 @@ with [] - _xx[time] as _time_:
 
 (_x >> range
  # print intermediate results
- << (_x - [len, sum, _time_ - _x.sub(t) - """{} sec""".format] >> log)
- >> list) >> call(10)
+ << (_x - [len, sum, _time_ - _x.sub(t) - """{} sec""".format] >> log) >>
+ list) >> call(10)
