@@ -7,16 +7,21 @@ from decorator import decorate
 from six import iteritems, PY34
 from toolz.curried import (isiterable, first, excepts, flip, last, complement,
                            map, identity, concatv, valfilter, merge, curry,
-                           groupby, concat, get, compose, reduce, juxt)
+                           groupby, concat, get, keyfilter, compose, reduce)
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
 __all__ = [
-    '_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy', 'extension'
+    '_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy', 'macro'
 ]
 
 
 class State(object):
+    """`State` defines the data model attributes that copy and pickle objects.
+    
+    Here is the example
+    """
+
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))
 
@@ -33,6 +38,9 @@ State.__deepcopy__ = State.__copy__
 
 
 def _wrapper(function, caller, *other_decorators):
+    """`_wrapper` is used to decorate objects with `itertools.wraps`,
+    `identity`, or sometimes `decorate`.
+    """
 
     for wrap in concatv(other_decorators, (wraps, )):
         try:
@@ -43,6 +51,13 @@ def _wrapper(function, caller, *other_decorators):
 
 
 def functor(function):
+    """`functor` will return the called `function` if it is `callable` or
+    `function`.
+    
+            functor(range)(10)
+            functor(3)(10)
+    """
+
     def caller(*args, **kwargs):
         if callable(function):
             return function(*args, **kwargs)
@@ -52,6 +67,25 @@ def functor(function):
 
 
 class call(State):
+    """`call` creates a `callable` with `partial` arguments.  Arguments are
+    immutable, keywords are mutable.
+    
+            f = call(10, 20)(range)
+            f(3)
+            f(2)
+    
+    `call` applies `functor` by default
+    
+            call(10, 20)(3)()
+    
+    polymorphisms
+    
+            f(*args, **kwargs)(func)()
+            f(*args)(func)(**kwargs)
+            f()(func)(*args, **kwargs)
+    
+    `fidget` relies heavily on call through the composition process.
+    """
 
     __slots__ = ('args', 'kwargs')
 
@@ -67,6 +101,9 @@ class call(State):
 
 
 def do(function):
+    """`do` calls a function & returns the `first` argument
+    """
+
     def caller(*args, **kwargs):
         function(*args, **kwargs)
         return first(args) if len(args) else tuple()
@@ -75,6 +112,11 @@ def do(function):
 
 
 def flipped(function):
+    """call a `function` with the argument order `flipped`.
+    
+    > `flip` only works with binary operations.
+    """
+
     def caller(*args, **kwargs):
         return call(*reversed(args), **kwargs)(function)()
 
@@ -82,6 +124,9 @@ def flipped(function):
 
 
 def stars(function):
+    """`stars` converts iterables to starred arguments, and vice versa.
+    """
+
     def caller(*args, **kwargs):
         if all(map(isiterable, args)):
             combined = groupby(flip(isinstance)(dict), args)
@@ -94,6 +139,9 @@ def stars(function):
 
 
 def defaults(default):
+    """`defaults` to another operation if `bool(function) is False`
+    """
+
     def caller(function):
         def defaults(*args, **kwargs):
             return call(*args)(function)(**kwargs) or call(*args)(default)(
@@ -105,6 +153,9 @@ def defaults(default):
 
 
 def ifthen(condition):
+    """`ifthen` requires a `condition` to be true before executing `function`.
+    """
+
     def caller(function):
         def ifthen(*args, **kwargs):
             return call(*args)(condition)(**kwargs) and call(*args)(function)(
@@ -117,6 +168,11 @@ def ifthen(condition):
 
 @total_ordering
 class Functions(State):
+    """`Functions` is the base class for `map` and `flatmap` function
+    compositions.
+    New functions are added to the compositions using the `__getitem__`
+    attribute.
+    """
 
     __slots__ = ('_functions', )
     _log = None
@@ -190,6 +246,8 @@ class Functions(State):
 
 
 class Juxtapose(Functions):
+    """`Juxtapose` applies the same arguments and keywords to many functions.
+    """
 
     __slots__ = ('_functions', '_codomain')
 
@@ -203,6 +261,9 @@ class Juxtapose(Functions):
 
 
 class Compose(Functions):
+    """`Compose` chains functions together.
+    """
+
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call(*args)(function)(**kwargs), ), {}
@@ -210,6 +271,9 @@ class Compose(Functions):
 
 
 class Callables(Functions):
+    """`Callables` are `Functions` that store partial `argument` & `keyword`
+    states.
+    """
 
     _functions_default_ = Compose
     _factory_, _do, _func_ = None, False, staticmethod(identity)
@@ -256,11 +320,16 @@ class Callables(Functions):
 
 
 class Juxtaposition(Callables):
+    """`Juxtaposition` is `Juxtapose` with arguments.
+    """
 
     _functions_default_ = Juxtapose
 
 
 class Composition(Callables):
+    """`Composition` is `Compose` with arguments.
+    """
+
     def __getitem__(self, item=None, *args, **kwargs):
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(item) or item)
@@ -295,7 +364,10 @@ class Composition(Callables):
     __mul__ = __getitem__
 
 
-def extension(attr, method, type=Composition):
+def macro(attr, method, cls=Composition):
+    """Adds attributes to `Compositon` `cls` to extend an api to contain named
+    actions.
+    """
 
     _impartial = not isinstance(method, partial)
     method = not _impartial and method.func or method
@@ -306,15 +378,22 @@ def extension(attr, method, type=Composition):
             kwargs) and self[_impartial and partial(method, *args, **kwargs) or
                              method(*args, **kwargs)] or self[method]
 
-    setattr(type, attr, getattr(type, attr, wraps(method)(caller)))
+    setattr(cls, attr, getattr(cls, attr, wraps(method)(caller)))
 
 
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    extension(attr, method)
+    macro(attr, method)
 
 
+# Attributes and symbols to compose functions.
+# 
+# Create attributes that apply function programming methods from `toolz` and `operator`.
+# 
+#         _x.map(_x.add(10)).filter(_x.gt(4)).pipe(list)(range(20))
 def _rattribute_(attr):
+    """Add right operators from the python data model.
+    """
 
     attr = """__{}__""".format(attr)
 
@@ -342,24 +421,34 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
     setattr(Composition, attr, getattr(Composition, s('', method)))
 
 for imports in ('toolz', 'operator'):
-    for attr, method in iteritems(
-            valfilter(
-                compose(all, juxt(callable, complement(flip(
-                    isinstance, type)))), vars(import_module(imports)))):
-        extension(attr,
-                  (identity
-                   if method in (flip, ) or imports == 'toolz' else partial
-                   if method in (methodcaller, itemgetter, attrgetter, not_,
-                                 truth, abs, invert, neg, pos, index) else
-                   flip)(method), Composition)
+    """introduce fucntional programming namespaces from `toolz` and `operator`.
+    """
+
+    for attr, method in compose(iteritems,
+                                valfilter(callable),
+                                keyfilter(compose(str.lower, first)), vars,
+                                import_module)(imports):
+        macro(attr, (identity
+                     if method in (flip, ) or imports == 'toolz' else partial
+                     if method in (methodcaller, itemgetter, attrgetter, not_,
+                                   truth, abs, invert, neg, pos, index) else
+                     flipped)(method))
 
 
 class Flipped(Composition):
+    """`Flipped` is a `Composition` with the arguments reversed; keywords have
+    no ordering.
+    """
 
     _func_ = staticmethod(flipped)
 
 
 class Starred(Composition):
+    """`Starred` is a `Composition` that applies an iterable as starred
+    arguments.
+    
+            _xx([10, 20, 3]) == _x(10, 20, 3)
+    """
 
     _func_ = staticmethod(stars)
 
