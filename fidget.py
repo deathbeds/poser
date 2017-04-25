@@ -237,7 +237,8 @@ class Partial(Functions):
         return call(*self._args, **self._keywords)(self._function)
 
     def __invert__(self):
-        return setattr(self[:], '_functions', reversed(self._functions))
+        self = self[:]
+        return setattr(self, '_functions', reversed(self._functions)) or self
 
     @property
     def _factory_(self):
@@ -283,7 +284,7 @@ class Composition(Partial):
         return self[complement(bool)]
 
     def __lshift__(self, item):
-        return self[do(item)] if self._factory_ else Do()[item]
+        return Do()[item] if self._factory_ else self[do(item)]
 
     __pow__, __mul__ = __xor__, __getitem__
 
