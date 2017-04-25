@@ -12,8 +12,7 @@
 {% set spaces = 4 + signature.splitlines()[-1].__len__() - signature.splitlines()[-1].lstrip().__len__() %}
 {% filter wrap_text(80-spaces) | trim | indent(spaces) %}"""{{ doc }}
 """
-{% endfilter %}{% endif %}
-{{rest}}
+{% endfilter %}{% endif %}{{rest}}
 {% else -%}
 {{source}}
 {%- endif %}
