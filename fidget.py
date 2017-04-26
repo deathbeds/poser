@@ -1,5 +1,9 @@
 # coding: utf-8
 
+# > `fidget` uses the python data model to compose higher-order functions.
+# 
+# ---
+
 from copy import copy
 from functools import wraps, total_ordering, partial
 from importlib import import_module
@@ -319,6 +323,14 @@ def macro(attr, method, cls=Composition):
     setattr(cls, attr, getattr(cls, attr, wraps(method)(_macro)))
 
 
+# |attribute     |symbol|function |  
+# |--------------|------|---------|
+# |`__div__`     |`/`   |`map`    |
+# |`__truediv__` |`/`   |`map`    |
+# |`__floordiv__`|`//`  |`filter` |
+# |`__mod__`     |`%`   |`reduce` |
+# |`__matmul__`  |`@`   |`groupby`|
+
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
     macro(attr, method)
@@ -363,6 +375,15 @@ for imports in ('toolz', 'operator'):
                                 truth, abs, invert, neg, pos, index) else
                   flipped)(method)
         macro(attr, method)
+
+# Assign factories for each composition.
+# 
+# |object|type           |
+# |------|---------------|
+# | _y   | Juxtaposition |
+# | _x   | Composition   |
+# | x_   | Flipped       |
+# | _xx  | Starred       |
 
 _y, _x, x_, _xx = tuple(
     type('_{}_'.format(function.__name__), (function, ),
