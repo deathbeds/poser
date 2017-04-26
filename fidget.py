@@ -101,8 +101,7 @@ class call(State):
         return partial(functor(function), *self.args, **self.kwargs)
 
 
-@total_ordering
-class Functions(State):
+class Function(State):
     """`Functions` is the base class for `map` and `flatmap` function
     compositions.
     New functions are added to the compositions using the `__getitem__`
@@ -114,7 +113,7 @@ class Functions(State):
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions, )
 
-        super(Functions, self).__init__(
+        super(Function, self).__init__(
             (isinstance(functions, dict) and iteritems or
              identity)(functions), *args)
 
@@ -126,34 +125,11 @@ class Functions(State):
             self._functions = tuple(concatv(self._functions, (item, )))
         return self
 
-    def __enter__(self):
-        return copy(self[:])
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
-
     def __iter__(self):
         for function in self._functions:
             yield (isinstance(function, (dict, set, list, tuple)) and
                    call(codomain=type(function))(Juxtapose) or
                    identity)(function)
-
-    def __len__(self):
-        return len(self._functions)
-
-    def __hash__(self):
-        return hash(self._functions)
-
-    def __eq__(self, other):
-        if isinstance(other, Functions):
-            return hash(self) == hash(other)
-        return False
-
-    def __lt__(self, other):
-        if isinstance(other, Functions):
-            return (len(self) < len(other)) and all(
-                eq(*i) for i in zip(self, other))
-        return False
 
     def __reversed__(self):
         self._functions = tuple(reversed(self._functions))
@@ -161,9 +137,6 @@ class Functions(State):
 
     def __repr__(self):
         return str(self._functions)
-
-    def __contains__(self, item):
-        return any(item == function for function in self)
 
     def __delitem__(self, item):
         self._functions = tuple(fn for fn in self if fn != item)
@@ -177,7 +150,36 @@ class Functions(State):
         return self.__call__
 
 
-class Juxtapose(Functions):
+@total_ordering
+class Composite(Function):
+    def __enter__(self):
+        return copy(self[:])
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        pass
+
+    def __len__(self):
+        return len(self._functions)
+
+    def __hash__(self):
+        return hash(self._functions)
+
+    def __eq__(self, other):
+        if isinstance(other, Composite):
+            return hash(self) == hash(other)
+        return False
+
+    def __lt__(self, other):
+        if isinstance(other, Composite):
+            return (len(self) < len(other)) and all(
+                eq(*i) for i in zip(self, other))
+        return False
+
+    def __contains__(self, item):
+        return any(item == function for function in self)
+
+
+class Juxtapose(Composite):
     """`Juxtapose` applies the same arguments and keywords to many functions.
     """
     __slots__ = ('_functions', '_codomain')
@@ -190,7 +192,7 @@ class Juxtapose(Functions):
             call(*args)(function)(**kwargs) for function in self)
 
 
-class Compose(Functions):
+class Compose(Composite):
     """`Compose` chains functions together.
     """
 
@@ -200,7 +202,7 @@ class Compose(Functions):
         return first(args)
 
 
-class Partial(Functions):
+class Partial(Composite):
     """`Callables` are `Functions` that store partial `argument` & `keyword`
     states.
     """
