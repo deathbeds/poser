@@ -14,7 +14,9 @@
 """
 {% endfilter %}{% endif %}{{rest}}
 {% else -%}
-{{source}}
+{% if doc.strip() %}{{doc | trim | comment_lines}}
+
+{% endif %}{{source}}
 {%- endif %}
 {% endfilter %}
 {% endmacro %}
@@ -24,7 +26,7 @@
 {%- if 'markdown' in cell.cell_type and loop.index < loop.length and 'code' in nb.cells[loop.index].cell_type -%}
 {%- elif 'code' in cell.cell_type %}{% set prev = nb.cells[loop.index0-1] -%}{{docify(
         cell.source, prev.source if loop.index and 'markdown' in prev.cell_type else ""
-    ) or cell.source}}
+    )}}
 {%- elif 'markdown' in cell.cell_type -%}{{ cell.source | trim  | comment_lines }}
 {%- endif -%}
 
