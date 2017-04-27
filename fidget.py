@@ -18,6 +18,8 @@ __all__ = ['_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy']
 
 
 class State(object):
+    __slots__ = tuple()
+
     def __init__(self, *args, **kwargs):
         for i, slot in enumerate(self.__slots__):
             setattr(self, slot, kwargs.pop(slot, args[i]))
@@ -33,17 +35,21 @@ class State(object):
         new = self.__class__()
         return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
 
+    def __hash__(self):
+        return hash(tuple(getattr(self, attr) for attr in self.__slots__))
+
+    def __eq__(self, other):
+        return hash(self) == hash(other)
+
     __deepcopy__ = __copy__
 
 
-class function(State):
+class functor(State):
     __slots__ = ('function', )
 
-    def __repr__(self):
-        return repr(self.function)
+    def __init__(self, function=identity, *args):
+        super(functor, self).__init__(function, *args)
 
-
-class functor(function):
     def __call__(self, *args, **kwargs):
         return self.function(
             *args, **kwargs) if callable(self.function) else self.function
@@ -72,18 +78,18 @@ class stars(functor):
 
 
 class condition(functor):
-    __slots__ = ('condition', 'function')
+    __slots__ = ('function', 'condition')
 
 
 class ifthen(condition):
     def __call__(self, *args, **kwargs):
         return functor(self.condition)(*args, **kwargs) and super(
-            condition, self).__call__(*args, **kwargs)
+            ifthen, self).__call__(*args, **kwargs)
 
 
 class defaults(condition):
     def __call__(self, *args, **kwargs):
-        return super(condition, self).__call__(
+        return super(defaults, self).__call__(
             *args, **kwargs) or functor(self.condition)(*args, **kwargs)
 
 
@@ -101,7 +107,7 @@ class call(State):
     def __init__(self, *args, **kwargs):
         super(call, self).__init__(args, kwargs)
 
-    def __call__(self, function=identity):
+    def __call__(self, function=functor):
         return partial(functor(function), *self.args, **self.kwargs)
 
 
@@ -111,32 +117,25 @@ class Function(State):
     New functions are added to the compositions using the `__getitem__`
     attribute.
     """
-    __slots__ = ('_functions', )
 
     def __init__(self, functions=tuple(), *args):
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions, )
 
-        super(Function, self).__init__(
-            (isinstance(functions, dict) and iteritems or
-             identity)(functions), *args)
+        super(Function, self).__init__(functions, *args)
 
     def __getitem__(self, item):
-        if isinstance(item, slice):
-            if item != slice(None):
-                self._functions = self._functions[item]
-        else:
-            self._functions = tuple(concatv(self._functions, (item, )))
+        self._functions = tuple(concatv(self._functions, (item, )))
         return self
 
     def __iter__(self):
         for function in self._functions:
             yield (isinstance(function, (dict, set, list, tuple)) and
                    call(codomain=type(function))(Juxtapose) or
-                   identity)(function)
+                   functor)(function)
 
     def __reversed__(self):
-        self._functions = tuple(reversed(self._functions))
+        self._functions = type(self._functions)(reversed(self._functions))
         return self
 
     def __repr__(self):
@@ -156,6 +155,17 @@ class Function(State):
 
 @total_ordering
 class Composite(Function):
+    __slots__ = ('_functions', )
+
+    def __getitem__(self, item):
+        if isinstance(item, slice):
+            if item != slice(None):
+                # Slice the composite
+                self._functions = self._functions[item]
+        else:
+            self = super(Composite, self).__getitem__(item)
+        return self
+
     def __enter__(self):
         return copy(self[:])
 
@@ -168,11 +178,6 @@ class Composite(Function):
     def __hash__(self):
         return hash(self._functions)
 
-    def __eq__(self, other):
-        if isinstance(other, Composite):
-            return hash(self) == hash(other)
-        return False
-
     def __lt__(self, other):
         if isinstance(other, Composite):
             return (len(self) < len(other)) and all(
@@ -182,18 +187,25 @@ class Composite(Function):
     def __contains__(self, item):
         return any(item == function for function in self)
 
+    @property
+    def _function(self):
+        return self._functions
+
 
 class Juxtapose(Composite):
     """`Juxtapose` applies the same arguments and keywords to many functions.
     """
     __slots__ = ('_functions', '_codomain')
 
-    def __init__(self, functions=tuple(), codomain=identity):
+    def __init__(self, functions=tuple(), codomain=functor):
         super(Juxtapose, self).__init__(functions, codomain)
 
     def __call__(self, *args, **kwargs):
         return self._codomain(
             call(*args)(function)(**kwargs) for function in self)
+
+    def __hash__(self):
+        return hash((self._functions, self._codomain))
 
 
 class Compose(Composite):
@@ -210,13 +222,12 @@ class Partial(Composite):
     """`Callables` are `Functions` that store partial `argument` & `keyword`
     states.
     """
-    __slots__ = ('_args', '_keywords', '_functions')
-    _decorate_, _composite_ = staticmethod(identity), staticmethod(Compose)
+    __slots__ = ('_functions', '_args', '_keywords')
+    _decorate_, _composite_ = staticmethod(functor), staticmethod(Compose)
 
     def __init__(self, *args, **kwargs):
-        super(Partial, self).__init__(args, kwargs,
-                                      kwargs.pop('functions',
-                                                 self._composite_()))
+        super(Partial, self).__init__(
+            kwargs.pop('functions', self._composite_()), args, kwargs)
 
     def __getitem__(self, item=None):
         if self._factory_:
@@ -235,16 +246,9 @@ class Partial(Composite):
     def _function(self):
         return self._decorate_(self._functions)
 
-    def __hash__(self):
-        return hash((self._functions, self._args, type(self)))
-
     @property
     def __call__(self):
         return call(*self._args, **self._keywords)(self._function)
-
-    def __invert__(self):
-        self = self[:]
-        return setattr(self, '_functions', reversed(self._functions)) or self
 
     @property
     def _factory_(self):
@@ -273,14 +277,14 @@ class Composition(Partial):
                 method = excepts
         elif isiterable(item) and all(map(flip(isinstance)(type), item)):
             item = flip(isinstance)(item)
-        self._functions = Compose([method(item, self._functions)])
+        self._functions = Compose([method(self._functions, item)])
         return self
 
     def __or__(self, item):
         """| returns a default value if composition evaluates true.
         """
         self = self[:]
-        self._functions = Compose([defaults(item, self._functions)])
+        self._functions = Compose([defaults(self._functions, item)])
         return self
 
     def __pos__(self):
@@ -293,6 +297,7 @@ class Composition(Partial):
         return Do()[item] if self._factory_ else self[do(item)]
 
     __pow__, __mul__ = __xor__, __getitem__
+    __invert__ = Composite.__reversed__
 
 
 class Flipped(Composition):
@@ -305,6 +310,18 @@ class Starred(Composition):
 
 class Do(Composition):
     _decorate_ = staticmethod(do)
+
+
+class ComposeLeft(Compose):
+    def __iter__(self):
+        return reversed(tuple(super(ComposeLeft, self).__iter__()))
+
+    def __hash__(self):
+        return hash(tuple(reversed(self._functions)))
+
+
+class Reversed(Composition):
+    _composite_ = staticmethod(ComposeLeft)
 
 
 def macro(attr, method, cls=Composition):
@@ -369,7 +386,7 @@ for imports in ('toolz', 'operator'):
                     keyfilter(compose(str.lower, first)), vars,
                     import_module)(imports)
     for attr, method in attrs:
-        method = (identity
+        method = (functor
                   if method in (flip, ) or imports == 'toolz' else partial
                   if method in (methodcaller, itemgetter, attrgetter, not_,
                                 truth, abs, invert, neg, pos, index) else
@@ -385,9 +402,9 @@ for imports in ('toolz', 'operator'):
 # | x_   | Flipped       |
 # | _xx  | Starred       |
 
-_y, _x, x_, _xx = tuple(
+_y, _x, _f, x_, _xx = tuple(
     type('_{}_'.format(function.__name__), (function, ),
          {})(functions=Compose([function]))
-    for function in (Juxtaposition, Composition, Flipped, Starred))
+    for function in (Juxtaposition, Composition, Reversed, Flipped, Starred))
 
 del attr, attrs, doc, func, imports, method, s
