@@ -14,7 +14,7 @@ from toolz.curried import (isiterable, first, excepts, flip, complement, map,
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ['_x', '_xx', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
+__all__ = ['_x', '_xx', '_f', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
 
 
 class State(object):
@@ -78,7 +78,7 @@ class stars(functor):
 
 
 class condition(functor):
-    __slots__ = ('function', 'condition')
+    __slots__ = ('condition', 'function')
 
 
 class ifthen(condition):
@@ -279,14 +279,14 @@ class Composition(Partial):
                 method = excepts
         elif isiterable(item) and all(map(flip(isinstance)(type), item)):
             item = flip(isinstance)(item)
-        self._functions = Compose([method(self._functions, item)])
+        self._functions = Compose([method(item, self._functions)])
         return self
 
     def __or__(self, item):
         """| returns a default value if composition evaluates true.
         """
         self = self[:]
-        self._functions = Compose([default(self._functions, item)])
+        self._functions = Compose([default(item, self._functions)])
         return self
 
     def __pos__(self):
@@ -410,5 +410,3 @@ _y, _x, _f, x_, _xx = tuple(
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred))
 
 del attr, attrs, doc, func, imports, method, s
-
-_x[{'a': identity}](10)
