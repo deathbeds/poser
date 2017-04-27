@@ -14,7 +14,7 @@ from toolz.curried import (isiterable, first, excepts, flip, complement, map,
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ['_x', '_xx', 'x_', '_y', 'call', 'defaults', 'ifthen', 'copy']
+__all__ = ['_x', '_xx', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
 
 
 class State(object):
@@ -87,9 +87,9 @@ class ifthen(condition):
             ifthen, self).__call__(*args, **kwargs)
 
 
-class defaults(condition):
+class default(condition):
     def __call__(self, *args, **kwargs):
-        return super(defaults, self).__call__(
+        return super(default, self).__call__(
             *args, **kwargs) or functor(self.condition)(*args, **kwargs)
 
 
@@ -97,7 +97,7 @@ def doc(self):
     return getattr(self.function, '__doc__', '')
 
 
-for func in (functor, flipped, do, stars, ifthen, defaults):
+for func in (functor, flipped, do, stars, ifthen, default):
     setattr(func, '__doc__', property(doc))
 
 
@@ -284,7 +284,7 @@ class Composition(Partial):
         """| returns a default value if composition evaluates true.
         """
         self = self[:]
-        self._functions = Compose([defaults(self._functions, item)])
+        self._functions = Compose([default(self._functions, item)])
         return self
 
     def __pos__(self):
