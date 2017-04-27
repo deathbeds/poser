@@ -122,7 +122,9 @@ class Function(State):
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions, )
 
-        super(Function, self).__init__(functions, *args)
+        super(Function, self).__init__(
+            (isinstance(functions, dict) and iteritems or
+             identity)(functions), *args)
 
     def __getitem__(self, item):
         self._functions = tuple(concatv(self._functions, (item, )))
@@ -408,3 +410,5 @@ _y, _x, _f, x_, _xx = tuple(
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred))
 
 del attr, attrs, doc, func, imports, method, s
+
+_x[{'a': identity}](10)
