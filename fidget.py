@@ -11,13 +11,18 @@ from six import iteritems
 from toolz.curried import (isiterable, first, excepts, flip, complement, map,
                            identity, concatv, valfilter, merge, groupby,
                            concat, get, keyfilter, compose, reduce)
+from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ['_x', '_xx', '_f', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
+__all__ = [
+    '_x', '_xx', '_f', 'x_', '_y', '_h', 'call', 'default', 'ifthen', 'copy'
+]
 
 
 class State(object):
+    """Base class to encapsulate the state of composite functions.
+    """
     __slots__ = tuple()
 
     def __init__(self, *args, **kwargs):
@@ -45,6 +50,7 @@ class State(object):
 
 
 class functor(State):
+    """Evaluate a function if it is `callable`, otherwise return value."""
     __slots__ = ('function', )
 
     def __init__(self, function=identity, *args):
@@ -56,17 +62,24 @@ class functor(State):
 
 
 class flipped(functor):
+    """Evaluate a function with the arguments reversed."""
+
     def __call__(self, *args, **kwargs):
         return super(flipped, self).__call__(*reversed(args), **kwargs)
 
 
 class do(functor):
+    """Evaluate a function and return the arguments"""
+
     def __call__(self, *args, **kwargs):
         super(do, self).__call__(*args, **kwargs)
         return args[0] if args else None
 
 
 class stars(functor):
+    """Evaluate a function that expands sequences and collections to star arguments and keywords.
+    """
+
     def __call__(self, *args, **kwargs):
         arguments = groupby(flip(isinstance)(dict),
                             args) if all(map(isiterable, args)) else {
@@ -82,12 +95,18 @@ class condition(functor):
 
 
 class ifthen(condition):
+    """Evaluate the condition, and if it is True evaluate function.
+    """
+
     def __call__(self, *args, **kwargs):
         return functor(self.condition)(*args, **kwargs) and super(
             ifthen, self).__call__(*args, **kwargs)
 
 
 class default(condition):
+    """Evaluate the function, and if it is False evaluate condition.
+    """
+
     def __call__(self, *args, **kwargs):
         return super(default, self).__call__(
             *args, **kwargs) or functor(self.condition)(*args, **kwargs)
@@ -102,6 +121,8 @@ for func in (functor, flipped, do, stars, ifthen, default):
 
 
 class call(State):
+    """Encapsulate `partial`  arguments and keywords.
+    """
     __slots__ = ('args', 'kwargs')
 
     def __init__(self, *args, **kwargs):
@@ -112,11 +133,10 @@ class call(State):
 
 
 class Function(State):
-    """`Functions` is the base class for `map` and `flatmap` function
-    compositions.
-    New functions are added to the compositions using the `__getitem__`
-    attribute.
+    """Encapsulate iterable of functions that can be evaluated sequentially;
+    compose functions using the `getitem` method.
     """
+    __slots__ = ('_functions', )
 
     def __init__(self, functions=tuple(), *args):
         if not isiterable(functions) or isinstance(functions, (str, )):
@@ -130,16 +150,6 @@ class Function(State):
         self._functions = tuple(concatv(self._functions, (item, )))
         return self
 
-    def __iter__(self):
-        for function in self._functions:
-            yield (isinstance(function, (dict, set, list, tuple)) and
-                   call(codomain=type(function))(Juxtapose) or
-                   functor)(function)
-
-    def __reversed__(self):
-        self._functions = type(self._functions)(reversed(self._functions))
-        return self
-
     def __repr__(self):
         return str(self._functions)
 
@@ -151,13 +161,30 @@ class Function(State):
         self._functions = tuple(value if fn == key else fn for fn in self)
         return self
 
+    def __iter__(self):
+        for function in self._functions:
+            yield (isinstance(function, (dict, set, list, tuple)) and
+                   call(codomain=type(function))(Juxtapose) or
+                   functor)(function)
+
+    def __reversed__(self):
+        self._functions = type(self._functions)(reversed(self._functions))
+        return self
+
+    def __len__(self):
+        return len(self._functions)
+
+    def __hash__(self):
+        return hash(self._functions)
+
     def __abs__(self):
         return self.__call__
 
 
 @total_ordering
 class Composite(Function):
-    __slots__ = ('_functions', )
+    """Composite Functions have total ordering and contextmanager.
+    """
 
     def __getitem__(self, item):
         if isinstance(item, slice):
@@ -173,12 +200,6 @@ class Composite(Function):
 
     def __exit__(self, exc_type, exc_value, traceback):
         pass
-
-    def __len__(self):
-        return len(self._functions)
-
-    def __hash__(self):
-        return hash(self._functions)
 
     def __lt__(self, other):
         if isinstance(other, Composite):
@@ -382,18 +403,29 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
     setattr(Composition, attr, getattr(Composition, s('', method)))
 
 # introduce functional programming namespaces from `toolz` and `operator`.
-for imports in ('toolz', 'operator'):
+for imports in ('toolz', 'operator', 'six.moves.builtins'):
     attrs = compose(iteritems,
                     valfilter(callable),
                     keyfilter(compose(str.lower, first)), vars,
                     import_module)(imports)
     for attr, method in attrs:
-        method = (functor
-                  if method in (flip, ) or imports == 'toolz' else partial
+        method = (functor if method in (flip, ) or method not in (
+            hasattr, getattr, isinstance, issubclass, setattr) or
+                  imports == 'toolz' else partial
                   if method in (methodcaller, itemgetter, attrgetter, not_,
                                 truth, abs, invert, neg, pos, index) else
                   flipped)(method)
         macro(attr, method)
+
+
+class Lambda(Composition):
+    def __getitem__(self, items):
+        if not isiterable(items):
+            items = (items, )
+        for item in items:
+            self = super(Lambda, self).__getitem__(item)
+        return self
+
 
 # Assign factories for each composition.
 # 
@@ -404,9 +436,20 @@ for imports in ('toolz', 'operator'):
 # | x_   | Flipped       |
 # | _xx  | Starred       |
 
-_y, _x, _f, x_, _xx = tuple(
+_y, _x, _f, x_, _xx, _h = tuple(
     type('_{}_'.format(function.__name__), (function, ),
          {})(functions=Compose([function]))
-    for function in (Juxtaposition, Composition, Reversed, Flipped, Starred))
+    for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
+                     Lambda))
 
 del attr, attrs, doc, func, imports, method, s
+
+
+def load_ipython_extension(ip):
+    """%%fidget magic that displays code cells as markdown, then runs the cell.
+    """
+    from IPython import display
+    ip.register_magic_function(
+        _x[lambda l, cell: cell][_x << display.Markdown >>
+                                 display.display][ip.run_cell][None], 'cell',
+        'fidget')
