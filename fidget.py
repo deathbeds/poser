@@ -409,13 +409,14 @@ for imports in ('toolz', 'operator', 'six.moves.builtins'):
                     keyfilter(compose(str.lower, first)), vars,
                     import_module)(imports)
     for attr, method in attrs:
-        method = (functor if method in (flip, ) or method not in (
-            hasattr, getattr, isinstance, issubclass, setattr) or
-                  imports == 'toolz' else partial
-                  if method in (methodcaller, itemgetter, attrgetter, not_,
-                                truth, abs, invert, neg, pos, index) else
-                  flipped)(method)
-        macro(attr, method)
+        if attr[0].islower():
+            method = (functor if method in (flip, ) or method not in (
+                hasattr, getattr, isinstance, issubclass, setattr) or
+                      imports == 'toolz' else partial
+                      if method in (methodcaller, itemgetter, attrgetter, not_,
+                                    truth, abs, invert, neg, pos, index) else
+                      flipped)(method)
+            macro(attr, method)
 
 
 class Lambda(Composition):
