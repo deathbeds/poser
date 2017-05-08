@@ -246,7 +246,7 @@ class Composable(Compose):
         super(Compose, self).__init__([functions])
 
 
-class Partial(Compose):
+class Partial(Composite):
     """`Callables` are `Functions` that store partial `argument` & `keyword`
     states.
     """
@@ -277,11 +277,6 @@ class Partial(Compose):
     @property
     def __call__(self):
         return call(*self._args, **self._keywords)(self._function)
-
-    @property
-    def _factory_(self):
-        return type(self).__name__.startswith('_') and type(
-            self).__name__.endswith('_')
 
 
 class Juxtaposition(Partial):
@@ -322,6 +317,11 @@ class Composition(Partial):
     def __lshift__(self, item):
         return Do()[item] if self._factory_ else self[do(item)]
 
+    @property
+    def _factory_(self):
+        return type(self).__name__.startswith('_') and type(
+            self).__name__.endswith('_')
+
     __pow__, __mul__ = __xor__, __getitem__
     __invert__ = Composite.__reversed__
     __and__ = __add__ = __rshift__ = __sub__ = __getitem__
@@ -355,17 +355,15 @@ def macro(attr, method, cls=Composition, composable=False):
     """Adds attributes to `Compositon` `cls` to extend an api to contain named
     actions.
     """
-    _impartial = not isinstance(method, partial)
-    method = not _impartial and method.func or method
+    _partial = isinstance(method, partial)
+    method = _partial and method.func or method
 
     def _macro(self, *args, **kwargs):
-        if len(args) is 1 and composable:
+        if len(args) is 1 and composable and not _partial:
             args = (Composable(args[0]), )
 
-        return (
-            args or
-            kwargs) and self[_impartial and partial(method, *args, **kwargs) or
-                             method(*args, **kwargs)] or self[method]
+        return self[method(*args, **kwargs) if _partial else partial(
+            method, *args, **kwargs)]
 
     setattr(cls, attr, getattr(cls, attr, wraps(method)(_macro)))
 
@@ -413,12 +411,13 @@ for imports in ('toolz', 'operator', 'six.moves.builtins'):
                     import_module)(imports)
     for attr, method in attrs:
         if attr[0].islower():
-            method = (functor if method in (flip, ) or method not in (
-                hasattr, getattr, isinstance, issubclass, setattr) or
-                      imports == 'toolz' else partial
+            method = (partial
                       if method in (methodcaller, itemgetter, attrgetter, not_,
                                     truth, abs, invert, neg, pos, index) else
-                      flipped)(method)
+                      functor
+                      if method in (flip, ) or method or imports == 'toolz' or
+                      method not in (hasattr, getattr, isinstance, issubclass,
+                                     setattr) else flipped)(method)
             macro(attr, method)
 
 
@@ -442,7 +441,7 @@ class Lambda(Composition):
 
 _y, _x, _f, x_, _xx, _h = tuple(
     type('_{}_'.format(function.__name__), (function, ),
-         {})(Compose([function]))
+         {})(functions=Compose([function]))
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
                      Lambda))
 
