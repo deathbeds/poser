@@ -387,6 +387,7 @@ def _right_(attr):
     _attr_ = """__{}__""".format(attr)
 
     def caller(self, other):
+        self = self[:]
         return methodcaller(_attr_, copy(self))(type(self)()[other])
 
     return wraps(getattr(Composition, _attr_))(caller)
