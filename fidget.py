@@ -241,7 +241,12 @@ class Compose(Composite):
         return first(args)
 
 
-class Partial(Composite):
+class Composable(Compose):
+    def __init__(self, functions):
+        super(Compose, self).__init__([functions])
+
+
+class Partial(Compose):
     """`Callables` are `Functions` that store partial `argument` & `keyword`
     states.
     """
@@ -277,8 +282,6 @@ class Partial(Composite):
     def _factory_(self):
         return type(self).__name__.startswith('_') and type(
             self).__name__.endswith('_')
-
-    __and__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 
 class Juxtaposition(Partial):
@@ -321,6 +324,7 @@ class Composition(Partial):
 
     __pow__, __mul__ = __xor__, __getitem__
     __invert__ = Composite.__reversed__
+    __and__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 
 class Flipped(Composition):
@@ -347,7 +351,7 @@ class Reversed(Composition):
     _composite_ = staticmethod(ComposeLeft)
 
 
-def macro(attr, method, cls=Composition):
+def macro(attr, method, cls=Composition, composable=False):
     """Adds attributes to `Compositon` `cls` to extend an api to contain named
     actions.
     """
@@ -355,6 +359,9 @@ def macro(attr, method, cls=Composition):
     method = not _impartial and method.func or method
 
     def _macro(self, *args, **kwargs):
+        if len(args) is 1 and composable:
+            args = (Composable(args[0]), )
+
         return (
             args or
             kwargs) and self[_impartial and partial(method, *args, **kwargs) or
@@ -373,28 +380,24 @@ def macro(attr, method, cls=Composition):
 
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    macro(attr, method)
+    macro(attr, method, Composition, True)
 
 
 def _right_(attr):
     """Add right operators from the python data model.
     """
+    _attr_ = """__{}__""".format(attr)
 
     def caller(self, other):
-        self = self[:]
-        if isinstance(other, call):
-            other = self.__class__(*other.args, **other.kwargs)
-        else:
-            other = self.__class__()[other]
-        return methodcaller(attr, copy(self))(other) if self else other
+        return methodcaller(_attr_, copy(self))(type(self)()[other])
 
-    return wraps(getattr(Composition, """__{}__""".format(attr)))(caller)
+    return wraps(getattr(Composition, _attr_))(caller)
 
 
 s = "__{}{}__".format
 for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
-        'lshift', 'rshift', 'and', 'xor', 'or'
+        'lshift', 'rshift', 'and', 'xor', 'or', 'pow'
 ]:
     setattr(Composition, s('i', attr), getattr(Composition, s('', attr)))
     setattr(Composition, s('r', attr), _right_(attr))
@@ -439,7 +442,7 @@ class Lambda(Composition):
 
 _y, _x, _f, x_, _xx, _h = tuple(
     type('_{}_'.format(function.__name__), (function, ),
-         {})(functions=Compose([function]))
+         {})(Compose([function]))
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
                      Lambda))
 
