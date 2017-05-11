@@ -7,10 +7,11 @@
 from copy import copy
 from functools import wraps, total_ordering, partial
 from importlib import import_module
-from six import iteritems
-from toolz.curried import (isiterable, first, excepts, flip, complement, map,
-                           identity, concatv, valfilter, merge, groupby,
-                           concat, get, keyfilter, compose, reduce)
+from six import iteritems, PY2
+from toolz.curried import (isiterable, filter, first, excepts, flip,
+                           complement, map, identity, concatv, valfilter,
+                           merge, groupby, concat, get, keyfilter, compose,
+                           reduce)
 from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
@@ -117,7 +118,7 @@ def doc(self):
 
 
 for func in (functor, flipped, do, stars, ifthen, default):
-    setattr(func, '__doc__', property(doc))
+    not PY2 and setattr(func, '__doc__', property(doc))
 
 
 class call(State):
@@ -376,8 +377,10 @@ def macro(attr, method, cls=Composition, composable=False):
 # |`__mod__`     |`%`   |`reduce` |
 # |`__matmul__`  |`@`   |`groupby`|
 
+composables = []
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
+    composables += [method.func]
     macro(attr, method, Composition, True)
 
 
@@ -405,6 +408,8 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
     setattr(Composition, attr, getattr(Composition, s('', method)))
 
 # introduce functional programming namespaces from `toolz` and `operator`.
+composables += attrgetter('keyfilter', 'keymap', 'valfilter', 'valmap',
+                          'itemfilter', 'itemmap')(import_module('toolz'))
 for imports in ('toolz', 'operator', 'six.moves.builtins'):
     attrs = compose(iteritems,
                     valfilter(callable),
@@ -412,14 +417,19 @@ for imports in ('toolz', 'operator', 'six.moves.builtins'):
                     import_module)(imports)
     for attr, method in attrs:
         if attr[0].islower():
-            method = (partial
-                      if method in (methodcaller, itemgetter, attrgetter, not_,
-                                    truth, abs, invert, neg, pos, index) else
-                      functor
-                      if method in (flip, ) or method or imports == 'toolz' or
-                      method not in (hasattr, getattr, isinstance, issubclass,
-                                     setattr) else flipped)(method)
-            macro(attr, method)
+            composable = method in composables
+            if method in (methodcaller, itemgetter, attrgetter, not_, truth,
+                          abs, invert, neg, pos, index):
+                method = partial(method)
+            elif method in (flip, ) or imports == 'toolz':
+                method = functor(method)
+            elif imports.endswith('builtins') and method not in (
+                    hasattr, getattr, isinstance, issubclass, setattr):
+                method = functor(method)
+            else:
+                method = flipped(method)
+
+            macro(attr, method, Composition, composable)
 
 
 class Lambda(Composition):
