@@ -46,7 +46,7 @@ class State(object):
         return hash(tuple(getattr(self, attr) for attr in self.__slots__))
 
     def __eq__(self, other):
-        return hash(self) == hash(other)
+        return isinstance(other, State) and hash(self) == hash(other)
 
     def __enter__(self):
         return copy(self[:])
@@ -144,10 +144,36 @@ for func in (functor, flipped, do, stars, ifthen, default):
 
 
 # Encapsulate `partial`  arguments and keywords.
-class Function(State):
+class call(State):
     """Encapsulate iterable of functions that can be evaluated sequentially;
     compose functions using the `getitem` method.
     """
+    __slots__ = ('args', 'kwargs')
+
+    def __init__(self, *args, **kwargs):
+        super(call, self).__init__(args, kwargs)
+
+    def __call__(self, function=functor):
+        return partial(functor(function), *self.args, **self.kwargs)
+
+
+class Function(State):
+    __slots__ = ('function', )
+
+    def __getitem__(self, item=slice(None)):
+        if item is call:
+            return abs(self)
+
+        if isinstance(item, call):
+            return item(self)()
+
+        return item != slice(None) and self.function.append(item) or self
+
+    def __repr__(self):
+        return str(self.function)
+
+
+class Functions(State):
     __slots__ = ('functions', )
 
     def __repr__(self):
@@ -157,14 +183,9 @@ class Function(State):
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions, )
 
-        super(Function, self).__init__(
+        super(Functions, self).__init__(
             (isinstance(functions, dict) and compose(tuple, iteritems) or
              identity)(functions), *args)
-
-    def __getitem__(self, item=slice(None)):
-        if not callable(item):
-            raise ValueError('item must be callable')
-        return item != slice(None) and self.append(item) or self
 
     def __delitem__(self, item):
         self.functions = tuple(fn for fn in self if fn != item)
@@ -194,7 +215,7 @@ class Function(State):
         self.functions = tuple(concatv(self.functions, iterable))
 
 
-class Composite(Function):
+class Composite(Functions):
     """Composite Functions have total ordering and contextmanager.
     """
 
@@ -213,16 +234,6 @@ class Composite(Function):
     def _dispatch_(self, function):
         return (isinstance(function, (dict, set, list, tuple)) and Juxtapose or
                 functor)(function)
-
-
-class call(State):
-    __slots__ = ('args', 'kwargs')
-
-    def __init__(self, *args, **kwargs):
-        super(call, self).__init__(args, kwargs)
-
-    def __call__(self, function=functor):
-        return partial(functor(function), *self.args, **self.kwargs)
 
 
 class Juxtapose(Composite):
@@ -254,10 +265,7 @@ class Composable(Compose):
         super(Compose, self).__init__([function])
 
 
-class Partial(State):
-    """`Callables` are `Functions` that store partial `argument` & `keyword`
-    states.
-    """
+class Partial(Function):
     __slots__ = ('args', 'keywords', 'function')
     _decorate_, _composite_ = staticmethod(functor), staticmethod(Compose)
 
@@ -266,22 +274,10 @@ class Partial(State):
                                       kwargs.pop('function',
                                                  self._composite_()))
 
-    def __getitem__(self, item=slice(None)):
-        if item is call:
-            return abs(self)
-
-        if isinstance(item, call):
-            return item(self)()
-
-        return self.function.append(item) or self
-
     @property
     def __call__(self):
         return call(*self.args,
                     **self.keywords)(self._decorate_(self.function))
-
-    def __repr__(self):
-        return str(self.function)
 
 
 class Juxtaposition(Partial):
