@@ -39,7 +39,7 @@ class State(object):
             setattr(self, key, value)
 
     def __copy__(self, *args):
-        new = self.__class__()
+        new = type(self)()
         return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
 
     def __hash__(self):
@@ -160,14 +160,14 @@ class call(State):
 class Function(State):
     __slots__ = ('function', )
 
-    def __getitem__(self, item=slice(None)):
-        if item is call:
+    def __getitem__(self, object=slice(None)):
+        if object is call:
             return abs(self)
 
-        if isinstance(item, call):
-            return item(self)()
+        if isinstance(object, call):
+            return object(self)()
 
-        return item != slice(None) and self.function.append(item) or self
+        return object != slice(None) and self.function.append(object) or self
 
     def __repr__(self):
         return str(self.function)
@@ -187,8 +187,8 @@ class Functions(State):
             (isinstance(functions, dict) and compose(tuple, iteritems) or
              identity)(functions), *args)
 
-    def __delitem__(self, item):
-        self.functions = tuple(fn for fn in self if fn != item)
+    def __delitem__(self, object):
+        self.functions = tuple(fn for fn in self if fn != object)
         return self
 
     def __setitem__(self, key, value):
@@ -219,17 +219,17 @@ class Composite(Functions):
     """Composite Functions have total ordering and contextmanager.
     """
 
-    def __getitem__(self, item=slice(None)):
-        if isinstance(item, slice):
-            if item != slice(None):
+    def __getitem__(self, object=slice(None)):
+        if isinstance(object, slice):
+            if object != slice(None):
                 with self as self:
-                    self.append(item)
+                    self.append(object)
         else:
-            self = super(Composite, self).__getitem__(item)
+            self = super(Composite, self).__getitem__(object)
         return self
 
-    def __contains__(self, item):
-        return any(item == function for function in self)
+    def __contains__(self, object):
+        return any(object == function for function in self)
 
     def _dispatch_(self, function):
         return (isinstance(function, (dict, set, list, tuple)) and Juxtapose or
@@ -239,7 +239,6 @@ class Composite(Functions):
 class Juxtapose(Composite):
     """`Juxtapose` applies the same arguments and keywords to many functions.
     """
-    __slots__ = ('functions', )
 
     def __init__(self, functions=tuple()):
         super(Juxtapose, self).__init__(functions)
@@ -285,45 +284,45 @@ class Juxtaposition(Partial):
 
 
 class Composition(Partial):
-    def __getitem__(self, item=slice(None), *args, **kwargs):
+    def __getitem__(self, object=slice(None), *args, **kwargs):
         if self._factory_:
             self = type(self).__mro__[1]()
 
-        if isinstance(item, (int, slice)):
+        if isinstance(object, (int, slice)):
             self = copy(self)
-            self.function.functions = self.function.functions[item]
+            self.function.functions = self.function.functions[object]
             if not isiterable(self.function.functions):
                 self.function.functions = self.function.functions,
             return self
 
         return super(Composition, self).__getitem__(
-            (args or kwargs) and call(*args, **kwargs)(item) or item)
+            (args or kwargs) and call(*args, **kwargs)(object) or object)
 
-    def __xor__(self, item):
+    def __xor__(self, object):
         """** operator requires an argument to be true because executing.
         """
         self, method = self[:], ifthen
-        if isinstance(item, type):
-            if issubclass(item, Exception) or isiterable(item) and all(
-                    map(flip(isinstance)(Exception), item)):
+        if isinstance(object, type):
+            if issubclass(object, Exception) or isiterable(object) and all(
+                    map(flip(isinstance)(Exception), object)):
                 method = excepts
-        elif isiterable(item) and all(map(flip(isinstance)(type), item)):
-            item = flip(isinstance)(item)
-        self.function = Compose([method(item, self.function)])
+        elif isiterable(object) and all(map(flip(isinstance)(type), object)):
+            object = flip(isinstance)(object)
+        self.function = Compose([method(object, self.function)])
         return self
 
-    def __or__(self, item):
+    def __or__(self, object):
         """| returns a default value if composition evaluates true.
         """
         self = self[:]
-        self.function = Compose([default(item, self.function)])
+        self.function = Compose([default(object, self.function)])
         return self
 
-    def __and__(self, item):
+    def __and__(self, object):
         """| returns a default value if composition evaluates true.
         """
         self = self[:]
-        self.function = Compose([step(self.function, item)])
+        self.function = Compose([step(self.function, object)])
         return self
 
     def __pos__(self):
@@ -332,8 +331,8 @@ class Composition(Partial):
     def __neg__(self):
         return self[complement(bool)]
 
-    def __lshift__(self, item):
-        return Do()[item] if self._factory_ else self[do(item)]
+    def __lshift__(self, object):
+        return Do()[object] if self._factory_ else self[do(object)]
 
     @property
     def _factory_(self):
@@ -448,11 +447,12 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
 
 
 class Lambda(Composition):
-    def __getitem__(self, items):
+    def __getitem__(self, objects):
         self = super(Lambda, self).__getitem__()
         return any(
-            self.function.append(item)
-            for item in isiterable(items) and items or (items, )) or self
+            self.function.append(object)
+            for object in isiterable(objects) and objects or
+            (objects, )) or self
 
 
 _y, _x, _f, x_, _xx, _h = tuple(
