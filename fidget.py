@@ -21,6 +21,7 @@ __all__ = [
 ]
 
 
+@total_ordering
 class State(object):
     """Base class to encapsulate the state of composite functions.
     """
@@ -55,6 +56,15 @@ class State(object):
 
     def __abs__(self):
         return self.__call__
+
+    def __lt__(self, other):
+        if isinstance(other, State):
+            return (len(self) < len(other)) and all(
+                eq(*i) for i in zip(self, other))
+        return False
+
+    def __len__(self):
+        return sum(1 for f in self)
 
     __deepcopy__ = __copy__
 
@@ -148,7 +158,7 @@ class Function(State):
             functions = (functions, )
 
         super(Function, self).__init__(
-            (isinstance(functions, dict) and iteritems or
+            (isinstance(functions, dict) and compose(tuple, iteritems) or
              identity)(functions), *args)
 
     def __getitem__(self, item=slice(None)):
@@ -172,9 +182,6 @@ class Function(State):
         self.functions = type(self.functions)(reversed(self.functions))
         return self
 
-    def __len__(self):
-        return len(self.functions)
-
     def insert(self, index, object):
         self.functions = tuple(
             concat((self.functions[:index], (object, ), self.functions[index:]
@@ -187,7 +194,6 @@ class Function(State):
         self.functions = tuple(concatv(self.functions, iterable))
 
 
-@total_ordering
 class Composite(Function):
     """Composite Functions have total ordering and contextmanager.
     """
@@ -200,12 +206,6 @@ class Composite(Function):
         else:
             self = super(Composite, self).__getitem__(item)
         return self
-
-    def __lt__(self, other):
-        if isinstance(other, Composite):
-            return (len(self) < len(other)) and all(
-                eq(*i) for i in zip(self, other))
-        return False
 
     def __contains__(self, item):
         return any(item == function for function in self)
@@ -347,6 +347,9 @@ class Composition(Partial):
     def __bool__(self):
         return not self._factory_ and bool(len(self))
 
+    def __hash__(self):
+        return hash(self.function)
+
     __pow__, __mul__ = __xor__, __getitem__
     __invert__ = Composite.__reversed__
     __add__ = __rshift__ = __sub__ = __getitem__
@@ -458,7 +461,7 @@ class Lambda(Composition):
 
 _y, _x, _f, x_, _xx, _h = tuple(
     type('_{}_'.format(function.__name__), (function, ),
-         {})(functions=Compose([function]))
+         {})(function=Compose([function]))
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
                      Lambda))
 
