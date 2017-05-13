@@ -132,7 +132,7 @@ class default(condition):
 class step(condition):
     def __call__(self, *args, **kwargs):
         result = functor(self.condition)(*args, **kwargs)
-        return result and super(condition, self).__call__(result)
+        return result and super(step, self).__call__(result)
 
 
 def doc(self):
@@ -259,14 +259,23 @@ class Compose(Composite):
         return first(args)
 
 
+class ComposeLeft(Compose):
+    def __iter__(self):
+        return reversed(tuple(super(ComposeLeft, self).__iter__()))
+
+    def __hash__(self):
+        return hash(tuple(reversed(self.functions)))
+
+
 class Composable(Compose):
     def __init__(self, function):
-        super(Compose, self).__init__([function])
+        super(Composable, self).__init__([function])
 
 
 class Partial(Function):
     __slots__ = ('args', 'keywords', 'function')
-    _decorate_, _composite_ = staticmethod(functor), staticmethod(Compose)
+    _decorate_ = staticmethod(functor)
+    _composite_ = staticmethod(Compose)
 
     def __init__(self, *args, **kwargs):
         super(Partial, self).__init__(args, kwargs,
@@ -277,10 +286,6 @@ class Partial(Function):
     def __call__(self):
         return call(*self.args,
                     **self.keywords)(self._decorate_(self.function))
-
-
-class Juxtaposition(Partial):
-    _composite_ = staticmethod(Juxtapose)
 
 
 class Composition(Partial):
@@ -298,6 +303,17 @@ class Composition(Partial):
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
 
+    @property
+    def _factory_(self):
+        return type(self).__name__.startswith('_') and type(
+            self).__name__.endswith('_')
+
+
+class Juxtaposition(Composition):
+    _composite_ = staticmethod(Juxtapose)
+
+
+class Composer(Composition):
     def __xor__(self, object):
         """** operator requires an argument to be true because executing.
         """
@@ -312,15 +328,11 @@ class Composition(Partial):
         return self
 
     def __or__(self, object):
-        """| returns a default value if composition evaluates true.
-        """
         self = self[:]
         self.function = Compose([default(object, self.function)])
         return self
 
     def __and__(self, object):
-        """| returns a default value if composition evaluates true.
-        """
         self = self[:]
         self.function = Compose([step(self.function, object)])
         return self
@@ -334,47 +346,28 @@ class Composition(Partial):
     def __lshift__(self, object):
         return Do()[object] if self._factory_ else self[do(object)]
 
-    @property
-    def _factory_(self):
-        return type(self).__name__.startswith('_') and type(
-            self).__name__.endswith('_')
-
-    def __bool__(self):
-        return not self._factory_ and bool(len(self))
-
-    def __hash__(self):
-        return hash(self.function)
-
-    __pow__, __mul__ = __xor__, __getitem__
-    __invert__ = Composite.__reversed__
-    __add__ = __rshift__ = __sub__ = __getitem__
+    __pow__ = __xor__
+    __invert__ = Functions.__reversed__
+    __mul__ = __add__ = __rshift__ = __sub__ = Composition.__getitem__
 
 
-class Flipped(Composition):
+class Flipped(Composer):
     _decorate_ = staticmethod(flipped)
 
 
-class Starred(Composition):
+class Starred(Composer):
     _decorate_ = staticmethod(stars)
 
 
-class Do(Composition):
+class Do(Composer):
     _decorate_ = staticmethod(do)
 
 
-class ComposeLeft(Compose):
-    def __iter__(self):
-        return reversed(tuple(super(ComposeLeft, self).__iter__()))
-
-    def __hash__(self):
-        return hash(tuple(reversed(self.functions)))
-
-
-class Reversed(Composition):
+class Reversed(Composer):
     _composite_ = staticmethod(ComposeLeft)
 
 
-def macro(attr, method, cls=Composition, composable=False):
+def macro(attr, method, cls=Composer, composable=False):
     """Adds attributes to `Compositon` `cls` to extend an api to contain named
     actions.
     """
@@ -395,7 +388,7 @@ def macro(attr, method, cls=Composition, composable=False):
 composables = []
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    composables += macro(attr, method, Composition, True) or [method.func]
+    composables += macro(attr, method, Composer, True) or [method.func]
 
 
 def _right_(attr):
@@ -408,7 +401,7 @@ def _right_(attr):
             return getattr(type(self)()[other], _attr_)(self)
         return self[other]
 
-    return wraps(getattr(Composition, _attr_))(caller)
+    return wraps(getattr(Composer, _attr_))(caller)
 
 
 s = "__{}{}__".format
@@ -416,11 +409,11 @@ for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
         'lshift', 'rshift', 'and', 'xor', 'or', 'pow'
 ]:
-    setattr(Composition, s('i', attr), getattr(Composition, s('', attr)))
-    setattr(Composition, s('r', attr), _right_(attr))
+    setattr(Composer, s('i', attr), getattr(Composer, s('', attr)))
+    setattr(Composer, s('r', attr), _right_(attr))
 
 for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
-    setattr(Composition, attr, getattr(Composition, s('', method)))
+    setattr(Composer, attr, getattr(Composer, s('', method)))
 
 composables += attrgetter('keyfilter', 'keymap', 'valfilter', 'valmap',
                           'itemfilter', 'itemmap')(import_module('toolz'))
@@ -443,10 +436,10 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
             else:
                 method = flipped(method)
 
-            macro(attr, method, Composition, method in composables)
+            macro(attr, method, Composer, method in composables)
 
 
-class Lambda(Composition):
+class Lambda(Composer):
     def __getitem__(self, objects):
         self = super(Lambda, self).__getitem__()
         return any(
@@ -458,7 +451,7 @@ class Lambda(Composition):
 _y, _x, _f, x_, _xx, _h = tuple(
     type('_{}_'.format(function.__name__), (function, ),
          {})(function=Compose([function]))
-    for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
+    for function in (Juxtaposition, Composer, Reversed, Flipped, Starred,
                      Lambda))
 
 del attr, doc, func, imports, method, s
