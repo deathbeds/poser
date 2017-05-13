@@ -63,9 +63,6 @@ class functor(State):
     """Evaluate a function if it is `callable`, otherwise return value."""
     __slots__ = ('function', )
 
-    def __init__(self, function=identity, *args):
-        super(functor, self).__init__(function, *args)
-
     def __call__(self, *args, **kwargs):
         return self.function(
             *args, **kwargs) if callable(self.function) else self.function
@@ -122,6 +119,12 @@ class default(condition):
             *args, **kwargs) or functor(self.condition)(*args, **kwargs)
 
 
+class step(condition):
+    def __call__(self, *args, **kwargs):
+        result = functor(self.condition)(*args, **kwargs)
+        return result and super(condition, self).__call__(result)
+
+
 def doc(self):
     return getattr(self.function, '__doc__', '')
 
@@ -137,6 +140,9 @@ class Function(State):
     """
     __slots__ = ('functions', )
 
+    def __repr__(self):
+        return str(self.functions)
+
     def __init__(self, functions=tuple(), *args):
         if not isiterable(functions) or isinstance(functions, (str, )):
             functions = (functions, )
@@ -145,11 +151,10 @@ class Function(State):
             (isinstance(functions, dict) and iteritems or
              identity)(functions), *args)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item=slice(None)):
         if not callable(item):
             raise ValueError('item must be callable')
-        item != slice(None) and self.append(item)
-        return self
+        return item != slice(None) and self.append(item) or self
 
     def __delitem__(self, item):
         self.functions = tuple(fn for fn in self if fn != item)
@@ -187,7 +192,7 @@ class Composite(Function):
     """Composite Functions have total ordering and contextmanager.
     """
 
-    def __getitem__(self, item):
+    def __getitem__(self, item=slice(None)):
         if isinstance(item, slice):
             if item != slice(None):
                 with self as self:
@@ -254,14 +259,14 @@ class Partial(State):
     states.
     """
     __slots__ = ('args', 'keywords', 'function')
-    _decorate, _composite = staticmethod(functor), staticmethod(Compose)
+    _decorate_, _composite_ = staticmethod(functor), staticmethod(Compose)
 
     def __init__(self, *args, **kwargs):
         super(Partial, self).__init__(args, kwargs,
                                       kwargs.pop('function',
-                                                 self._composite()))
+                                                 self._composite_()))
 
-    def __getitem__(self, item=None):
+    def __getitem__(self, item=slice(None)):
         if item is call:
             return abs(self)
 
@@ -272,18 +277,19 @@ class Partial(State):
 
     @property
     def __call__(self):
-        return call(*self.args, **self.keywords)(self._decorate(self.function))
+        return call(*self.args,
+                    **self.keywords)(self._decorate_(self.function))
 
     def __repr__(self):
         return str(self.function)
 
 
 class Juxtaposition(Partial):
-    _composite = staticmethod(Juxtapose)
+    _composite_ = staticmethod(Juxtapose)
 
 
 class Composition(Partial):
-    def __getitem__(self, item=None, *args, **kwargs):
+    def __getitem__(self, item=slice(None), *args, **kwargs):
         if self._factory_:
             self = type(self).__mro__[1]()
 
@@ -317,6 +323,13 @@ class Composition(Partial):
         self.function = Compose([default(item, self.function)])
         return self
 
+    def __and__(self, item):
+        """| returns a default value if composition evaluates true.
+        """
+        self = self[:]
+        self.function = Compose([step(self.function, item)])
+        return self
+
     def __pos__(self):
         return self[bool]
 
@@ -336,19 +349,19 @@ class Composition(Partial):
 
     __pow__, __mul__ = __xor__, __getitem__
     __invert__ = Composite.__reversed__
-    __and__ = __add__ = __rshift__ = __sub__ = __getitem__
+    __add__ = __rshift__ = __sub__ = __getitem__
 
 
 class Flipped(Composition):
-    _decorate = staticmethod(flipped)
+    _decorate_ = staticmethod(flipped)
 
 
 class Starred(Composition):
-    _decorate = staticmethod(stars)
+    _decorate_ = staticmethod(stars)
 
 
 class Do(Composition):
-    _decorate = staticmethod(do)
+    _decorate_ = staticmethod(do)
 
 
 class ComposeLeft(Compose):
@@ -375,16 +388,16 @@ def macro(attr, method, cls=Composition, composable=False):
             args = (Composable(args[0]), )
 
         return self[method(*args, **kwargs) if _partial else partial(
-            method, *args, **kwargs)]
+            method, *args, **kwargs) if args or kwargs else method]
 
-    setattr(cls, attr, getattr(cls, attr, wraps(method)(_macro)))
+    not hasattr(cls, attr) and setattr(
+        cls, attr, getattr(cls, attr, wraps(method)(_macro)))
 
 
 composables = []
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    composables += [method.func]
-    macro(attr, method, Composition, True)
+    composables += macro(attr, method, Composition, True) or [method.func]
 
 
 def _right_(attr):
@@ -413,14 +426,14 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
 
 composables += attrgetter('keyfilter', 'keymap', 'valfilter', 'valmap',
                           'itemfilter', 'itemmap')(import_module('toolz'))
-for imports in ('toolz', 'operator', 'six.moves.builtins'):
-    attrs = compose(iteritems,
-                    valfilter(callable),
-                    keyfilter(compose(str.lower, first)), vars,
-                    import_module)(imports)
-    for attr, method in attrs:
+
+for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
+    for attr, method in compose(iteritems,
+                                valfilter(callable),
+                                keyfilter(compose(str.lower, first)), vars,
+                                import_module)(imports):
+
         if attr[0].islower():
-            composable = method in composables
             if method in (methodcaller, itemgetter, attrgetter, not_, truth,
                           abs, invert, neg, pos, index):
                 method = partial(method)
@@ -428,20 +441,19 @@ for imports in ('toolz', 'operator', 'six.moves.builtins'):
                 method = functor(method)
             elif imports.endswith('builtins') and method not in (
                     hasattr, getattr, isinstance, issubclass, setattr):
-                method = functor(method)
+                pass
             else:
                 method = flipped(method)
 
-            macro(attr, method, Composition, composable)
+            macro(attr, method, Composition, method in composables)
 
 
 class Lambda(Composition):
     def __getitem__(self, items):
-        if not isiterable(items):
-            items = (items, )
-        for item in items:
-            self = super(Lambda, self).__getitem__(item)
-        return self
+        self = super(Lambda, self).__getitem__()
+        return any(
+            self.function.append(item)
+            for item in isiterable(items) and items or (items, )) or self
 
 
 _y, _x, _f, x_, _xx, _h = tuple(
@@ -450,7 +462,7 @@ _y, _x, _f, x_, _xx, _h = tuple(
     for function in (Juxtaposition, Composition, Reversed, Flipped, Starred,
                      Lambda))
 
-del attr, attrs, doc, func, imports, method, s
+del attr, doc, func, imports, method, s
 
 
 def load_ipython_extension(ip):
