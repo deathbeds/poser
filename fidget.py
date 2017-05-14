@@ -256,13 +256,12 @@ class Partial(Functions):
 class Composition(Partial):
     def __getitem__(self, object=slice(None), *args, **kwargs):
         if self._factory_:
-            self = type(self).__mro__[1]()
+            self = self.function()
 
         if isinstance(object, (int, slice)):
-            self = copy(self)
-            return setattr(
-                self, 'function',
-                self._composite_(self.function.function[object])) or self
+            object, self = self.function.function[object], copy(self)
+            self.function = self._composite_(object)
+            return self
 
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
