@@ -23,8 +23,6 @@ __all__ = [
 
 @total_ordering
 class State(object):
-    """Base class to encapsulate the state of composite functions.
-    """
     __slots__ = tuple()
 
     def __init__(self, *args, **kwargs):
@@ -143,11 +141,7 @@ for func in (functor, flipped, do, stars, ifthen, default):
     not PY2 and setattr(func, '__doc__', property(doc))
 
 
-# Encapsulate `partial`  arguments and keywords.
 class call(State):
-    """Encapsulate iterable of functions that can be evaluated sequentially;
-    compose functions using the `getitem` method.
-    """
     __slots__ = ('args', 'kwargs')
 
     def __init__(self, *args, **kwargs):
@@ -216,9 +210,6 @@ class Functions(State):
 
 
 class Composite(Functions):
-    """Composite Functions have total ordering and contextmanager.
-    """
-
     def __getitem__(self, object=slice(None)):
         if isinstance(object, slice):
             if object != slice(None):
@@ -237,9 +228,6 @@ class Composite(Functions):
 
 
 class Juxtapose(Composite):
-    """`Juxtapose` applies the same arguments and keywords to many functions.
-    """
-
     def __init__(self, functions=tuple()):
         super(Juxtapose, self).__init__(functions)
 
@@ -249,9 +237,6 @@ class Juxtapose(Composite):
 
 
 class Compose(Composite):
-    """`Compose` chains functions together.
-    """
-
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call(*args)(self._dispatch_(function))(
@@ -295,10 +280,9 @@ class Composition(Partial):
 
         if isinstance(object, (int, slice)):
             self = copy(self)
-            self.function.functions = self.function.functions[object]
-            if not isiterable(self.function.functions):
-                self.function.functions = self.function.functions,
-            return self
+            return setattr(
+                self, 'function',
+                self._composite_(self.function.functions[object])) or self
 
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
@@ -317,14 +301,13 @@ class Composer(Composition):
     def __xor__(self, object):
         """** operator requires an argument to be true because executing.
         """
-        self, method = self[:], ifthen
-        if isinstance(object, type):
-            if issubclass(object, Exception) or isiterable(object) and all(
-                    map(flip(isinstance)(Exception), object)):
+        self = self[:]
+        if isiterable(object):
+            if all(map(flip(isinstance)(Exception), object)):
                 method = excepts
-        elif isiterable(object) and all(map(flip(isinstance)(type), object)):
-            object = flip(isinstance)(object)
-        self.function = Compose([method(object, self.function)])
+            elif all(map(flip(isinstance)(type), object)):
+                object = flip(isinstance)(object)
+        self.function = Compose([ifthen(object, self.function)])
         return self
 
     def __or__(self, object):
@@ -367,22 +350,21 @@ class Reversed(Composer):
     _composite_ = staticmethod(ComposeLeft)
 
 
-def macro(attr, method, cls=Composer, composable=False):
-    """Adds attributes to `Compositon` `cls` to extend an api to contain named
-    actions.
+def macro(attr, method, cls=Composer, composable=False, force=False):
+    """Extent the Composer api.
     """
-    _partial = isinstance(method, partial)
-    method = _partial and method.func or method
+    if not hasattr(cls, attr) or force:
+        _partial = isinstance(method, partial)
+        method = _partial and method.func or method
 
-    def _macro(self, *args, **kwargs):
-        if len(args) is 1 and composable and not _partial:
-            args = (Composable(args[0]), )
+        def _macro(self, *args, **kwargs):
+            if len(args) is 1 and composable and not _partial:
+                args = (Composable(args[0]), )
 
-        return self[method(*args, **kwargs) if _partial else partial(
-            method, *args, **kwargs) if args or kwargs else method]
+            return self[method(*args, **kwargs) if _partial else partial(
+                method, *args, **kwargs) if args or kwargs else method]
 
-    not hasattr(cls, attr) and setattr(
-        cls, attr, getattr(cls, attr, wraps(method)(_macro)))
+        setattr(cls, attr, getattr(cls, attr, wraps(method)(_macro)))
 
 
 composables = []
@@ -392,8 +374,6 @@ for attr, method in [('__matmul__', groupby), ('__div__', map), (
 
 
 def _right_(attr):
-    """Add right operators from the python data model.
-    """
     _attr_ = """__{}__""".format(attr)
 
     def caller(self, other):
