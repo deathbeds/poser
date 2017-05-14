@@ -8,23 +8,18 @@ from copy import copy
 from functools import wraps, total_ordering, partial
 from importlib import import_module
 from six import iteritems, PY2
-from toolz.curried import (isiterable, filter, first, excepts, flip,
-                           complement, map, identity, concatv, valfilter,
-                           merge, groupby, concat, get, keyfilter, compose,
-                           reduce)
+from toolz.curried import (isiterable, filter, first, flip, complement, map,
+                           identity, valfilter, merge, groupby, concat, get,
+                           keyfilter, compose, reduce)
 from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = [
-    '_x', '_xx', '_f', 'x_', '_y', '_h', 'call', 'default', 'ifthen', 'copy'
-]
+__all__ = ['_x', '_xx', '_f', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
 
 
 @total_ordering
 class State(object):
-    __slots__ = tuple()
-
     def __init__(self, *args, **kwargs):
         for i, slot in enumerate(self.__slots__):
             setattr(self, slot, kwargs.pop(slot, args[i]))
@@ -68,7 +63,6 @@ class State(object):
 
 
 class functor(State):
-    """Evaluate a function if it is `callable`, otherwise return value."""
     __slots__ = ('function', )
 
     def __call__(self, *args, **kwargs):
@@ -77,24 +71,17 @@ class functor(State):
 
 
 class flipped(functor):
-    """Evaluate a function with the arguments reversed."""
-
     def __call__(self, *args, **kwargs):
         return super(flipped, self).__call__(*reversed(args), **kwargs)
 
 
 class do(functor):
-    """Evaluate a function and return the arguments"""
-
     def __call__(self, *args, **kwargs):
         super(do, self).__call__(*args, **kwargs)
         return args[0] if args else None
 
 
 class stars(functor):
-    """Evaluate a function that expands sequences and collections to star arguments and keywords.
-    """
-
     def __call__(self, *args, **kwargs):
         arguments = groupby(flip(isinstance)(dict),
                             args) if all(map(isiterable, args)) else {
@@ -110,18 +97,12 @@ class condition(functor):
 
 
 class ifthen(condition):
-    """Evaluate the condition, and if it is True evaluate function.
-    """
-
     def __call__(self, *args, **kwargs):
         return functor(self.condition)(*args, **kwargs) and super(
             ifthen, self).__call__(*args, **kwargs)
 
 
 class default(condition):
-    """Evaluate the function, and if it is False evaluate condition.
-    """
-
     def __call__(self, *args, **kwargs):
         return super(default, self).__call__(
             *args, **kwargs) or functor(self.condition)(*args, **kwargs)
@@ -133,11 +114,30 @@ class step(condition):
         return result and super(step, self).__call__(result)
 
 
+class excepts(functor):
+    __slots__ = ('exceptions', 'function')
+
+    def __call__(self, *args, **kwargs):
+        try:
+            return super(excepts, self).__call__(*args, **kwargs)
+        except self.exceptions as e:
+            return self.exception(e)
+
+    class exception(State):
+        __slots__ = ('e', )
+
+        def __bool__(self):
+            return not self.e
+
+        def __repr__(self):
+            return repr(self.e)
+
+
 def doc(self):
     return getattr(self.function, '__doc__', '')
 
 
-for func in (functor, flipped, do, stars, ifthen, default):
+for func in (functor, flipped, do, stars, ifthen, default, excepts):
     not PY2 and setattr(func, '__doc__', property(doc))
 
 
@@ -164,7 +164,7 @@ class Function(State):
         return object != slice(None) and self.append(object) or self
 
     def __repr__(self):
-        return str(self.function)
+        return repr(self.function)
 
     def append(self, object):
         self.function += [object]
@@ -174,6 +174,7 @@ class Functions(Function):
     def __init__(self, function=None, *args):
         if function is None:
             function = list()
+
         if not isiterable(function) or isinstance(function, (str, )):
             function = [function]
 
@@ -185,8 +186,8 @@ class Functions(Function):
         self.function = list(fn for fn in self if fn != object)
         return self
 
-    def __setitem__(self, key, value):
-        self.function = list(value if fn == key else fn for fn in self)
+    def __setitem__(self, attr, object):
+        self.function = list(object if fn == attr else fn for fn in self)
         return self
 
     def __iter__(self):
@@ -254,6 +255,11 @@ class Partial(Functions):
 
 
 class Composition(Partial):
+    @property
+    def _factory_(self):
+        return type(self).__name__.startswith('_') and type(
+            self).__name__.endswith('_')
+
     def __getitem__(self, object=slice(None), *args, **kwargs):
         if self._factory_:
             self = self.function()
@@ -266,11 +272,6 @@ class Composition(Partial):
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
 
-    @property
-    def _factory_(self):
-        return type(self).__name__.startswith('_') and type(
-            self).__name__.endswith('_')
-
 
 class Juxtaposition(Composition):
     _composite_ = staticmethod(Juxtapose)
@@ -278,12 +279,19 @@ class Juxtaposition(Composition):
 
 class Composer(Composition):
     def __xor__(self, object):
-        self = self[:]
+        self, isinstance = self[:], flip(isinstance)  # noqa: F823
         if isiterable(object):
-            if all(map(flip(isinstance)(Exception), object)):
-                method = excepts
-            elif all(map(flip(isinstance)(type), object)):
-                object = flip(isinstance)(object)
+            if all(map(isinstance(type), object)) and all(
+                    map(flip(issubclass)(BaseException), object)):
+                self.function = Compose(excepts(object, self.function))
+                return self
+
+            if all(map(isinstance(BaseException), object)):
+                object = tuple(map(type, object))
+
+            if all(map(isinstance(type), object)):
+                object = isinstance(object)
+
         self.function = Compose([ifthen(object, self.function)])
         return self
 
@@ -328,8 +336,6 @@ class Reversed(Composer):
 
 
 def macro(attr, method, composable=False, cls=Composer, force=False):
-    """Extent the Composer api.
-    """
     if not hasattr(cls, attr) or force:
         _partial = isinstance(method, partial)
         method = _partial and method.func or method
@@ -395,21 +401,10 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
 
             macro(attr, method, method in composables)
 
-
-class Lambda(Composer):
-    def __getitem__(self, objects):
-        self = super(Lambda, self).__getitem__()
-        return any(
-            self.function.append(object)
-            for object in isiterable(objects) and objects or
-            (objects, )) or self
-
-
-_y, _x, _f, x_, _xx, _h = tuple(
+_y, _x, _f, x_, _xx = tuple(
     type('_{}_'.format(function.__name__), (function, ),
          {})(function=Compose([function]))
-    for function in (Juxtaposition, Composer, Reversed, Flipped, Starred,
-                     Lambda))
+    for function in (Juxtaposition, Composer, Reversed, Flipped, Starred))
 
 del attr, doc, func, imports, method, s
 
