@@ -133,14 +133,6 @@ class step(condition):
         return result and super(step, self).__call__(result)
 
 
-def doc(self):
-    return getattr(self.function, '__doc__', '')
-
-
-for func in (functor, flipped, do, stars, ifthen, default):
-    not PY2 and setattr(func, '__doc__', property(doc))
-
-
 class call(State):
     __slots__ = ('args', 'kwargs')
 
@@ -149,6 +141,14 @@ class call(State):
 
     def __call__(self, function=functor):
         return partial(functor(function), *self.args, **self.kwargs)
+
+
+def doc(self):
+    return getattr(self.function, '__doc__', '')
+
+
+for func in (functor, flipped, do, stars, ifthen, default, call):
+    not PY2 and setattr(func, '__doc__', property(doc))
 
 
 class Function(State):
