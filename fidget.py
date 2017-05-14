@@ -15,7 +15,7 @@ from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ['_x', '_xx', '_f', 'x_', '_y', 'call', 'default', 'ifthen', 'copy']
+__all__ = ('function', 'flips', 'stars', 'does', 'each', 'when')  # noqa: F822
 
 
 @total_ordering
@@ -81,13 +81,13 @@ class do(functor):
         return args[0] if args else None
 
 
-class stars(functor):
+class starred(functor):
     def __call__(self, *args, **kwargs):
         arguments = groupby(flip(isinstance)(dict),
                             args) if all(map(isiterable, args)) else {
                                 False: [[args]]
                             }
-        return super(stars, self).__call__(
+        return super(starred, self).__call__(
             *concat(get(False, arguments, tuple())), **merge(
                 kwargs, *get(True, arguments, [{}])))
 
@@ -121,24 +121,26 @@ class excepts(functor):
         try:
             return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
-            return self.exception(e)
-
-    class exception(State):
-        __slots__ = ('e', )
-
-        def __bool__(self):
-            return not self.e
-
-        def __repr__(self):
-            return repr(self.e)
+            return exception(e)
 
 
-def doc(self):
-    return getattr(self.function, '__doc__', '')
+class exception(State):
+    __slots__ = ('exception', )
+
+    def __bool__(self):
+        return not self.exception
+
+    def __repr__(self):
+        return repr(self.exception)
 
 
-for func in (functor, flipped, do, stars, ifthen, default, excepts):
-    not PY2 and setattr(func, '__doc__', property(doc))
+if not PY2:
+
+    def doc(self):
+        return getattr(self.function, '__doc__', '')
+
+    for func in (functor, flipped, do, starred, ifthen, default, excepts):
+        setattr(func, '__doc__', property(doc))
 
 
 class call(State):
@@ -151,7 +153,7 @@ class call(State):
         return partial(functor(function), *self.args, **self.kwargs)
 
 
-class Function(State):
+class Append(State):
     __slots__ = ('function', )
 
     def __getitem__(self, object=slice(None)):
@@ -170,7 +172,7 @@ class Function(State):
         self.function += [object]
 
 
-class Functions(Function):
+class Functions(Append):
     def __init__(self, function=None, *args):
         if function is None:
             function = list()
@@ -254,7 +256,7 @@ class Partial(Functions):
         self.function.function += [object]
 
 
-class Composition(Partial):
+class Composer(Partial):
     @property
     def _factory_(self):
         return type(self).__name__.startswith('_') and type(
@@ -269,28 +271,24 @@ class Composition(Partial):
             self.function = self._composite_(object)
             return self
 
-        return super(Composition, self).__getitem__(
+        return super(Composer, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
 
 
-class Juxtaposition(Composition):
-    _composite_ = staticmethod(Juxtapose)
-
-
-class Composer(Composition):
+class Function(Composer):
     def __xor__(self, object):
-        self, isinstance = self[:], flip(isinstance)  # noqa: F823
+        self, _isinstance = self[:], flip(isinstance)  # noqa: F823
         if isiterable(object):
-            if all(map(isinstance(type), object)) and all(
+            if all(map(_isinstance(type), object)) and all(
                     map(flip(issubclass)(BaseException), object)):
                 self.function = Compose(excepts(object, self.function))
                 return self
 
-            if all(map(isinstance(BaseException), object)):
+            if all(map(_isinstance(BaseException), object)):
                 object = tuple(map(type, object))
 
-            if all(map(isinstance(type), object)):
-                object = isinstance(object)
+            if all(map(_isinstance(type), object)):
+                object = _isinstance(object)
 
         self.function = Compose([ifthen(object, self.function)])
         return self
@@ -316,26 +314,24 @@ class Composer(Composition):
 
     __pow__ = __xor__
     __invert__ = Functions.__reversed__
-    __mul__ = __add__ = __rshift__ = __sub__ = Composition.__getitem__
+    __mul__ = __add__ = __rshift__ = __sub__ = Composer.__getitem__
 
 
-class Flipped(Composer):
-    _decorate_ = staticmethod(flipped)
+for name, func in (('Flips', flipped), ('Stars', starred), ('Does', do),
+                   ('Each', map), ('When', filter)):
+    locals()[name] = type(name, (Function, ),
+                          {'_decorate_': staticmethod(func)})
 
 
-class Starred(Composer):
-    _decorate_ = staticmethod(stars)
+class Juxt(Composer):
+    _composite_ = staticmethod(Juxtapose)
 
 
-class Do(Composer):
-    _decorate_ = staticmethod(do)
-
-
-class Reversed(Composer):
+class Composition(Function):
     _composite_ = staticmethod(ComposeLeft)
 
 
-def macro(attr, method, composable=False, cls=Composer, force=False):
+def macro(attr, method, composable=False, cls=Function, force=False):
     if not hasattr(cls, attr) or force:
         _partial = isinstance(method, partial)
         method = _partial and method.func or method
@@ -364,7 +360,7 @@ def _right_(attr):
             return getattr(type(self)()[other], _attr_)(self)
         return self[other]
 
-    return wraps(getattr(Composer, _attr_))(caller)
+    return wraps(getattr(Function, _attr_))(caller)
 
 
 s = "__{}{}__".format
@@ -372,11 +368,11 @@ for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
         'lshift', 'rshift', 'and', 'xor', 'or', 'pow'
 ]:
-    setattr(Composer, s('i', attr), getattr(Composer, s('', attr)))
-    setattr(Composer, s('r', attr), _right_(attr))
+    setattr(Function, s('i', attr), getattr(Function, s('', attr)))
+    setattr(Function, s('r', attr), _right_(attr))
 
 for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem']]:
-    setattr(Composer, attr, getattr(Composer, s('', method)))
+    setattr(Function, attr, getattr(Function, s('', method)))
 
 composables += attrgetter('keyfilter', 'keymap', 'valfilter', 'valmap',
                           'itemfilter', 'itemmap')(import_module('toolz'))
@@ -401,19 +397,17 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
 
             macro(attr, method, method in composables)
 
-_y, _x, _f, x_, _xx = tuple(
-    type('_{}_'.format(function.__name__), (function, ),
-         {})(function=Compose([function]))
-    for function in (Juxtaposition, Composer, Reversed, Flipped, Starred))
+for func in (Function, Juxt, Flips, Stars, Does, Each, When, Composition):
+    locals()[func.__name__.lower()] = type('_{}_'.format(func.__name__), (
+        func, ), {})(function=Compose([func]))
 
-del attr, doc, func, imports, method, s
+del attr, doc, func, imports, method, s, name
 
 
 def load_ipython_extension(ip):
     """%%fidget magic that displays code cells as markdown, then runs the cell.
     """
     from IPython import display
-    ip.register_magic_function(
-        _x[lambda l, cell: cell][_x << display.Markdown >>
-                                 display.display][ip.run_cell][None], 'cell',
-        'fidget')
+    ip.register_magic_function(function[lambda l, cell: cell][does[
+        display.Markdown][display.display]][ip.run_cell][None], 'cell',
+                               'fidget')
