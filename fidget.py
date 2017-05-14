@@ -133,6 +133,14 @@ class step(condition):
         return result and super(step, self).__call__(result)
 
 
+def doc(self):
+    return getattr(self.function, '__doc__', '')
+
+
+for func in (functor, flipped, do, stars, ifthen, default):
+    not PY2 and setattr(func, '__doc__', property(doc))
+
+
 class call(State):
     __slots__ = ('args', 'kwargs')
 
@@ -141,14 +149,6 @@ class call(State):
 
     def __call__(self, function=functor):
         return partial(functor(function), *self.args, **self.kwargs)
-
-
-def doc(self):
-    return getattr(self.function, '__doc__', '')
-
-
-for func in (functor, flipped, do, stars, ifthen, default, call):
-    not PY2 and setattr(func, '__doc__', property(doc))
 
 
 class Function(State):
@@ -161,64 +161,44 @@ class Function(State):
         if isinstance(object, call):
             return object(self)()
 
-        return object != slice(None) and self.function.append(object) or self
+        return object != slice(None) and self.append(object) or self
 
     def __repr__(self):
         return str(self.function)
 
+    def append(self, object):
+        self.function += [object]
 
-class Functions(State):
-    __slots__ = ('functions', )
 
-    def __repr__(self):
-        return str(self.functions)
-
-    def __init__(self, functions=tuple(), *args):
-        if not isiterable(functions) or isinstance(functions, (str, )):
-            functions = (functions, )
+class Functions(Function):
+    def __init__(self, function=None, *args):
+        if function is None:
+            function = list()
+        if not isiterable(function) or isinstance(function, (str, )):
+            function = [function]
 
         super(Functions, self).__init__(
-            (isinstance(functions, dict) and compose(tuple, iteritems) or
-             identity)(functions), *args)
+            (isinstance(function, dict) and compose(list, iteritems) or
+             identity)(function), *args)
 
     def __delitem__(self, object):
-        self.functions = tuple(fn for fn in self if fn != object)
+        self.function = list(fn for fn in self if fn != object)
         return self
 
     def __setitem__(self, key, value):
-        self.functions = tuple(value if fn == key else fn for fn in self)
+        self.function = list(value if fn == key else fn for fn in self)
         return self
 
     def __iter__(self):
-        for function in self.functions:
+        for function in self.function:
             yield function
 
     def __reversed__(self):
-        self.functions = type(self.functions)(reversed(self.functions))
+        self.function = type(self.function)(reversed(self.function))
         return self
-
-    def insert(self, index, object):
-        self.functions = tuple(
-            concat((self.functions[:index], (object, ), self.functions[index:]
-                    )))
-
-    def append(self, object):
-        self.extend((object, ))
-
-    def extend(self, iterable):
-        self.functions = tuple(concatv(self.functions, iterable))
 
 
 class Composite(Functions):
-    def __getitem__(self, object=slice(None)):
-        if isinstance(object, slice):
-            if object != slice(None):
-                with self as self:
-                    self.append(object)
-        else:
-            self = super(Composite, self).__getitem__(object)
-        return self
-
     def __contains__(self, object):
         return any(object == function for function in self)
 
@@ -228,11 +208,8 @@ class Composite(Functions):
 
 
 class Juxtapose(Composite):
-    def __init__(self, functions=tuple()):
-        super(Juxtapose, self).__init__(functions)
-
     def __call__(self, *args, **kwargs):
-        return type(self.functions)(call(*args)(self._dispatch_(function))(
+        return type(self.function)(call(*args)(self._dispatch_(function))(
             **kwargs) for function in self)
 
 
@@ -249,7 +226,7 @@ class ComposeLeft(Compose):
         return reversed(tuple(super(ComposeLeft, self).__iter__()))
 
     def __hash__(self):
-        return hash(tuple(reversed(self.functions)))
+        return hash(tuple(reversed(self.function)))
 
 
 class Composable(Compose):
@@ -257,20 +234,23 @@ class Composable(Compose):
         super(Composable, self).__init__([function])
 
 
-class Partial(Function):
+class Partial(Functions):
     __slots__ = ('args', 'keywords', 'function')
-    _decorate_ = staticmethod(functor)
-    _composite_ = staticmethod(Compose)
+    _decorate_, _composite_ = map(staticmethod, (functor, Compose))
 
     def __init__(self, *args, **kwargs):
-        super(Partial, self).__init__(args, kwargs,
-                                      kwargs.pop('function',
-                                                 self._composite_()))
+        function = kwargs.pop('function', self._composite_())
+        if not callable(function):
+            function = self._composite_(function)
+        super(Partial, self).__init__(args, kwargs, function)
 
     @property
     def __call__(self):
         return call(*self.args,
                     **self.keywords)(self._decorate_(self.function))
+
+    def append(self, object):
+        self.function.function += [object]
 
 
 class Composition(Partial):
@@ -282,7 +262,7 @@ class Composition(Partial):
             self = copy(self)
             return setattr(
                 self, 'function',
-                self._composite_(self.function.functions[object])) or self
+                self._composite_(self.function.function[object])) or self
 
         return super(Composition, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
@@ -299,8 +279,6 @@ class Juxtaposition(Composition):
 
 class Composer(Composition):
     def __xor__(self, object):
-        """** operator requires an argument to be true because executing.
-        """
         self = self[:]
         if isiterable(object):
             if all(map(flip(isinstance)(Exception), object)):
@@ -350,7 +328,7 @@ class Reversed(Composer):
     _composite_ = staticmethod(ComposeLeft)
 
 
-def macro(attr, method, cls=Composer, composable=False, force=False):
+def macro(attr, method, composable=False, cls=Composer, force=False):
     """Extent the Composer api.
     """
     if not hasattr(cls, attr) or force:
@@ -370,7 +348,7 @@ def macro(attr, method, cls=Composer, composable=False, force=False):
 composables = []
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    composables += macro(attr, method, Composer, True) or [method.func]
+    composables += macro(attr, method, True) or [method.func]
 
 
 def _right_(attr):
@@ -416,7 +394,7 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
             else:
                 method = flipped(method)
 
-            macro(attr, method, Composer, method in composables)
+            macro(attr, method, method in composables)
 
 
 class Lambda(Composer):
