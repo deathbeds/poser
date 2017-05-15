@@ -328,7 +328,7 @@ class Juxt(Composer):
     _composite_ = staticmethod(Juxtapose)
 
 
-class Composition(Function):
+class Composition(Composer):
     _composite_ = staticmethod(ComposeLeft)
 
 
