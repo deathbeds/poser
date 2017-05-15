@@ -135,13 +135,12 @@ class exception(State):
         return repr(self.exception)
 
 
-if not PY2:
+def doc(self):
+    return getattr(self.function, '__doc__', '')
 
-    def doc(self):
-        return getattr(self.function, '__doc__', '')
 
-    for func in (functor, flipped, do, starred, ifthen, default, excepts):
-        setattr(func, '__doc__', property(doc))
+for func in (functor, flipped, do, starred, ifthen, default, excepts):
+    PY2 and setattr(func, '__doc__', property(doc))
 
 
 class call(State):
