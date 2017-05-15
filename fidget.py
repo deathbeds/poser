@@ -356,10 +356,9 @@ for attr, method in [('__matmul__', groupby), ('__div__', map), (
 def _right_(attr):
     _attr_ = """__{}__""".format(attr)
 
-    def caller(self, other):
-        if self:
-            return getattr(type(self)()[other], _attr_)(self)
-        return self[other]
+    def caller(self, object):
+        object = type(self)()[object]
+        return getattr(object, _attr_)(self[:]) or object
 
     return wraps(getattr(Function, _attr_))(caller)
 
