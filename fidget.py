@@ -15,7 +15,8 @@ from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (methodcaller, itemgetter, attrgetter, not_, truth, abs,
                       invert, neg, pos, index, eq)
 
-__all__ = ('function', 'flips', 'stars', 'does', 'each', 'when')  # noqa: F822
+__all__ = ('function', 'flips', 'stars', 'does', 'each', 'when',
+           'call')  # noqa: F822
 
 
 @total_ordering
@@ -310,7 +311,7 @@ class Function(Composer):
         return self[complement(bool)]
 
     def __lshift__(self, object):
-        return Do()[object] if self._factory_ else self[do(object)]
+        return Does()[object] if self._factory_ else self[do(object)]
 
     __pow__ = __xor__
     __invert__ = Functions.__reversed__
