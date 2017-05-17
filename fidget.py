@@ -227,14 +227,6 @@ class Compose(Composite):
         return first(args)
 
 
-class ComposeLeft(Compose):
-    def __iter__(self):
-        return reversed(tuple(super(ComposeLeft, self).__iter__()))
-
-    def __hash__(self):
-        return hash(tuple(reversed(self.function)))
-
-
 class Composable(Compose):
     def __init__(self, function):
         super(Composable, self).__init__([function])
@@ -328,10 +320,6 @@ for name, func in (('Flips', flipped), ('Stars', starred), ('Does', do), (
         name:
         type(name, (Calls, ), {'_decorate_': staticmethod(func)})
     })
-
-
-class Composition(Composer):
-    _composite_ = staticmethod(ComposeLeft)
 
 
 def macro(attr, method, composable=False, cls=Calls, force=False):
