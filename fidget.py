@@ -360,8 +360,8 @@ def _right_(attr):
     _attr_ = """__{}__""".format(attr)
 
     def caller(self, object):
-        object = type(self)()[object]
-        return getattr(object, _attr_)(self[:]) or object
+        self = self[:]
+        return getattr(type(self)()[object], _attr_)(self)
 
     return wraps(getattr(Calls, _attr_))(caller)
 
@@ -371,8 +371,8 @@ for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
         'lshift', 'rshift', 'and', 'xor', 'or', 'pow'
 ]:
-    setattr(Calls, s('i', attr), getattr(Calls, s('', attr)))
-    setattr(Calls, s('r', attr), _right_(attr))
+    setattr(Calls, s('i', attr), getattr(Calls, s('', attr))) or setattr(
+        Calls, s('r', attr), _right_(attr))
 
 for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem'],
                      ['tries', 'xor'], ['then', 'and'], ['other', 'or']]:
@@ -387,7 +387,6 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
                                 valfilter(callable),
                                 keyfilter(compose(str.lower, first)), vars,
                                 import_module)(imports):
-
         if attr[0].islower():
             if method in (methodcaller, itemgetter, attrgetter, not_, truth,
                           abs, invert, neg, pos, index):
@@ -399,7 +398,6 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
                 pass
             else:
                 method = flipped(method)
-
             macro(attr, method, method in composables)
 
 for name in __all__:
