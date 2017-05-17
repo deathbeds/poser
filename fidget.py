@@ -180,7 +180,7 @@ class Functions(Append):
         if not isiterable(function) or isinstance(function, (str, )):
             function = [function]
         elif isinstance(function, dict):
-            function = compose(list, iteritems)(function)
+            function = compose(tuple, iteritems)(function)
 
         super(Functions, self).__init__(function, *args)
 
