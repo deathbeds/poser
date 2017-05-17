@@ -8,9 +8,8 @@ from copy import copy
 from functools import partial, total_ordering, wraps
 from importlib import import_module
 from six import iteritems, PY3
-from toolz.curried import (complement, compose, concat, filter, first, flip,
-                           get, groupby, isiterable, identity, keyfilter, map,
-                           merge, reduce, valfilter)
+from toolz.curried import (complement, compose, filter, first, flip, groupby,
+                           isiterable, keyfilter, map, reduce, valfilter)
 from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (abs, attrgetter, eq, index, invert, itemgetter,
                       methodcaller, neg, not_, pos, truth)
@@ -180,10 +179,10 @@ class Functions(Append):
 
         if not isiterable(function) or isinstance(function, (str, )):
             function = [function]
+        elif isinstance(function, dict):
+            function = compose(list, iteritems)(function)
 
-        super(Functions, self).__init__(
-            (isinstance(function, dict) and compose(list, iteritems) or
-             identity)(function), *args)
+        super(Functions, self).__init__(function, *args)
 
     def __delitem__(self, object):
         self.function = list(fn for fn in self if fn != object)
