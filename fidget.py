@@ -102,10 +102,10 @@ class ifthen(condition):
             ifthen, self).__call__(*args, **kwargs)
 
 
-class default(condition):
+class ifnot(condition):
     def __call__(self, *args, **kwargs):
-        return super(default, self).__call__(
-            *args, **kwargs) or functor(self.condition)(*args, **kwargs)
+        return functor(self.condition)(*args, **kwargs) or super(
+            ifnot, self).__call__(*args, **kwargs)
 
 
 class step(condition):
@@ -139,7 +139,7 @@ def doc(self):
 
 
 if PY3:
-    for func in (functor, flipped, do, starred, ifthen, default, excepts):
+    for func in (functor, flipped, do, starred, ifthen, ifnot, excepts):
         setattr(func, '__doc__', property(doc))
 
 
@@ -157,6 +157,9 @@ class Append(State):
     __slots__ = ('function', )
 
     def __getitem__(self, object=slice(None)):
+        if isinstance(object, Append) and object._factory_:
+            object = object()
+
         if object is call:
             return abs(self)
 
@@ -261,7 +264,7 @@ class Composer(Partial):
         if self._factory_:
             self = self.function()
 
-        if isinstance(object, (int, slice)) and not isinstance(object, bool):
+        if isinstance(object, slice):
             object, self = self.function.function[object], copy(self)
             self.function = self._composite_(object)
             return self
@@ -287,17 +290,17 @@ class Calls(Composer):
             if all(map(_isinstance(type), object)):
                 object = _isinstance(object)
 
-        self.function = Compose([ifthen(object, self.function)])
+        self.function = Compose([ifthen(Composable(object), self.function)])
         return self
 
     def __or__(self, object):
         self = self[:]
-        self.function = Compose([default(object, self.function)])
+        self.function = Compose([ifnot(self.function, Composable(object))])
         return self
 
     def __and__(self, object):
         self = self[:]
-        self.function = Compose([step(self.function, object)])
+        self.function = Compose([step(self.function, Composable(object))])
         return self
 
     def __pos__(self):
