@@ -7,12 +7,13 @@
 from copy import copy
 from functools import partial, total_ordering, wraps
 from importlib import import_module
-from six import iteritems, PY3
-from toolz.curried import (complement, compose, filter, first, flip, groupby,
-                           isiterable, keyfilter, map, reduce, valfilter)
-from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
 from operator import (abs, attrgetter, eq, index, invert, itemgetter,
                       methodcaller, neg, not_, pos, truth)
+from six import iteritems, PY3
+from six.moves.builtins import hasattr, getattr, isinstance, issubclass, setattr
+from toolz.curried import (complement, compose, filter, first, flip, groupby,
+                           isiterable, interpose, keyfilter, map, reduce,
+                           valfilter)
 
 __all__ = [
     'calls', 'does', 'filters', 'flips', 'maps', 'stars', 'reduces', 'groups'
@@ -156,6 +157,15 @@ class call(State):
 class Append(State):
     __slots__ = ('function', )
 
+    def __init__(self, function=None, *args):
+        if function is None:
+            function = list()
+
+        if not isiterable(function) or isinstance(function, (str, )):
+            function = [function]
+
+        super(Append, self).__init__(function, *args)
+
     def __getitem__(self, object=slice(None)):
         if isinstance(object, Append) and object._factory_:
             object = object()
@@ -176,16 +186,8 @@ class Append(State):
 
 
 class Functions(Append):
-    def __init__(self, function=None, *args):
-        if function is None:
-            function = list()
-
-        if not isiterable(function) or isinstance(function, (str, )):
-            function = [function]
-        elif isinstance(function, dict):
-            function = compose(tuple, iteritems)(function)
-
-        super(Functions, self).__init__(function, *args)
+    def __contains__(self, object):
+        return any(object == function for function in self)
 
     def __delitem__(self, object):
         self.function = list(fn for fn in self if fn != object)
@@ -205,16 +207,19 @@ class Functions(Append):
 
 
 class Composite(Functions):
-    def __contains__(self, object):
-        return any(object == function for function in self)
-
     def _dispatch_(self, function):
         return isinstance(function, (dict, set, list, tuple)) and Juxtapose(
             function, type(function)) or functor(function)
 
 
-class Juxtapose(Composite):
+class Juxtapose(Functions):
     __slots__ = ('function', 'type')
+
+    def __init__(self, function, type_=None):
+        if isinstance(function, dict):
+            type_ = type(function)
+            function = compose(tuple, iteritems)(function)
+        super(Juxtapose, self).__init__(function, type_)
 
     def __call__(self, *args, **kwargs):
         return self.type(
@@ -222,17 +227,12 @@ class Juxtapose(Composite):
             for function in self)
 
 
-class Compose(Composite):
+class Compose(Functions):
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call(*args)(self._dispatch_(function))(
                 **kwargs), ), {}
         return first(args)
-
-
-class Composable(Compose):
-    def __init__(self, function):
-        super(Composable, self).__init__([function])
 
 
 class Partial(Functions):
@@ -290,17 +290,17 @@ class Calls(Composer):
             if all(map(_isinstance(type), object)):
                 object = _isinstance(object)
 
-        self.function = Compose([ifthen(Composable(object), self.function)])
+        self.function = Compose([ifthen(Compose([object]), self.function)])
         return self
 
     def __or__(self, object):
         self = self[:]
-        self.function = Compose([ifnot(self.function, Composable(object))])
+        self.function = Compose([ifnot(self.function, Compose([object]))])
         return self
 
     def __and__(self, object):
         self = self[:]
-        self.function = Compose([step(self.function, Composable(object))])
+        self.function = Compose([step(self.function, Compose([object]))])
         return self
 
     def __pos__(self):
@@ -311,6 +311,10 @@ class Calls(Composer):
 
     def __lshift__(self, object):
         return Does()[object] if self._factory_ else self[do(object)]
+
+    def __round__(self, n):
+        self.function.function = list(interpose(n, self.function.function))
+        return self
 
     __invert__, __pow__ = Functions.__reversed__, __xor__
     __mul__ = __add__ = __rshift__ = __sub__ = Composer.__getitem__
@@ -325,14 +329,14 @@ for name, func in (('Flips', flipped), ('Stars', starred), ('Does', do), (
     })
 
 
-def macro(attr, method, composable=False, cls=Calls, force=False):
+def macro(attr, method, juxtapose=False, cls=Calls, force=False):
     if not hasattr(cls, attr) or force:
         _partial = isinstance(method, partial)
         method = _partial and method.func or method
 
         def _macro(self, *args, **kwargs):
-            if len(args) is 1 and composable and not _partial:
-                args = (Composable(args[0]), )
+            if len(args) is 1 and juxtapose and not _partial:
+                args = (Compose([args[0]]), )
 
             return self[method(*args, **kwargs) if _partial else partial(
                 method, *args, **kwargs) if args or kwargs else method]
@@ -340,10 +344,12 @@ def macro(attr, method, composable=False, cls=Calls, force=False):
         setattr(cls, attr, getattr(cls, attr, wraps(method)(_macro)))
 
 
-composables = []
+juxtaposes = []
 for attr, method in [('__matmul__', groupby), ('__div__', map), (
         '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    macro(attr, method, True) or composables.append(method.func)
+    macro(attr,
+          method, True) or setattr(Calls, method.__name__, getattr(
+              Calls, attr)) or juxtaposes.append(method.func)
 
 
 def _right_(attr):
@@ -368,7 +374,7 @@ for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem'],
                      ['tries', 'xor'], ['then', 'and'], ['other', 'or']]:
     setattr(Calls, attr, getattr(Calls, s('', method)))
 
-composables.extend(
+juxtaposes.extend(
     attrgetter('keyfilter', 'keymap', 'valfilter', 'valmap', 'itemfilter',
                'itemmap')(import_module('toolz')))
 
@@ -388,7 +394,7 @@ for imports in ('toolz', 'operator', 'six.moves.builtins', 'itertools'):
                 pass
             else:
                 method = flipped(method)
-            macro(attr, method, method in composables)
+            macro(attr, method, method in juxtaposes)
 
 for name in __all__:
     func = locals()[name.capitalize()]
