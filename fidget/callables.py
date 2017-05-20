@@ -1,9 +1,9 @@
 # coding: utf-8
 
 try:
-    from .base import State
+    from .state import State
 except:
-    from base import State
+    from state import State
 from six import PY3
 from toolz import isiterable, partial
 

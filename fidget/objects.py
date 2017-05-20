@@ -5,10 +5,10 @@
 # ---
 
 try:
-    from .base import State
+    from .state import State
     from .callables import call, functor
 except:
-    from base import State
+    from state import State
     from callables import call, functor
 
 from copy import copy
