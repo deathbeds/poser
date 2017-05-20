@@ -2,11 +2,11 @@
 
 try:
     from .callables import call
-    from .classes import Compose
+    from .objects import Compose
     from .calls import *
 except:
     from callables import call
-    from classes import Compose
+    from objects import Compose
     from calls import *
 
 __all__ = [

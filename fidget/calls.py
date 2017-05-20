@@ -5,10 +5,10 @@
 # ---
 
 try:
-    from .classes import Functions, Composer, Attributes, Compose
+    from .objects import Functions, Composer, Attributes, Compose
     from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
 except Exception as e:
-    from classes import Functions, Composer, Attributes, Compose
+    from objects import Functions, Composer, Attributes, Compose
     from callables import flipped, do, step, starred, excepts, ifnot, ifthen
 
 from functools import wraps
