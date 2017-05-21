@@ -27,7 +27,7 @@ class Namespaces(object):
             if attr in namespace:
                 callable = namespace[attr]
                 doc = callable.__doc__
-                if callable in type(self).__dict__.values():
+                if callable in merge(map(vars, type(self).__mro__)).values():
                     callable = partial(callable, self)
                 else:
                     callable = partial(self.__getitem__, callable)
@@ -146,5 +146,3 @@ for attr in [
     setattr(Models,
             _attribute_('i', attr), getattr(Models, _attribute_('', attr)))
     setattr(Models, _attribute_('r', attr), fallback(_attribute_('', attr)))
-
-models * range
