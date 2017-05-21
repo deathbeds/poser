@@ -23,7 +23,7 @@ class Namespaces(Calls):
     namespaces = OrderedDict({'fidget': {}})
 
     def __getattr__(self, attr):
-        for namespace in self.namespaces.values():
+        for namespace in self.nameaspaces.values():
             if attr in namespace:
                 callable = namespace[attr]
                 doc = callable.__doc__
@@ -39,7 +39,22 @@ class Namespaces(Calls):
             merge(self.namespaces.values()).keys())
 
 
-class Models(Namespaces):
+class Factory(Namespaces):
+    @property
+    def _factory_(self):
+        return type(self).__name__.startswith('_') and type(
+            self).__name__.endswith('_')
+
+    def __getitem__(self, object=slice(None), *args, **kwargs):
+        self = self._factory_ and self.function() or self
+
+        if isinstance(object, Factory) and object._factory_:
+            object = object()
+
+        return super(Factory, self).__getitem__(object, *args, **kwargs)
+
+
+class Models(Factory):
     def __xor__(self, object):
         self, _isinstance = self[:], flip(isinstance)  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
