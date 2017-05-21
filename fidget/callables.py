@@ -7,6 +7,11 @@ except:
 from six import PY3
 from toolz import isiterable, partial
 
+__all__ = [
+    'functor', 'flipped', 'do', 'call', 'starred', 'ifthen', 'ifnot', 'step',
+    'excepts'
+]
+
 
 class functor(State):
     __slots__ = ('function', )

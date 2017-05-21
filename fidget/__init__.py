@@ -1,18 +1,14 @@
 # coding: utf-8
 
 try:
-    from .callables import call
     from . import model
     from .model import *
     from . import namespaces
 except:
-    from callables import call
     import model
     from model import *
     import namespaces
 __all__ = model.__all__
-
-__all__ += ['call']
 
 try:
     from IPython import get_ipython
