@@ -41,7 +41,7 @@ class Append(State):
         self.function.append(object)
 
 
-class Functions(Append):
+class Functions(object):
     def __contains__(self, object):
         return any(object == function for function in self)
 
@@ -62,14 +62,18 @@ class Functions(Append):
         return self
 
 
-class Composite(Functions):
+class Composite(object):
     @staticmethod
     def _dispatch_(function):
         return isinstance(function, (dict, set, list, tuple)) and Juxtapose(
             function, type(function)) or functor(function)
 
 
-class Juxtapose(Composite):
+class Composition(Append, Composite, Functions):
+    pass
+
+
+class Juxtapose(Composition):
     __slots__ = ('function', 'type')
 
     def __init__(self, function, type_=None):
@@ -84,7 +88,7 @@ class Juxtapose(Composite):
             for function in self)
 
 
-class Compose(Composite):
+class Compose(Composition):
     def __call__(self, *args, **kwargs):
         for function in self:
             args, kwargs = (call(*args)(self._dispatch_(function))(
@@ -92,7 +96,7 @@ class Compose(Composite):
         return first(args)
 
 
-class Partial(Functions):
+class Partial(Composition):
     __slots__ = ('args', 'keywords', 'function')
 
     @property

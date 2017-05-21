@@ -1,10 +1,10 @@
 # coding: utf-8
 
 try:
-    from .objects import Functions, Compose, Calls, Composer, Juxtapose
+    from .objects import Compose, Calls, Juxtapose
     from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
 except Exception as e:
-    from objects import Functions, Compose, Calls, Composer, Juxtapose
+    from objects import Compose, Calls, Juxtapose
     from callables import flipped, do, step, starred, excepts, ifnot, ifthen
 
 from collections import OrderedDict
@@ -19,7 +19,7 @@ __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-class Namespaces(Calls):
+class Namespaces(object):
     namespaces = OrderedDict({'fidget': {}})
 
     def __getattr__(self, attr):
@@ -39,21 +39,7 @@ class Namespaces(Calls):
             merge(self.namespaces.values()).keys())
 
 
-class Factory(Namespaces):
-    @property
-    def _factory_(self):
-        return type(self).__name__.startswith('_') and type(
-            self).__name__.endswith('_')
-
-    def __getitem__(self, object=slice(None), *args, **kwargs):
-        self = self.function() if self._factory_ else self
-
-        return super(Factory, self).__getitem__(
-            object() if isinstance(object, Factory) and object._factory_ else
-            object, *args, **kwargs)
-
-
-class Models(Factory):
+class Syntax(object):
     def __xor__(self, object):
         self, _isinstance = self[:], flip(isinstance)  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
@@ -96,8 +82,22 @@ class Models(Factory):
         self.function.function = list(interpose(n, self.function.function))
         return self
 
-    __invert__, __pow__ = Functions.__reversed__, __xor__
-    __mul__ = __add__ = __rshift__ = __sub__ = Factory.__getitem__
+    __invert__, __pow__ = Calls.__reversed__, __xor__
+    __mul__ = __add__ = __rshift__ = __sub__ = Calls.__getitem__
+
+
+class Models(Calls, Syntax, Namespaces):
+    @property
+    def _factory_(self):
+        return type(self).__name__.startswith('_') and type(
+            self).__name__.endswith('_')
+
+    def __getitem__(self, object=slice(None), *args, **kwargs):
+        self = self.function() if self._factory_ else self
+
+        return super(Models, self).__getitem__(
+            object() if isinstance(object, Models) and object._factory_ else
+            object, *args, **kwargs)
 
 
 @property
