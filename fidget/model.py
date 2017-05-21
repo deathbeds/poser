@@ -83,7 +83,6 @@ class Syntax(object):
         return self
 
     __invert__, __pow__ = Calls.__reversed__, __xor__
-    __mul__ = __add__ = __rshift__ = __sub__ = Calls.__getitem__
 
 
 class Models(Calls, Syntax, Namespaces):
@@ -98,6 +97,8 @@ class Models(Calls, Syntax, Namespaces):
         return super(Models, self).__getitem__(
             object() if isinstance(object, Models) and object._factory_ else
             object, *args, **kwargs)
+
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 
 @property
@@ -145,3 +146,5 @@ for attr in [
     setattr(Models,
             _attribute_('i', attr), getattr(Models, _attribute_('', attr)))
     setattr(Models, _attribute_('r', attr), fallback(_attribute_('', attr)))
+
+models * range
