@@ -15,6 +15,9 @@ class functor(State):
         return self.function(
             *args, **kwargs) if callable(self.function) else self.function
 
+    def __repr__(self):
+        return repr(self.function)
+
 
 class flipped(functor):
     def __call__(self, *args, **kwargs):

@@ -5,6 +5,19 @@ from functools import partial, total_ordering
 from operator import eq
 
 
+def hashdict(attr):
+    value = []
+    for item in attr.items():
+        value += [[]]
+        for part in item:
+            if isinstance(part, dict):
+                part = hashdict(part)
+
+            value[-1] += [part]
+        value[-1] = tuple(value[-1])
+    return tuple(value)
+
+
 @total_ordering
 class State(object):
     def __init__(self, *args, **kwargs):
@@ -24,7 +37,12 @@ class State(object):
         return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
 
     def __hash__(self):
-        return hash(tuple(getattr(self, attr) for attr in self.__slots__))
+        values = []
+        for attr in self.__slots__:
+            if isinstance(attr, dict):
+                attr = hashdict(attr)
+            values += [hash(attr)]
+        return hash(tuple(values))
 
     def __eq__(self, other):
         return isinstance(other, State) and hash(self) == hash(other)

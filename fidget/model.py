@@ -1,25 +1,23 @@
 # coding: utf-8
 
-# > `fidget` uses the python data model to compose higher-order functions.
-# 
-# ---
-
 try:
-    from .objects import Functions, Composer, Attributes, Compose
+    from .objects import Functions, Compose, Calls, Composer
     from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
 except Exception as e:
-    from objects import Functions, Composer, Attributes, Compose
+    from objects import Functions, Compose, Calls, Composer
     from callables import flipped, do, step, starred, excepts, ifnot, ifthen
 
 from functools import wraps
+from operator import attrgetter
 from toolz.curried import (isiterable, flip, complement, interpose, groupby,
-                           partial, reduce, filter, map)
+                           reduce, filter, map)
+_attribute_ = "__{}{}__".format
 
-__all__ = ['Flips', 'Stars', 'Does', 'Maps', 'Filters', 'Groups', 'Reduces']
-_calls_ = (flipped, starred, do, map, filter, groupby, reduce)
+__all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
+functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-class Calls(Composer, Attributes):
+class Models(Calls):
     def __xor__(self, object):
         self, _isinstance = self[:], flip(isinstance)  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
@@ -66,35 +64,23 @@ class Calls(Composer, Attributes):
     __mul__ = __add__ = __rshift__ = __sub__ = Composer.__getitem__
 
 
-_attribute_ = "__{}{}__".format
+for name, function in zip(__all__, functions):
+    locals().update({
+        name.capitalize():
+        type(name, (Models, ), {'_decorate_': staticmethod(function)})
+    })
 
-for attr, method in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem'],
-                     ['ifthen', 'xor'], ['step', 'and'], ['ifnot', 'or']]:
-    setattr(Calls, attr, getattr(Calls, _attribute_('', method)))
+__all__ += ['models']
 
+for fidget in __all__:
+    callable = locals()[fidget.capitalize()]
+    locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable, ),
+                            {})(function=Compose([callable]))
 
-def operator(attr,
-             method,
-             partialize=False,
-             juxtapose=False,
-             force=False,
-             cls=Calls):
-    if force or not hasattr(cls, attr):
-
-        def operator(self, *args, **kwargs):
-            if len(args) is 1 and juxtapose and not partialize:
-                args = (Compose([args[0]]), )
-
-            return self[method(*args, **kwargs) if partialize else partial(
-                method, *args, **kwargs) if args or kwargs else method]
-
-        setattr(cls, attr, getattr(cls, attr, wraps(method)(operator)))
-
-
-for attr, method in [('__matmul__', groupby), ('__div__', map), (
-        '__truediv__', map), ('__floordiv__', filter), ('__mod__', reduce)]:
-    operator(attr, method, True) or setattr(Calls, method.__name__,
-                                            getattr(Calls, attr))
+for op, func in (('matmul', 'groupby'), ('truediv', 'map'),
+                 ('floordiv', 'filter'), ('mod', 'reduce')):
+    setattr(Models, _attribute_('', op), property(Compose(attrgetter(func))))
+Models.__div__ = Models.__truediv__
 
 
 def fallback(attr):
@@ -102,23 +88,13 @@ def fallback(attr):
         right = right[:]
         return getattr(type(right)()[left], attr)(right)
 
-    return wraps(getattr(Calls, attr))(fallback)
+    return wraps(getattr(Models, attr))(fallback)
 
 
 for attr in [
         'add', 'sub', 'mul', 'matmul', 'div', 'truediv', 'floordiv', 'mod',
         'lshift', 'rshift', 'and', 'xor', 'or', 'pow'
 ]:
-    setattr(Calls,
-            _attribute_('i', attr), getattr(Calls, _attribute_('', attr)))
-    setattr(Calls, _attribute_('r', attr), fallback(_attribute_('', attr)))
-
-for name, func in (('Flips', flipped), ('Stars', starred), ('Does', do), (
-        'Maps', map), ('Filters', filter), ('Groups', groupby), ('Reduces',
-                                                                 reduce)):
-    locals().update({
-        name:
-        type(name, (Calls, ), {'_decorate_': staticmethod(func)})
-    })
-
-__all__ += ['Calls']
+    setattr(Models,
+            _attribute_('i', attr), getattr(Models, _attribute_('', attr)))
+    setattr(Models, _attribute_('r', attr), fallback(_attribute_('', attr)))

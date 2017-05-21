@@ -2,31 +2,22 @@
 
 try:
     from .callables import call
-    from .objects import Compose
-    from .calls import *
+    from . import model
+    from .model import *
+    from . import namespaces
 except:
     from callables import call
-    from objects import Compose
-    from calls import *
+    import model
+    from model import *
+    import namespaces
+__all__ = model.__all__
 
-__all__ = [
-    'calls', 'does', 'filters', 'flips', 'maps', 'stars', 'reduces', 'groups'
-]  # noqa: F822
-
-for name in __all__:
-    func = locals()[name.capitalize()]
-    locals()[name] = type('_{}_'.format(func.__name__), (func, ),
-                          {})(function=Compose([func]))
-
-del func, name
 __all__ += ['call']
-
-Calls.namespaces['toolz'] = vars(__import__('toolz'))
 
 try:
     from IPython import get_ipython
 
-    class Magic(Calls):
+    class Magic(model.Model):
         def _decorate_(self, function):
             return get_ipython().register_magic_function(
                 calls[does[stars.second()[function.function]]][None],

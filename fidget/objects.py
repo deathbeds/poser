@@ -1,24 +1,23 @@
 # coding: utf-8
 
-# > `fidget` uses the python data model to compose higher-order functions.
-# 
-# ---
-
 try:
     from .state import State
     from .callables import call, functor
+
 except:
     from state import State
     from callables import call, functor
 
 from copy import copy
 from collections import OrderedDict
-from toolz.curried import compose, first, isiterable, partial, map, merge
+from functools import partial
+from toolz.curried import compose, first, isiterable, merge
 from six import iteritems, PY3
 
 
 class Append(State):
     __slots__ = ('function', )
+    namespaces = OrderedDict({'fidget': {}})
 
     def __init__(self, function=None, *args):
         if function is None:
@@ -47,6 +46,22 @@ class Append(State):
     def append(self, object):
         self.function.append(object)
 
+    def __getattr__(self, attr):
+        for namespace in self.namespaces.values():
+            if attr in namespace:
+                callable = namespace[attr]
+                doc = callable.__doc__
+                if callable in type(self).__dict__.values():
+                    callable = partial(callable, self)
+                else:
+                    callable = partial(self.__getitem__, callable)
+                return PY3 and setattr(callable, '__doc__', doc) or callable
+        raise AttributeError("No attribute {}".format(attr))
+
+    def __dir__(self):
+        return list(super(Append, self).__dir__()) + list(
+            merge(self.namespaces.values()).keys())
+
 
 class Functions(Append):
     def __contains__(self, object):
@@ -70,7 +85,8 @@ class Functions(Append):
 
 
 class Composite(Functions):
-    def _dispatch_(self, function):
+    @staticmethod
+    def _dispatch_(function):
         return isinstance(function, (dict, set, list, tuple)) and Juxtapose(
             function, type(function)) or functor(function)
 
@@ -100,25 +116,18 @@ class Compose(Composite):
 
 class Partial(Functions):
     __slots__ = ('args', 'keywords', 'function')
-    _decorate_, _composite_ = map(staticmethod, (functor, Compose))
-
-    def __init__(self, *args, **kwargs):
-        function = kwargs.pop('function', self._composite_())
-        if not callable(function):
-            function = self._composite_(function)
-        super(Partial, self).__init__(args, kwargs, function)
 
     @property
     def __call__(self):
-        return call(*self.args,
-                    **self.keywords)(self._decorate_(self.function))
-
-    def append(self, object):
-        self.function.function.append(object)
+        return call(*self.args, **self.keywords)
 
 
 class Composer(Partial):
-    attributes = OrderedDict()
+    def __init__(self, *args, **kwargs):
+        function = kwargs.pop('function', Compose())
+        if not callable(function):
+            function = Compose(function)
+        super(Partial, self).__init__(args, kwargs, function)
 
     @property
     def _factory_(self):
@@ -131,25 +140,31 @@ class Composer(Partial):
 
         if isinstance(object, slice):
             object, self = self.function.function[object], copy(self)
-            self.function = self._composite_(object)
+            self.function = Compose(object)
             return self
 
         return super(Composer, self).__getitem__(
             (args or kwargs) and call(*args, **kwargs)(object) or object)
 
+    def append(self, object):
+        self.function.function.append(object)
 
-class Attributes(object):
-    namespaces = OrderedDict({'custom': {}})
 
-    def __getattr__(self, attr):
-        for ns in self.namespaces.values():
-            if attr in ns:
-                function = partial(self.__getitem__, ns[attr])
-                return PY3 and setattr(function, '__doc__',
-                                       getattr(ns[attr], '__doc__',
-                                               "")) or function
-        raise AttributeError("No attribute {}".format(attr))
+class Calls(Composer):
+    _decorate_ = staticmethod(functor)
 
-    def __dir__(self):
-        return list(super(Attributes, self).__dir__()) + list(
-            merge(self.namespaces.values()).keys())
+    @property
+    def __call__(self):
+        return super(Calls, self).__call__(self._decorate_(self.function))
+
+
+@property
+def doc(self):
+    string = ""
+    for function in self:
+        string += getattr(function, 'func', function).__doc__ or "" + "\n---\n"
+    return string
+
+
+for klass in (Calls, Partial, Compose, Juxtapose):
+    klass.__doc__ = doc
