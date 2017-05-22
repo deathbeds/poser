@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from copy import copy
+from copy import copy, deepcopy
 from functools import partial, total_ordering
 from operator import eq
 
@@ -23,11 +23,12 @@ class State(object):
     __kwdefaults__ = {}
 
     def __init__(self, *args, **kwargs):
+        kwdefaults = deepcopy(self.__kwdefaults__)
         for i, slot in enumerate(self.__slots__):
             setattr(self, slot,
                     kwargs.pop(slot, args[i]
-                               if i < len(args) else self.__kwdefaults__[slot]
-                               if slot in self.__kwdefaults__ else None))
+                               if i < len(args) else kwdefaults[slot]
+                               if slot in kwdefaults else None))
 
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))

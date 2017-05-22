@@ -49,9 +49,7 @@ class Functions(object):
 
 
 class Composition(Append, Functions):
-    @property
-    def __kwdefaults__(self):
-        return {'function': list()}
+    __kwdefaults__ = {'function': list()}
 
     def __init__(self, *args):
         super(Composition, self).__init__(*args)
@@ -89,13 +87,10 @@ class Compose(Composition):
 
 class Partial(Append, Functions):
     __slots__ = ('args', 'keywords', 'function')
+    __kwdefaults__ = {'function': Compose()}
 
     def __init__(self, *args, **kwargs):
         super(Partial, self).__init__(args, kwargs)
-
-    @property
-    def __kwdefaults__(self):
-        return {'function': Compose()}
 
     @property
     def __call__(self):
