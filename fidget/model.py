@@ -2,10 +2,10 @@
 
 try:
     from .objects import Compose, Calls, Juxtapose
-    from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
+    from .callables import flipped, do, step, starred, excepts, ifnot, ifthen, call
 except Exception as e:
     from objects import Compose, Calls, Juxtapose
-    from callables import flipped, do, step, starred, excepts, ifnot, ifthen
+    from callables import flipped, do, step, starred, excepts, ifnot, ifthen, call
 
 from collections import OrderedDict
 from functools import partial, wraps
