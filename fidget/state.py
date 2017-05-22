@@ -20,10 +20,14 @@ def hashdict(attr):
 
 @total_ordering
 class State(object):
+    __kwdefaults__ = {}
+
     def __init__(self, *args, **kwargs):
         for i, slot in enumerate(self.__slots__):
             setattr(self, slot,
-                    kwargs.pop(slot, args[i] if i < len(args) else None))
+                    kwargs.pop(slot, args[i]
+                               if i < len(args) else self.__kwdefaults__[slot]
+                               if slot in self.__kwdefaults__ else None))
 
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))

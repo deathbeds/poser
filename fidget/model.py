@@ -39,9 +39,12 @@ class Namespaces(object):
             merge(self.namespaces.values()).keys())
 
 
+_isinstance = flip(isinstance)
+
+
 class Syntax(object):
     def __xor__(self, object):
-        self, _isinstance = self[:], flip(isinstance)  # noqa: F823
+        self = self[:]  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
             object = (object, )
         if isiterable(object):
@@ -123,7 +126,8 @@ __all__ += ['models']
 for fidget in __all__:
     callable = locals()[fidget.capitalize()]
     locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable, ),
-                            {})(function=Compose([callable]))
+                            {})()
+    locals()[fidget].function = Compose([callable])
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'),
                  ('floordiv', 'filter'), ('mod', 'reduce')):
