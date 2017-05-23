@@ -3,11 +3,12 @@
 try:
     from .objects import Compose, Calls
     from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
+    from .namespaces import Namespaces, composed
 except Exception as e:
     from objects import Compose, Calls
     from callables import flipped, do, step, starred, excepts, ifnot, ifthen
+    from namespaces import Namespaces, composed
 
-from collections import OrderedDict
 from functools import partial, wraps
 from six import PY3
 from operator import attrgetter
@@ -21,26 +22,6 @@ functions = (flipped, starred, do, map, filter, groupby, reduce)
 _mro_ = compose(dict.values, merge, map(vars), attrgetter('__mro__'), type)
 
 _isinstance_ = flip(isinstance)
-
-
-class Namespaces(object):
-    namespaces = OrderedDict({'fidget': {}})
-
-    def __getattr__(self, attr):
-        for namespace in self.namespaces.values():
-            if attr in namespace:
-                callable = namespace[attr]
-                doc = callable.__doc__
-                if callable in merge(map(vars, type(self).__mro__)).values():
-                    callable = partial(callable, self)
-                else:
-                    callable = partial(self.__getitem__, callable)
-                return PY3 and setattr(callable, '__doc__', doc) or callable
-        raise AttributeError("No attribute {}".format(attr))
-
-    def __dir__(self):
-        return list(super(Namespaces, self).__dir__()) + list(
-            merge(self.namespaces.values()).keys())
 
 
 class Syntax(object):
@@ -151,3 +132,12 @@ for attr in [
     setattr(Models,
             _attribute_('i', attr), getattr(Models, _attribute_('', attr)))
     setattr(Models, _attribute_('r', attr), fallback(_attribute_('', attr)))
+
+Models.namespaces['fidget'].update(
+    {f.__name__: composed(f)
+     for f in (groupby, reduce, filter, map)})
+Models.namespaces['fidget'].update({
+    key: getattr(Models, _attribute_('', value))
+    for key, value in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem'],
+                       ['ifthen', 'xor'], ['step', 'and'], ['ifnot', 'or']]
+})

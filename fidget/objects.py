@@ -97,10 +97,6 @@ class Partial(Append, Functions):
     def __init__(self, *args, **kwargs):
         super(Partial, self).__init__(args, kwargs, Compose())
 
-    @property
-    def __call__(self):
-        return partial(self.function, *self.args, **self.keywords)
-
 
 class Composer(Partial):
     def __getitem__(self, object=slice(None), *args, **kwargs):
@@ -122,7 +118,7 @@ class Calls(Composer):
 
     @property
     def __call__(self):
-        return super(Calls, self).__call__(self._decorate_(self.function))
+        return partial(self.function, *self.args, **self.keywords)
 
 
 def doc(self):

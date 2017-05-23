@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 
-class Signature(State):
+class Signature(object):
     @property
     def __signature__(self):
         try:
@@ -24,7 +24,7 @@ class Signature(State):
             return signature(self.__call__)
 
 
-class functor(Signature):
+class functor(State, Signature):
     __slots__ = ('function', )
 
     def __init__(self, function=identity):

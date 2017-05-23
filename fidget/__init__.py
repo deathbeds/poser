@@ -3,11 +3,9 @@
 try:
     from . import model
     from .model import *
-    from . import namespaces
 except:
     import model
     from model import *
-    import namespaces
 __all__ = model.__all__
 
 try:

@@ -3,14 +3,15 @@
 try:
     from .callables import flipped
     from .objects import Compose
-    from .model import Models, _attribute_
 except:
     from callables import flipped
     from objects import Compose
-    from model import Models, _attribute_
 
+from collections import OrderedDict
 from functools import wraps
-from toolz.curried import groupby, reduce, filter, map
+from toolz.curried import map, partial, merge
+from six import PY3
+_attribute_ = "__{}{}__".format
 
 
 def composed(callable):
@@ -31,25 +32,37 @@ def curried(callable):
     return wraps(callable)(curried)
 
 
-Models.namespaces['fidget'].update(
-    {f.__name__: composed(f)
-     for f in (groupby, reduce, filter, map)})
-Models.namespaces['fidget'].update({
-    key: getattr(Models, _attribute_('', value))
-    for key, value in [['call'] * 2, ['do', 'lshift'], ['pipe', 'getitem'],
-                       ['ifthen', 'xor'], ['step', 'and'], ['ifnot', 'or']]
-})
-Models.namespaces['toolz'] = {
+class Namespaces(object):
+    namespaces = OrderedDict({'fidget': {}})
+
+    def __getattr__(self, attr):
+        for namespace in self.namespaces.values():
+            if attr in namespace:
+                callable = namespace[attr]
+                doc = callable.__doc__
+                if callable in merge(map(vars, type(self).__mro__)).values():
+                    callable = partial(callable, self)
+                else:
+                    callable = partial(self.__getitem__, callable)
+                return PY3 and setattr(callable, '__doc__', doc) or callable
+        raise AttributeError("No attribute {}".format(attr))
+
+    def __dir__(self):
+        return list(super(Namespaces, self).__dir__()) + list(
+            merge(self.namespaces.values()).keys())
+
+
+Namespaces.namespaces['toolz'] = {
     key: composed(value)
     if any(map(key.endswith, ('filter', 'map'))) else value
     for key, value in vars(__import__('toolz')).items() if key[0].islower()
 }
-Models.namespaces['itertools'] = vars(__import__('itertools'))
-Models.namespaces['operator'] = {
+Namespaces.namespaces['itertools'] = vars(__import__('itertools'))
+Namespaces.namespaces['operator'] = {
     key: curried(value)
     if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
     for key, value in vars(__import__('operator')).items() if key[0].islower()
 }
-Models.namespaces['builtins'] = vars(
+Namespaces.namespaces['builtins'] = vars(
     __import__('builtins', fromlist=['six.moves']))
-Models.namespaces['collections'] = vars(__import__('collections'))
+Namespaces.namespaces['collections'] = vars(__import__('collections'))
