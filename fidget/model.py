@@ -1,22 +1,26 @@
 # coding: utf-8
 
 try:
-    from .objects import Compose, Calls, Juxtapose
-    from .callables import flipped, do, step, starred, excepts, ifnot, ifthen, call
+    from .objects import Compose, Calls
+    from .callables import flipped, do, step, starred, excepts, ifnot, ifthen
 except Exception as e:
-    from objects import Compose, Calls, Juxtapose
-    from callables import flipped, do, step, starred, excepts, ifnot, ifthen, call
+    from objects import Compose, Calls
+    from callables import flipped, do, step, starred, excepts, ifnot, ifthen
 
 from collections import OrderedDict
 from functools import partial, wraps
 from six import PY3
 from operator import attrgetter
 from toolz.curried import (isiterable, flip, complement, interpose, groupby,
-                           merge, reduce, filter, map)
+                           compose, merge, reduce, filter, map)
 _attribute_ = "__{}{}__".format
 
 __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
+
+_mro_ = compose(dict.values, merge, map(vars), attrgetter('__mro__'), type)
+
+_isinstance_ = flip(isinstance)
 
 
 class Namespaces(object):
@@ -39,25 +43,23 @@ class Namespaces(object):
             merge(self.namespaces.values()).keys())
 
 
-_isinstance = flip(isinstance)
-
-
 class Syntax(object):
     def __xor__(self, object):
         self = self[:]  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
             object = (object, )
+
         if isiterable(object):
-            if all(map(_isinstance(type), object)) and all(
+            if all(map(_isinstance_(type), object)) and all(
                     map(flip(issubclass)(BaseException), object)):
                 self.function = Compose(excepts(object, self.function))
                 return self
 
-            if all(map(_isinstance(BaseException), object)):
+            if all(map(_isinstance_(BaseException), object)):
                 object = tuple(map(type, object))
 
-            if all(map(_isinstance(type), object)):
-                object = _isinstance(object)
+            if all(map(_isinstance_(type), object)):
+                object = _isinstance_(object)
 
         self.function = Compose([ifthen(Compose([object]), self.function)])
         return self
@@ -101,19 +103,19 @@ class Models(Calls, Syntax, Namespaces):
             object() if isinstance(object, Models) and object._factory_ else
             object, *args, **kwargs)
 
+    def __call__(self, *args, **kwargs):
+        return super(Models, self).__call__(*args, **kwargs)
+
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
+    @property
+    def __doc__(self):
+        string = ""
+        for function in self:
+            string += (getattr(function, 'func', function).__doc__ or
+                       "") + "\n---\n"
+        return string
 
-@property
-def doc(self):
-    string = ""
-    for function in self:
-        string += getattr(function, 'func', function).__doc__ or "" + "\n---\n"
-    return string
-
-
-for klass in (Models, Compose, Juxtapose):
-    klass.__doc__ = doc
 
 for name, function in zip(__all__, functions):
     locals().update({
@@ -137,8 +139,7 @@ Models.__div__ = Models.__truediv__
 
 def fallback(attr):
     def fallback(right, left):
-        right = right[:]
-        return getattr(type(right)()[left], attr)(right)
+        return getattr(Models()[left], attr)(right[:])
 
     return wraps(getattr(Models, attr))(fallback)
 

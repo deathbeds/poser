@@ -4,17 +4,31 @@ try:
     from .state import State
 except:
     from state import State
+from inspect import signature
+from copy import copy
+
 from six import PY3
-from toolz import isiterable, partial
+from toolz import isiterable, identity
 
 __all__ = [
-    'functor', 'flipped', 'do', 'call', 'starred', 'ifthen', 'ifnot', 'step',
-    'excepts'
+    'functor', 'flipped', 'do', 'starred', 'ifthen', 'ifnot', 'step', 'excepts'
 ]
 
 
-class functor(State):
+class Signature(State):
+    @property
+    def __signature__(self):
+        try:
+            return signature(self.function)
+        except:
+            return signature(self.__call__)
+
+
+class functor(Signature):
     __slots__ = ('function', )
+
+    def __init__(self, function=identity):
+        super(functor, self).__init__(function)
 
     def __call__(self, *args, **kwargs):
         return self.function(
@@ -35,16 +49,6 @@ class do(functor):
         return args[0] if args else None
 
 
-class call(State):
-    __slots__ = ('args', 'kwargs')
-
-    def __init__(self, *args, **kwargs):
-        super(call, self).__init__(args, kwargs)
-
-    def __call__(self, function=functor):
-        return partial(functor(function), *self.args, **self.kwargs)
-
-
 class starred(functor):
     def __call__(self, *args, **kwargs):
         args = args[0] if len(args) is 1 else (args, )
@@ -57,6 +61,9 @@ class starred(functor):
 
 class condition(functor):
     __slots__ = ('condition', 'function')
+
+    def __init__(self, condition=bool, function=identity):
+        super(functor, self).__init__(condition, function)
 
 
 class ifthen(condition):
@@ -80,6 +87,9 @@ class step(condition):
 class excepts(functor):
     __slots__ = ('exceptions', 'function')
 
+    def __init__(self, exceptions=tuple(), function=identity):
+        super(functor, self).__init__(copy(exceptions), function)
+
     def __call__(self, *args, **kwargs):
         try:
             return super(excepts, self).__call__(*args, **kwargs)
@@ -89,6 +99,9 @@ class excepts(functor):
 
 class exception(State):
     __slots__ = ('exception', )
+
+    def __init__(self, exception=tuple()):
+        super(functor, self).__init__(copy(exception))
 
     def __bool__(self):
         return not self.exception
@@ -102,5 +115,5 @@ def doc(self):
 
 
 if PY3:
-    for func in (functor, flipped, do, starred, ifthen, ifnot, excepts):
+    for func in map(locals().__getitem__, __all__):
         setattr(func, '__doc__', property(doc))

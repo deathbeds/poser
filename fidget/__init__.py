@@ -13,10 +13,10 @@ __all__ = model.__all__
 try:
     from IPython import get_ipython
 
-    class Magic(model.Model):
+    class Magic(model.Models):
         def _decorate_(self, function):
             return get_ipython().register_magic_function(
-                calls[does[stars.second()[function.function]]][None],
+                models[does[stars.second()[function.function]]][None],
                 magic_kind='cell',
                 magic_name=self.args[0])
 
