@@ -50,7 +50,7 @@ class Functions(Signature):
         return self
 
     def __iter__(self):
-        for function in self.function or [functor()]:
+        for function in self.function:
             yield function
 
     def __reversed__(self):
@@ -58,11 +58,11 @@ class Functions(Signature):
         return self
 
 
-class Composition(Append, Functions):
-    def __init__(self, function=list()):
+class Composition(Functions, Append):
+    def __init__(self, function=list(), *args):
         if not isiterable(function) or isinstance(function, (str, )):
             function = [function]
-        super(Composition, self).__init__(copy(function))
+        super(Composition, self).__init__(copy(function), *args)
 
     @staticmethod
     def _dispatch_(function):
@@ -86,12 +86,16 @@ class Juxtapose(Composition):
 
 class Compose(Composition):
     def __call__(self, *args, **kwargs):
-        for function in self:
-            args, kwargs = (self._dispatch_(function)(*args, **kwargs), ), {}
+        try:
+            for function in self:
+                args, kwargs = (self._dispatch_(function)(*args,
+                                                          **kwargs), ), {}
+        except:
+            pass
         return first(args)
 
 
-class Partial(Append, Functions):
+class Partial(Functions, Append):
     __slots__ = ('args', 'keywords', 'function')
 
     def __init__(self, *args, **kwargs):

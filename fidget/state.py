@@ -3,6 +3,7 @@
 from copy import copy
 from functools import partial, total_ordering
 from operator import eq
+from toolz import isiterable
 
 
 def hashdict(attr):
@@ -12,7 +13,6 @@ def hashdict(attr):
         for part in item:
             if isinstance(part, dict):
                 part = hashdict(part)
-
             value[-1] += [part]
         value[-1] = tuple(value[-1])
     return tuple(value)
@@ -38,8 +38,11 @@ class State(object):
     def __hash__(self):
         values = []
         for attr in self.__slots__:
+            attr = getattr(self, attr)
             if isinstance(attr, dict):
                 attr = hashdict(attr)
+            elif isiterable(attr):
+                attr = type(attr), tuple(attr)
             values += [hash(attr)]
         return hash(tuple(values))
 
