@@ -1,21 +1,30 @@
 # coding: utf-8
 
+# In[12]:
+
 from copy import copy
 from functools import partial, total_ordering
 from operator import eq
 from toolz import isiterable
 
+# In[33]:
 
-def hashdict(attr):
-    value = []
-    for item in attr.items():
-        value += [[]]
-        for part in item:
-            if isinstance(part, dict):
-                part = hashdict(part)
-            value[-1] += [part]
-        value[-1] = tuple(value[-1])
-    return tuple(value)
+
+def hashiter(object):
+    if isiterable(object):
+        if isinstance(object, dict):
+            values = []
+            for key, value in object.items():
+                values += [(key, hashiter(value))]
+        else:
+            values = []
+            for value in object:
+                values += [hashiter(value)]
+        object = (type(object), tuple(values))
+    return hash(object)
+
+
+# In[21]:
 
 
 @total_ordering
@@ -37,13 +46,8 @@ class State(object):
 
     def __hash__(self):
         values = []
-        for attr in self.__slots__:
-            attr = getattr(self, attr)
-            if isinstance(attr, dict):
-                attr = hashdict(attr)
-            elif isiterable(attr):
-                attr = type(attr), tuple(attr)
-            values += [hash(attr)]
+        for slot in self.__slots__:
+            values += [hashiter(getattr(self, slot))]
         return hash(tuple(values))
 
     def __eq__(self, other):

@@ -1,17 +1,20 @@
 # coding: utf-8
 
+# In[1]:
+
 try:
     from .state import State
-    from .callables import functor
+    from .callables import functor, Signature
 
 except:
     from state import State
-    from callables import functor
+    from callables import functor, Signature
 
 from copy import copy
-from inspect import signature
 from toolz.curried import compose, first, isiterable, partial
 from six import iteritems, PY3
+
+# In[2]:
 
 
 class Append(State):
@@ -26,13 +29,7 @@ class Append(State):
         return self.function.append
 
 
-class Signature(object):
-    @property
-    def __signature__(self):
-        try:
-            return signature(first(self.function))
-        except:
-            return signature(self.__call__)
+# In[3]:
 
 
 class Functions(Signature):
@@ -58,71 +55,89 @@ class Functions(Signature):
         return self
 
 
+# In[4]:
+
+
+def dispatch(object):
+    if isinstance(object, (dict, set, list, tuple)):
+        return Juxtapose(object, type(object))
+    return functor(object)
+
+
+# In[11]:
+
+
 class Composition(Functions, Append):
-    def __init__(self, function=list(), *args):
-        if not isiterable(function) or isinstance(function, (str, )):
-            function = [function]
-        super(Composition, self).__init__(copy(function), *args)
-
-    @staticmethod
-    def _dispatch_(function):
-        return isinstance(function, (dict, set, list, tuple)) and Juxtapose(
-            function, type(function)) or functor(function)
-
-
-class Juxtapose(Composition):
     __slots__ = ('function', 'type')
 
-    def __init__(self, function, type_=None):
-        type_ = type_ or type(function)
-        if isinstance(function, dict):
-            function = compose(tuple, iteritems)(function)
-        super(Juxtapose, self).__init__(function, type_)
+    def __init__(self, object, type=None):
+        if not isiterable(object) or isinstance(object, (str, )):
+            object = [object]
+        super(Composition, self).__init__(object, type)
 
-    def __call__(self, *args, **kwargs):
-        return self.type(
-            self._dispatch_(function)(*args, **kwargs) for function in self)
-
-
-class Compose(Composition):
     def __call__(self, *args, **kwargs):
         try:
-            for function in self:
-                args, kwargs = (self._dispatch_(function)(*args,
-                                                          **kwargs), ), {}
-        except:
+            for i, object in enumerate(self):
+                args, kwargs = (dispatch(object)(*args, **kwargs), ), {}
+        except StopIteration:
             pass
         return first(args)
 
 
+# In[12]:
+
+
+class Juxtapose(Composition):
+    def __init__(self, function, type=first):
+        if isinstance(function, dict):
+            function = compose(tuple, iteritems)(function)
+        super(Juxtapose, self).__init__(function, type)
+
+    def __call__(self, *args, **kwargs):
+        return self.type(
+            [dispatch(function)(*args, **kwargs) for function in self])
+
+
+# In[13]:
+
+
+class Compose(Composition):
+    def __init__(self, function=list(), type=functor):
+        super(Compose, self).__init__(copy(function), type)
+
+    def __call__(self, *args, **kwargs):
+        return self.type(super(Compose, self).__call__)(*args, **kwargs)
+
+
+# In[18]:
+
+
 class Partial(Functions, Append):
+    type = staticmethod(functor)
     __slots__ = ('args', 'keywords', 'function')
 
     def __init__(self, *args, **kwargs):
-        super(Partial, self).__init__(args, kwargs, Compose())
+        super(Partial, self).__init__(args, kwargs, Compose(type=self.type))
 
-
-class Composer(Partial):
     def __getitem__(self, object=slice(None), *args, **kwargs):
         if isinstance(object, slice):
             object, self = self.function.function[object], copy(self)
             self.function = Compose(object)
             return self
 
-        return super(Composer, self).__getitem__(
+        return super(Partial, self).__getitem__(
             (args or kwargs) and partial(object, *args, **kwargs) or object)
 
     @property
     def append(self):
         return self.function.function.append
 
-
-class Calls(Composer):
-    _decorate_ = staticmethod(functor)
-
     @property
     def __call__(self):
         return partial(self.function, *self.args, **self.keywords)
+
+
+# In[19]:
 
 
 def doc(self):
@@ -130,5 +145,5 @@ def doc(self):
 
 
 if PY3:
-    for func in [Compose, Juxtapose, Calls]:
+    for func in [Compose, Juxtapose]:
         setattr(func, '__doc__', property(doc))

@@ -1,27 +1,35 @@
 # coding: utf-8
 
+# In[1]:
+
 try:
     from .state import State
 except:
     from state import State
 from inspect import signature
 from copy import copy
-
 from six import PY3
-from toolz import isiterable, identity
+from toolz import isiterable, identity, first
 
 __all__ = [
     'functor', 'flipped', 'do', 'starred', 'ifthen', 'ifnot', 'step', 'excepts'
 ]
+
+# In[2]:
 
 
 class Signature(object):
     @property
     def __signature__(self):
         try:
-            return signature(self.function)
+            return signature(
+                first(self.function)
+                if isiterable(self.function) else self.function)
         except:
             return signature(self.__call__)
+
+
+# In[3]:
 
 
 class functor(State, Signature):
@@ -49,6 +57,9 @@ class do(functor):
         return args[0] if args else None
 
 
+# In[4]:
+
+
 class starred(functor):
     def __call__(self, *args, **kwargs):
         args = args[0] if len(args) is 1 else (args, )
@@ -57,6 +68,9 @@ class starred(functor):
         if isinstance(args, dict):
             args = kwargs.update(args) or tuple()
         return super(starred, self).__call__(*args, **kwargs)
+
+
+# In[43]:
 
 
 class condition(functor):
@@ -84,6 +98,9 @@ class step(condition):
         return result and super(step, self).__call__(result)
 
 
+# In[44]:
+
+
 class excepts(functor):
     __slots__ = ('exceptions', 'function')
 
@@ -97,6 +114,9 @@ class excepts(functor):
             return exception(e)
 
 
+# In[45]:
+
+
 class exception(State):
     __slots__ = ('exception', )
 
@@ -108,6 +128,9 @@ class exception(State):
 
     def __repr__(self):
         return repr(self.exception)
+
+
+# In[46]:
 
 
 def doc(self):
