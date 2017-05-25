@@ -1,0 +1,12 @@
+tricks:
+- watchdog.tricks.ShellCommandTrick:
+    patterns:
+    - "*.ipynb"
+    ignore_patterns: ["*~*.ipynb",  "*-checkpoint.ipynb"]
+    shell_command: >
+        jupyter nbconvert --to script --template docify.tpl "${watch_src_path}"
+- watchdog.tricks.ShellCommandTrick:
+    patterns:
+    - "*.py"
+    shell_command: >
+        yapf -i "${watch_src_path}" & flake8 "${watch_src_path}"

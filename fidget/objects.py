@@ -3,12 +3,12 @@
 # In[1]:
 
 try:
-    from .state import State
-    from .callables import functor, Signature
+    from .state import State, Signature
+    from .callables import functor
 
 except:
-    from state import State
-    from callables import functor, Signature
+    from state import State, Signature
+    from callables import functor
 
 from copy import copy
 from toolz.curried import compose, first, isiterable, partial
@@ -64,7 +64,7 @@ def dispatch(object):
     return functor(object)
 
 
-# In[11]:
+# In[5]:
 
 
 class Composition(Functions, Append):
@@ -84,7 +84,7 @@ class Composition(Functions, Append):
         return first(args)
 
 
-# In[12]:
+# In[6]:
 
 
 class Juxtapose(Composition):
@@ -98,12 +98,13 @@ class Juxtapose(Composition):
             [dispatch(function)(*args, **kwargs) for function in self])
 
 
-# In[13]:
+# In[21]:
 
 
 class Compose(Composition):
-    def __init__(self, function=list(), type=functor):
-        super(Compose, self).__init__(copy(function), type)
+    def __init__(self, function=None, type=functor):
+        super(Compose, self).__init__(list()
+                                      if function is None else function, type)
 
     def __call__(self, *args, **kwargs):
         return self.type(super(Compose, self).__call__)(*args, **kwargs)
@@ -113,11 +114,11 @@ class Compose(Composition):
 
 
 class Partial(Functions, Append):
-    type = staticmethod(functor)
+    wrapper = staticmethod(functor)
     __slots__ = ('args', 'keywords', 'function')
 
     def __init__(self, *args, **kwargs):
-        super(Partial, self).__init__(args, kwargs, Compose(type=self.type))
+        super(Partial, self).__init__(args, kwargs, Compose(type=self.wrapper))
 
     def __getitem__(self, object=slice(None), *args, **kwargs):
         if isinstance(object, slice):

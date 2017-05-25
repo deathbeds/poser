@@ -3,31 +3,16 @@
 # In[1]:
 
 try:
-    from .state import State
+    from .state import State, Signature
 except:
-    from state import State
-from inspect import signature
+    from state import State, Signature
 from copy import copy
 from six import PY3
-from toolz import isiterable, identity, first
+from toolz import isiterable, identity
 
 __all__ = [
     'functor', 'flipped', 'do', 'starred', 'ifthen', 'ifnot', 'step', 'excepts'
 ]
-
-# In[2]:
-
-
-class Signature(object):
-    @property
-    def __signature__(self):
-        try:
-            return signature(
-                first(self.function)
-                if isiterable(self.function) else self.function)
-        except:
-            return signature(self.__call__)
-
 
 # In[3]:
 

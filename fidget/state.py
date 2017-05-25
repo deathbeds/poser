@@ -5,7 +5,8 @@
 from copy import copy
 from functools import partial, total_ordering
 from operator import eq
-from toolz import isiterable
+from inspect import signature
+from toolz import isiterable, first
 
 # In[33]:
 
@@ -22,6 +23,20 @@ def hashiter(object):
                 values += [hashiter(value)]
         object = (type(object), tuple(values))
     return hash(object)
+
+
+# In[ ]:
+
+
+class Signature(object):
+    @property
+    def __signature__(self):
+        try:
+            return signature(
+                first(self.function)
+                if isiterable(self.function) else self.function)
+        except:
+            return signature(self.__call__)
 
 
 # In[21]:

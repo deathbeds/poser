@@ -4,14 +4,13 @@
 
 try:
     from .callables import flipped
-    from .objects import Compose, dispatch
+    from .objects import dispatch
 except:
     from callables import flipped
-    from objects import Compose, dispatch
+    from objects import dispatch
 
 from collections import OrderedDict
 from functools import wraps
-from operator import attrgetter
 from inspect import signature
 from toolz.curried import map, partial, merge
 from six import PY3
@@ -45,7 +44,7 @@ def curried(callable):
 
 
 class Namespaces(object):
-    namespaces = OrderedDict({'fidget': {}})
+    namespaces = OrderedDict()
 
     def __getattr__(self, attr):
         for namespace in reversed(self.namespaces.values()):

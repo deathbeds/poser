@@ -1,5 +1,7 @@
 # coding: utf-8
 
+# In[1]:
+
 try:
     from . import model
     from .model import *
@@ -7,6 +9,12 @@ except:
     import model
     from model import *
 __all__ = model.__all__
+
+# In[8]:
+
+models.pipe(range).pipe(len)
+
+# In[2]:
 
 try:
     from IPython import get_ipython
@@ -21,6 +29,8 @@ try:
     __all__.append('Magic')
 except:
     pass
+
+# In[3]:
 
 
 def load_ipython_extension(ip):
