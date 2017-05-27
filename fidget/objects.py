@@ -14,6 +14,8 @@ from copy import copy
 from toolz.curried import compose, first, isiterable, partial
 from six import iteritems, PY3
 
+__all__ = ['Compose', 'Juxtapose']
+
 # In[2]:
 
 
@@ -64,13 +66,15 @@ def dispatch(object):
     return functor(object)
 
 
-# In[5]:
+# In[11]:
 
 
 class Composition(Functions, Append):
     __slots__ = ('function', 'type')
 
-    def __init__(self, object, type=None):
+    def __init__(self, object=None, type=None):
+        if object is None:
+            object = list()
         if not isiterable(object) or isinstance(object, (str, )):
             object = [object]
         super(Composition, self).__init__(object, type)
@@ -84,11 +88,11 @@ class Composition(Functions, Append):
         return first(args)
 
 
-# In[6]:
+# In[20]:
 
 
 class Juxtapose(Composition):
-    def __init__(self, function, type=first):
+    def __init__(self, function=None, type=first):
         if isinstance(function, dict):
             function = compose(tuple, iteritems)(function)
         super(Juxtapose, self).__init__(function, type)
@@ -98,32 +102,32 @@ class Juxtapose(Composition):
             [dispatch(function)(*args, **kwargs) for function in self])
 
 
-# In[21]:
+# In[13]:
 
 
 class Compose(Composition):
     def __init__(self, function=None, type=functor):
-        super(Compose, self).__init__(list()
-                                      if function is None else function, type)
+        super(Compose, self).__init__(function, type)
 
     def __call__(self, *args, **kwargs):
         return self.type(super(Compose, self).__call__)(*args, **kwargs)
 
 
-# In[18]:
+# In[21]:
 
 
 class Partial(Functions, Append):
-    wrapper = staticmethod(functor)
+    wrapper, composition = map(staticmethod, (functor, Compose))
     __slots__ = ('args', 'keywords', 'function')
 
     def __init__(self, *args, **kwargs):
-        super(Partial, self).__init__(args, kwargs, Compose(type=self.wrapper))
+        super(Partial, self).__init__(
+            args, kwargs, self.composition(type=self.wrapper))
 
     def __getitem__(self, object=slice(None), *args, **kwargs):
         if isinstance(object, slice):
-            object, self = self.function.function[object], copy(self)
-            self.function = Compose(object)
+            object, self = Compose(self.function.function[object]), copy(self)
+            self.function = object
             return self
 
         return super(Partial, self).__getitem__(
@@ -138,13 +142,12 @@ class Partial(Functions, Append):
         return partial(self.function, *self.args, **self.keywords)
 
 
-# In[19]:
-
-
-def doc(self):
-    return getattr(first(self), '__doc__', '')
-
+# In[15]:
 
 if PY3:
-    for func in [Compose, Juxtapose]:
-        setattr(func, '__doc__', property(doc))
+
+    def doc(self):
+        return getattr(first(self), '__doc__', '')
+
+    for func in __all__:
+        setattr(locals()[func], '__doc__', property(doc))

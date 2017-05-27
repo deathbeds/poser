@@ -10,10 +10,6 @@ except:
     from model import *
 __all__ = model.__all__
 
-# In[8]:
-
-models.pipe(range).pipe(len)
-
 # In[2]:
 
 try:
