@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 # In[85]:
@@ -11,9 +10,9 @@ def read(fname):
     with open(join(dirname(__file__), fname)) as f:
         return f.read()
 
+
 from distutils.core import setup, Command
 # you can also import from setuptools
-print(setuptools.find_packages())
 
 setuptools.setup(
     name="fidget",
@@ -24,8 +23,8 @@ setuptools.setup(
     license="BSD-3-Clause",
     keywords="IPython Magic Jupyter",
     url="http://github.com/tonyfast/fidget",
-    py_modules=['fidget'],
-#     long_description=read("readme.rst"),
+    packages=setuptools.find_packages(),
+    #     long_description=read("readme.rst"),
     classifiers=[
         "Topic :: Utilities",
         "Framework :: IPython",
@@ -39,10 +38,8 @@ setuptools.setup(
         "Topic :: Software Development :: Testing",
     ],
     install_requires=[
-#         "sklearn", "pandas", "jinja2", "bokeh"
+        #         "sklearn", "pandas", "jinja2", "bokeh"
     ],
     tests_require=[
-#         'pytest', 'pytest-ipynb'
-    ],
-)
-
+        #         'pytest', 'pytest-ipynb'
+    ], )
