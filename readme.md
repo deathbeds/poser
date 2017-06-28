@@ -78,7 +78,7 @@ More later:
 * extensions
 
 
-```python
+```bash
 %%bash 
 jupyter nbconvert --to custom --Exporter.file_extension .py --TemplateExporter.template_file docify.tpl fidget.ipynb
 yapf -i fidget.py
@@ -89,7 +89,7 @@ yapf -i fidget.py
 
 
 
-```python
+```bash
 %%bash
 cd test
 coverage erase
@@ -131,14 +131,10 @@ coverage report
 
 
 
-```python
+```bash
 %%bash 
 jupyter nbconvert --to markdown readme.ipynb
 ```
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3847 bytes to readme.md
-
 
 
 ```python
