@@ -1,11 +1,14 @@
+
 # coding: utf-8
 
 # In[1]:
 
+
 try:
-    from . import model
-    from .model import *
+    from . import fidgets
+    from .fidgets import *
 except:
-    import model
-    from model import *
-__all__ = model.__all__
+    import fidgets
+    from fidgets import *
+__all__ = fidgets.__all__
+

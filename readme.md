@@ -1,140 +1,51 @@
 
-# `fidget` - A literate syntax for functional programming
 
-`fidget` provides symbollic & pythonic expressions that compose complex functions.  It uses the Python data model & [operator precedence](https://docs.python.org/3/reference/expressions.html#operator-precedence) to quickly prototype literate code with flexible design choices, _no `AST` was harmed in the making of `fidget`_. Markdown is our primary styleguide for monospaced type.  With `fidget`, Markdown styled lists can also execute code, even executing a `fidget` resembles a link `__x__ [requests.get](url)` - __x__ [requests.get](url).
+```python
+from fidget import *
+```
 
 
 ```python
-from fidget import _x as __x__
-
-(__x__
- * range
- * [len, sum, 
-    __x__
-    .filter(__x__.mod(2))
-    [__x__.count(), sum]
-   ]
-)(100)
+the[range].partition_all(4).enumerate().dict().valmap(list)(10)
 ```
 
 
 
 
-    [100, 4950, (50, 0)]
+    {0: [0, 1, 2, 3], 1: [4, 5, 6, 7], 2: [8, 9]}
 
-
-
-`fidget` includes _most_ of the Python model attributes to provide a flexible symbollic syntax 
-to compose functions.  It is also loaded with function programming attributes from `toolz` and `operator` including:
-
-
-```python
-__x__[dir].filter(-__x__.first().eq('_')).random_sample(.1)[list][str](__x__)
-```
-
-
-
-
-    "['dissoc', 'get_in', 'iand', 'irshift', 'matmul', 'merge_sorted', 'mod', 'partial', 'random_sample', 'reduceby', 'sliding_window']"
-
-
-
-
-```python
-_x(10) >> (_x << str >> type >> print) >> __x__.mul(42) >> call()
-```
-
-    <class 'str'>
-
-
-
-
-
-    420
-
-
-
-## [Examples](https://github.com/tonyfast/fidget/blob/master/test/data_model.ipynb)
-
----
-
-## More
-
-This project is developed for interactive computing & uses the Jupyter notebooks to derive formatted Python code.
-
-`toolz` provides a python 2 and 3 compatible interface to functional programmming in pure Python.  `fidget` objects can be pickled and used in parallel computing tasks like `joblib`, `luigi`, or `dask`.  
-
-The `fidget` namespace is design for a "programming as UI" experience.  In the minimal namespace, function methods and type can be modified with a single text character.  
-
-
-Other notes:
-
-* lazy
-* Everything is a function
-* Functions are immutable, Arguments and Keywords are Muttable
-
-More later:
-* interactive type checking
-* extensions
-
-
-```bash
-%%bash 
-jupyter nbconvert --to custom --Exporter.file_extension .py --TemplateExporter.template_file docify.tpl fidget.ipynb
-yapf -i fidget.py
-```
-
-    [NbConvertApp] Converting notebook fidget.ipynb to custom
-    [NbConvertApp] Writing 14881 bytes to fidget.py
-
-
-
-```bash
-%%bash
-cd test
-coverage erase
-coverage run -a testing.py
-coverage run -a data_model.py
-coverage report
-```
-
-    <class 'NoneType'>
-    <class 'range'>
-    <class 'range'>
-    <class 'NoneType'>
-    <class 'str'>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    attributes for [<class 'fidget.Juxtaposition'>]
-    <IPython.core.display.HTML object>
-    attributes for [<class 'fidget.Composition'>]
-    <IPython.core.display.HTML object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    [10, 45]
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    <IPython.core.display.Markdown object>
-    [10, 45, '0.001268148422241211 sec']
-    Name                               Stmts   Miss  Cover
-    ------------------------------------------------------
-    /Users/tonyfast/fidget/fidget.py     241      8    97%
-    data_model.py                         69      0   100%
-    testing.py                            86      0   100%
-    ------------------------------------------------------
-    TOTAL                                396      8    98%
 
 
 
 ```bash
 %%bash 
-jupyter nbconvert --to markdown readme.ipynb
+jupyter nbconvert --to python fidget/*.ipynb
 ```
+
+    [NbConvertApp] Converting notebook fidget/__init__.ipynb to python
+    [NbConvertApp] Writing 167 bytes to fidget/__init__.py
+    [NbConvertApp] Converting notebook fidget/attributes.ipynb to python
+    [NbConvertApp] Writing 4204 bytes to fidget/attributes.py
+    [NbConvertApp] Converting notebook fidget/callables.ipynb to python
+    [NbConvertApp] Writing 9712 bytes to fidget/callables.py
+    [NbConvertApp] Converting notebook fidget/fidgets.ipynb to python
+    [NbConvertApp] Writing 3582 bytes to fidget/fidgets.py
+
+
+
+```python
+!jupyter nbconvert --to markdown readme.ipynb
+!pyreverse -o png fidget
+```
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 1259 bytes to readme.md
+    parsing fidget/__init__.py...
+    parsing /Users/tonyfast/fidget/fidget/__init__.py...
+    parsing /Users/tonyfast/fidget/fidget/attributes.py...
+    parsing /Users/tonyfast/fidget/fidget/callables.py...
+    parsing /Users/tonyfast/fidget/fidget/fidgets.py...
+
 
 
 ```python
