@@ -13,13 +13,13 @@
 # * groups
 # * reduces
 
-# In[20]:
+# In[1]:
 
 
 try:
-    from .callables import flipped, do, starred, Compose, Partial, Juxtapose, _dispatch
+    from .callables import flipped, do, starred, Compose, Partial, Juxtapose, calls
 except Exception as e:
-    from callables import flipped, do, starred, Compose, Partial, Juxtapose, _dispatch
+    from callables import flipped, do, starred, Compose, Partial, Juxtapose, calls
     
 from functools import wraps
 
@@ -46,7 +46,7 @@ functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 def composed(callable):
     def composed(*args, **kwargs):
-        args = (_dispatch(args[0]), *args[1:])
+        args = (calls(args[0]), *args[1:])
         return callable(*args, **kwargs)
     return wraps(callable)(composed)
 
@@ -205,7 +205,7 @@ class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[30]:
+# In[2]:
 
 
 for name, function in zip(__all__, functions):
@@ -218,7 +218,7 @@ for fidget in __all__:
     locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable,), {})()
     locals()[fidget].function = Compose([callable])
     
-__all__ += ['a', 'an', 'the']; a = an = the = pipes
+__all__ += ['a', 'an', 'the', 'then']; a = an = the = then = pipes
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
     setattr(Pipes, _attribute_('', op), property(Compose(attrgetter(func))))

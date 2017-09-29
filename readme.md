@@ -1,48 +1,74 @@
 
 
 ```python
-from fidget import *
+    from fidget import *
 ```
+
+
+    from fidget import *
+
 
 
 ```python
-the[range].partition_all(4).enumerate().dict().valmap(list)(10)
+    %reload_ext literacy
 ```
 
 
+    %reload_ext literacy
 
 
-    {0: [0, 1, 2, 3], 1: [4, 5, 6, 7], 2: [8, 9]}
+
+```python
+    f = a.range(3) @ a.floordiv(3)
+    f (10)
+```
+
+
+    f = a.range(3) @ a.floordiv(3)
+    f (10)
+
+
+
+
+
+    {1: [3, 4, 5], 2: [6, 7, 8], 3: [9]}
 
 
 
 
 ```bash
-%%bash 
-jupyter nbconvert --to python fidget/*.ipynb
+    %%bash 
+    jupyter nbconvert --to python fidget/*.ipynb
 ```
+
+
+    %%bash 
+    jupyter nbconvert --to python fidget/*.ipynb
+
 
     [NbConvertApp] Converting notebook fidget/__init__.ipynb to python
     [NbConvertApp] Writing 167 bytes to fidget/__init__.py
-    [NbConvertApp] Converting notebook fidget/attributes.ipynb to python
-    [NbConvertApp] Writing 4204 bytes to fidget/attributes.py
     [NbConvertApp] Converting notebook fidget/callables.ipynb to python
-    [NbConvertApp] Writing 9712 bytes to fidget/callables.py
+    [NbConvertApp] Writing 9878 bytes to fidget/callables.py
     [NbConvertApp] Converting notebook fidget/fidgets.ipynb to python
-    [NbConvertApp] Writing 3582 bytes to fidget/fidgets.py
+    [NbConvertApp] Writing 7481 bytes to fidget/fidgets.py
 
 
 
 ```python
-!jupyter nbconvert --to markdown readme.ipynb
-!pyreverse -o png fidget
+    !jupyter nbconvert --to markdown readme.ipynb
+    !pyreverse -o png fidget
 ```
 
+
+    !jupyter nbconvert --to markdown readme.ipynb
+    !pyreverse -o png fidget
+
+
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 1259 bytes to readme.md
+    [NbConvertApp] Writing 1023 bytes to readme.md
     parsing fidget/__init__.py...
     parsing /Users/tonyfast/fidget/fidget/__init__.py...
-    parsing /Users/tonyfast/fidget/fidget/attributes.py...
     parsing /Users/tonyfast/fidget/fidget/callables.py...
     parsing /Users/tonyfast/fidget/fidget/fidgets.py...
 

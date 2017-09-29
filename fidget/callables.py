@@ -5,21 +5,23 @@
 # 
 # Collections of special callable objects.
 
-# In[52]:
+# In[35]:
 
 
-from functools import total_ordering
-from toolz.curried import compose, first, isiterable, partial, identity
+from functools import total_ordering, singledispatch
+from toolz.curried import compose, first, isiterable, partial, identity, count
+from copy import copy
 from six import iteritems, PY3
 from decorator import decorator, decorate
 from types import LambdaType
-from inspect import getsource, signature
+from typing import Mapping, Text, Sequence
+from inspect import getsource, signature, getdoc
 from operator import eq
 
 __all__ = 'functor', 'flipped', 'do', 'starred', 'ifthen', 'ifnot', 'step', 'excepts', 'Compose', 'Juxtapose'
 
 
-# In[ ]:
+# In[2]:
 
 
 @total_ordering
@@ -45,7 +47,7 @@ class State(object):
     def __hash__(self):
         values = []
         for slot in self.__slots__:
-            values += [hashiter(getattr(self, slot))]
+            values += [hashed(getattr(self, slot))]
         return hash(tuple(values))
     
     def __eq__(self, other):
@@ -81,25 +83,30 @@ class State(object):
     __deepcopy__ = __copy__
 
 
-# In[53]:
+# In[3]:
 
 
-def hashiter(object):
-    """Hash an interable container."""
-    if isiterable(object):
-        if isinstance(object, dict):
-            values = []
-            for key, value in object.items():
-                values +=[(key, hashiter(value))]
-        else:
-            values = []
-            for value in object:
-                values += [hashiter(value)]
-        object = (type(object), tuple(values))
-    return hash(object)
+@singledispatch
+def hashable(object):
+    """Hash mappings and sequences"""
+    return object
+
+@hashable.register(Mapping)
+def _(object):
+    return type(object), tuple(
+        (hashable(key), hashable(value)) for key, value in object.items())
+
+hashable.register(Text, identity)
+
+@hashable.register(Sequence)
+def _(object):
+    return type(object), tuple(hashable(value) for value in object)
+
+def hashed(object): 
+    return hash(hashable(object))
 
 
-# In[54]:
+# In[4]:
 
 
 class functor(State):
@@ -115,7 +122,7 @@ class functor(State):
         return repr(self.function)
 
 
-# In[55]:
+# In[5]:
 
 
 class flipped(functor):
@@ -124,7 +131,7 @@ class flipped(functor):
         return super(flipped, self).__call__(*reversed(args), **kwargs)
 
 
-# In[56]:
+# In[6]:
 
 
 class do(functor):
@@ -134,7 +141,7 @@ class do(functor):
         return args[0] if args else None
 
 
-# In[57]:
+# In[7]:
 
 
 class starred(functor):
@@ -148,7 +155,7 @@ class starred(functor):
         return super(starred, self).__call__(*args, **kwargs)
 
 
-# In[63]:
+# In[8]:
 
 
 class Condition(functor):
@@ -158,7 +165,7 @@ class Condition(functor):
         super(functor, self).__init__(condition, function)
 
 
-# In[64]:
+# In[9]:
 
 
 class ifthen(Condition):
@@ -170,7 +177,7 @@ class ifnot(Condition):
         return functor(self.condition)(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 
-# In[67]:
+# In[10]:
 
 
 class step(Condition):
@@ -179,7 +186,7 @@ class step(Condition):
         return result and super(step, self).__call__(result)
 
 
-# In[69]:
+# In[11]:
 
 
 class excepts(functor):
@@ -196,7 +203,7 @@ class excepts(functor):
             return exception(e)
 
 
-# In[70]:
+# In[12]:
 
 
 class Functions(State):  
@@ -234,17 +241,7 @@ class Functions(State):
         return self
 
 
-# In[71]:
-
-
-def _dispatch(object):
-    """Evaluate sequences and containers as functions"""
-    if isinstance(object, (dict, set, list, tuple)):
-        return Juxtapose(object, type(object))
-    return functor(object)
-
-
-# In[72]:
+# In[14]:
 
 
 class Callable(Functions):
@@ -268,7 +265,7 @@ class Callable(Functions):
         return partial(self.function, *self.args, **self.keywords)
 
 
-# In[73]:
+# In[15]:
 
 
 class Compose(Callable):
@@ -287,7 +284,7 @@ class Compose(Callable):
         try:
             for i, object in enumerate(self):
                 try:
-                    args, kwargs = (_dispatch(object)(*args, **kwargs),), {}
+                    args, kwargs = (calls(object)(*args, **kwargs),), {}
                 except Exception as e:
                     # Could analyze current state.
                     raise Exception('on {}th callable `{}` in {}'.format(
@@ -300,7 +297,7 @@ class Compose(Callable):
         return first(args)
 
 
-# In[74]:
+# In[26]:
 
 
 class Juxtapose(Callable):
@@ -311,10 +308,25 @@ class Juxtapose(Callable):
         super(Juxtapose, self).__init__(tuple(), dict(), function or list(), type)
         
     def __call__(self, *args, **kwargs):
-        return self.type([_dispatch(function)(*args, **kwargs) for function in self]) 
+        return self.type([calls(function)(*args, **kwargs) for function in self]) 
 
 
-# In[83]:
+# In[32]:
+
+
+@singledispatch
+def calls(object): return None
+
+calls.register(str, functor)
+
+@calls.register(Mapping)
+@calls.register(Sequence)
+def _(object): return Juxtapose(object, type(object))
+
+calls.register(object, functor)
+
+
+# In[33]:
 
 
 class Partial(Callable):
@@ -344,13 +356,19 @@ class Partial(Callable):
             self._wrapper(self.function), *self.args, **self.keywords)
 
 
-# In[76]:
+# In[37]:
 
 
 if PY3:
     def doc(self):
-        return getattr(first(self), '__doc__', '')
+        return isiterable(self) and count(self) and getdoc(first(self)) or getdoc(self.function)
     
     for func in __all__:
         setattr(locals()[func], '__doc__', property(doc))
+
+
+# In[ ]:
+
+
+
 
