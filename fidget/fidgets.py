@@ -17,16 +17,16 @@
 
 
 try:
-    from .callables import flipped, do, starred, Compose, Partial, Juxtapose, calls
+    from .functions import flipped, do, starred
+    from .composites import Compose, Partial, Juxtapose, calls
 except Exception as e:
-    from callables import flipped, do, starred, Compose, Partial, Juxtapose, calls
+    from functions import flipped, do, starred
+    from composites import Compose, Partial, Juxtapose, calls
     
 from functools import wraps
-
 from operator import attrgetter
-from toolz.curried import groupby, compose, merge, reduce, filter, map, partial, merge, isiterable, flip, complement, interpose
+from toolz.curried import groupby, compose, merge, reduce, filter, map, partial, merge, isiterable, flip, complement, interpose, concat, identity
 from collections import OrderedDict
-from functools import wraps
 from inspect import signature
 from importlib import import_module
 from six import PY3
@@ -34,36 +34,14 @@ _attribute_ = "__{}{}__".format
 _isinstance_ = flip(isinstance)
 
 
-# In[21]:
+# In[2]:
 
 
 __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-# In[22]:
-
-
-def composed(callable):
-    def composed(*args, **kwargs):
-        args = (calls(args[0]), *args[1:])
-        return callable(*args, **kwargs)
-    return wraps(callable)(composed)
-
-
-# In[23]:
-
-
-def curried(callable):
-    def curried(*args):
-        function = callable
-        for arg in args:
-            function = function(arg)
-        return function
-    return wraps(callable)(curried)
-
-
-# In[24]:
+# In[3]:
 
 
 class Imports(OrderedDict):
@@ -77,58 +55,30 @@ class Imports(OrderedDict):
         return super(Imports, self).__setitem__(key, value) or self
 
 
-# In[25]:
+# In[4]:
 
 
-class Attributes(object):
-    _attributes = Imports()
-
-    def __getattr__(self, attribute):
-        for section in reversed(self._attributes.values()):
-            if attribute in section:
-                callable = section[attribute]
-                doc = callable.__doc__
-                try:
-                    sig = signature(callable)
-                except:
-                    sig=None
-
-                if callable in merge(map(vars, type(self).__mro__)).values():
-                    callable = partial(callable, self)
-                else:
-                    callable = partial(self.__getitem__, callable)
-                
-                PY3 and setattr(callable, '__doc__', doc)
-                sig and setattr(callable, '__signature__', sig)
-                
-                return callable
-        raise AttributeError("No attribute {}".format(attribute))
-
-    def __dir__(self):
-        return list(super(Attributes, self).__dir__()) + list(
-            merge(self._attributes.values()).keys())
+def _composed(callable):
+    def composed(*args, **kwargs):
+        args = (calls(args[0]), *args[1:])
+        return callable(*args, **kwargs)
+    return wraps(callable)(composed)
 
 
-# In[26]:
+def _curried(callable):
+    def curried(*args):
+        function = callable
+        for arg in args:
+            function = function(arg)
+        return function
+    return wraps(callable)(curried)
 
 
-Attributes._attributes['itertools']
-Attributes._attributes['collections']
-Attributes._attributes['builtins'] = 'six.moves.builtins'
-Attributes._attributes['operator'] = {
-    key: curried(value) if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
-    for key, value in vars(__import__('operator')).items() if key[0].islower()
-}
-Attributes._attributes['toolz'] = {
-    key: composed(value) if any(map(key.endswith, ('filter', 'map'))) else value
-    for key, value in vars(__import__('toolz')).items() if key[0].islower()
-}
+# In[5]:
 
 
-# In[27]:
-
-
-class Operators(object):    
+class Operations(object):    
+    _attributes = list()
     def __xor__(self, object):
         self = self[:]  # noqa: F823
         if not isiterable(object) and isinstance(object, type):
@@ -167,9 +117,37 @@ class Operators(object):
     def __round__(self, n):
         self.function.function = list(interpose(n, self.function.function))
         return self
+    
+    _attributes = list()
+
+    def __getattr__(self, attribute):
+        for dict in reversed(self._attributes):
+            dict = getattr(dict, '__dict__', dict)
+            if attribute in dict:
+                callable = dict[attribute]
+                
+                doc = callable.__doc__
+                try:
+                    sig = signature(callable)
+                except:
+                    sig=None
+
+                if callable in merge(map(vars, type(self).__mro__)).values():
+                    callable = partial(callable, self)
+                else:
+                    callable = partial(self.__getitem__, callable)
+                
+                PY3 and setattr(callable, '__doc__', doc)
+                sig and setattr(callable, '__signature__', sig)
+                
+                return callable
+        raise AttributeError("No attribute {}".format(attribute))
+
+    def __dir__(self):
+        return set(concat(map(dir, self._attributes)))
 
 
-# In[28]:
+# In[6]:
 
 
 class Factory(Partial):
@@ -185,16 +163,16 @@ class Factory(Partial):
             *args, **kwargs)
 
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    __invert__, __pow__ = Partial.__reversed__, Operators.__xor__
+    __invert__, __pow__ = Partial.__reversed__, Operations.__xor__
     
     def __lshift__(self, object):
         return Does()[object] if self._factory_ else self[do(object)]
 
 
-# In[29]:
+# In[7]:
 
 
-class Pipes(Factory, Operators, Attributes): 
+class Pipes(Factory, Operations): 
     @property
     def __doc__(self):
         return '\n'.join([
@@ -205,7 +183,7 @@ class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[2]:
+# In[8]:
 
 
 for name, function in zip(__all__, functions):
@@ -218,48 +196,61 @@ for fidget in __all__:
     locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable,), {})()
     locals()[fidget].function = Compose([callable])
     
-__all__ += ['a', 'an', 'the', 'then']; a = an = the = then = pipes
+articles = ['a', 'an', 'the', 'then']; a = an = the = then = pipes
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
     setattr(Pipes, _attribute_('', op), property(Compose(attrgetter(func))))
 Pipes.__div__  = Pipes.__truediv__ 
 
 
-# In[31]:
+# In[9]:
 
 
-def fallback(attr):
+def _right_fallback(attr):
     def fallback(right, left):
         return getattr(Pipes()[left], attr)(Pipes()[right])
     return wraps(getattr(Pipes, attr))(fallback)
 
 
-# In[32]:
+# In[10]:
 
 
 for attr in ['add', 'sub', 'mul', 'matmul','div', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'and', 'xor', 'or', 'pow']:
     setattr(Pipes, _attribute_('i', attr), getattr(Pipes, _attribute_('', attr)))
-    setattr(Pipes, _attribute_('r', attr), fallback(_attribute_('', attr)))
+    setattr(Pipes, _attribute_('r', attr), _right_fallback(_attribute_('', attr)))
 
 
-# In[33]:
+# In[11]:
 
 
-Pipes._attributes['fidget'] = {
-    f.__name__: composed(f) for f in (groupby, reduce, filter, map)}
-Pipes._attributes['fidget'].update({
+Operations._attributes = list()
+Operations._attributes.append(__import__('pathlib'))
+Operations._attributes.append(__import__('itertools'))
+Operations._attributes.append(__import__('collections'))
+Operations._attributes.append(__import__('six').moves.builtins)
+Operations._attributes.append({
+    key: _curried(value) if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
+    for key, value in vars(__import__('operator')).items() if key[0].islower()
+})
+Operations._attributes.append({
+    key: _composed(value) if any(map(key.endswith, ('filter', 'map'))) else value
+    for key, value in vars(__import__('toolz')).items() if key[0].islower()
+})
+
+
+# In[12]:
+
+
+Pipes._attributes.append({
+    f.__name__: _composed(f) for f in (groupby, reduce, filter, map)})
+Pipes._attributes.append({
     key: getattr(Pipes, _attribute_('', value)) 
     for key, value in [['call']*2, ['do', 'lshift'], ['pipe',  'getitem'], ['ifthen','xor'], ['step', 'and'], ['ifnot', 'or']]})
 
 
-# In[34]:
-
-
-(pipes.range(2) @ (lambda x: x//2))(10)
-
-
-# In[ ]:
+# In[13]:
 
 
 
+__all__ += articles
 
