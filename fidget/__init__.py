@@ -5,10 +5,10 @@
 
 
 try:
-    from . import fidgets
-    from .fidgets import *
+    from . import stacks
+    from .stacks import *
 except:
-    import fidgets
-    from fidgets import *
-__all__ = fidgets.__all__
+    import stacks
+    from stacks import *
+__all__ = stacks.__all__
 

@@ -31,6 +31,8 @@ class Functions(State):
     """Base class for chainable functions."""
     __slots__ = ('function',)
     def __getitem__(self, object=slice(None)):   
+        if isinstance(object, int): 
+            return self.function[object]
         return object != slice(None) and self.append(object) or self 
     
     def __repr__(self):

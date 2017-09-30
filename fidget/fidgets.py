@@ -23,7 +23,7 @@ except Exception as e:
     from functions import flipped, do, starred, step, ifthen, ifnot, excepts
     from composites import Compose, Partial, Juxtapose, calls
     
-from functools import wraps
+from functools import wraps, partialmethod
 from operator import attrgetter
 from toolz.curried import groupby, compose, merge, reduce, filter, map, partial, merge, isiterable, flip, complement, interpose, concat, identity
 from inspect import signature
@@ -40,7 +40,7 @@ __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-# In[4]:
+# In[3]:
 
 
 def _composed(callable):
@@ -59,7 +59,7 @@ def _curried(callable):
     return wraps(callable)(curried)
 
 
-# In[5]:
+# In[4]:
 
 
 class Operations(object):    
@@ -117,10 +117,10 @@ class Operations(object):
                 except:
                     sig=None
 
-                if callable in merge(map(vars, type(self).__mro__)).values():
-                    callable = partial(callable, self)
-                else:
-                    callable = partial(self.__getitem__, callable)
+#                 if callable in merge(map(vars, type(self).__mro__)).values():
+#                     callable = partial(callable, self)
+#                 else:
+                callable = partial(self.__getitem__, callable)
                 
                 PY3 and setattr(callable, '__doc__', doc)
                 sig and setattr(callable, '__signature__', sig)
@@ -130,9 +130,10 @@ class Operations(object):
 
     def __dir__(self):
         return set(concat(map(dir, self._attributes)))
+   
 
 
-# In[6]:
+# In[5]:
 
 
 class Factory(Partial):
@@ -146,18 +147,19 @@ class Factory(Partial):
         return super(Factory, self).__getitem__(
             object() if isinstance(object, Factory) and object._factory_ else object, 
             *args, **kwargs)
-
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    __invert__, __pow__ = Partial.__reversed__, Operations.__xor__
     
     def __lshift__(self, object):
         return Does()[object] if self._factory_ else self[do(object)]
 
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    __invert__, __pow__ = Partial.__reversed__, Operations.__xor__
+ 
 
-# In[7]:
+
+# In[6]:
 
 
-class Pipes(Factory, Operations): 
+class Composes(Factory, Operations): 
     @property
     def __doc__(self):
         return '\n'.join([
@@ -168,45 +170,21 @@ class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[8]:
+# In[7]:
 
-
-for name, function in zip(__all__, functions):
-    locals().update({name.capitalize(): type(name.capitalize(), (Pipes,), {'_wrapper': staticmethod(function)})})
-
-__all__ += ['pipes', 'juxts']
-
-for fidget in __all__:
-    callable = locals()[fidget.capitalize()]
-    locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable,), {})()
-    locals()[fidget].function = Compose([callable])
-    
-articles = ['a', 'an', 'the', 'then']; a = an = the = then = pipes
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
-    setattr(Pipes, _attribute_('', op), property(Compose(attrgetter(func))))
-Pipes.__div__  = Pipes.__truediv__ 
-
-
-# In[9]:
-
+    setattr(Composes, _attribute_('', op), property(Compose(attrgetter(func))))
+Composes.__div__  = Composes.__truediv__ 
 
 def _right_fallback(attr):
     def fallback(right, left):
-        return getattr(Pipes()[left], attr)(Pipes()[right])
-    return wraps(getattr(Pipes, attr))(fallback)
-
-
-# In[10]:
-
+        return getattr(Composes()[left], attr)(Composes()[right])
+    return wraps(getattr(Composes, attr))(fallback)
 
 for attr in ['add', 'sub', 'mul', 'matmul','div', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'and', 'xor', 'or', 'pow']:
-    setattr(Pipes, _attribute_('i', attr), getattr(Pipes, _attribute_('', attr)))
-    setattr(Pipes, _attribute_('r', attr), _right_fallback(_attribute_('', attr)))
-
-
-# In[11]:
-
+    setattr(Composes, _attribute_('i', attr), getattr(Composes, _attribute_('', attr)))
+    setattr(Composes, _attribute_('r', attr), _right_fallback(_attribute_('', attr)))
 
 Operations._attributes = list()
 Operations._attributes.append(__import__('pathlib'))
@@ -223,25 +201,26 @@ Operations._attributes.append({
 })
 
 
-# In[12]:
+# In[8]:
 
 
-Pipes._attributes.append({
+for name, function in zip(__all__, functions):
+    locals().update({name.capitalize(): type(name.capitalize(), (Composes,), {'_wrapper': staticmethod(function)})})
+
+__all__ += ['composes', 'juxts']
+
+for fidget in __all__:
+    callable = locals()[fidget.capitalize()]
+    locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable,), {})()
+    locals()[fidget].function = Compose([callable])
+
+
+# In[9]:
+
+
+Composes._attributes.append({
     f.__name__: _composed(f) for f in (groupby, reduce, filter, map)})
-Pipes._attributes.append({
-    key: getattr(Pipes, _attribute_('', value)) 
+Composes._attributes.append({
+    key: getattr(Composes, _attribute_('', value)) 
     for key, value in [['call']*2, ['do', 'lshift'], ['pipe',  'getitem'], ['ifthen','xor'], ['step', 'and'], ['ifnot', 'or']]})
-
-
-# In[13]:
-
-
-for article in articles:
-    setattr(Pipes, article, property(identity))
-
-
-# In[14]:
-
-
-__all__ += articles
 
