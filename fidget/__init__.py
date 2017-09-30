@@ -5,10 +5,9 @@
 
 
 try:
-    from . import stacks
+    from .stacks import __all__    
     from .stacks import *
 except:
-    import stacks
+    from stacks import __all__
     from stacks import *
-__all__ = stacks.__all__
 

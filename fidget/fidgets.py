@@ -117,9 +117,9 @@ class Operations(object):
                 except:
                     sig=None
 
-#                 if callable in merge(map(vars, type(self).__mro__)).values():
-#                     callable = partial(callable, self)
-#                 else:
+                #                 if callable in merge(map(vars, type(self).__mro__)).values():
+                #                     callable = partial(callable, self)
+                #                 else:
                 callable = partial(self.__getitem__, callable)
                 
                 PY3 and setattr(callable, '__doc__', doc)
@@ -130,7 +130,6 @@ class Operations(object):
 
     def __dir__(self):
         return set(concat(map(dir, self._attributes)))
-   
 
 
 # In[5]:
@@ -188,6 +187,11 @@ for attr in ['add', 'sub', 'mul', 'matmul','div', 'truediv', 'floordiv', 'mod', 
 
 Operations._attributes = list()
 Operations._attributes.append(__import__('pathlib'))
+from pathlib import Path
+Operations._attributes.append({
+     k: flipped(getattr(Path, k)) for k in dir(Path) if k[0]!='_' and callable(getattr(Path, k))
+})
+Operations._attributes.append(__import__('json'))
 Operations._attributes.append(__import__('itertools'))
 Operations._attributes.append(__import__('collections'))
 Operations._attributes.append(__import__('six').moves.builtins)
@@ -210,9 +214,9 @@ for name, function in zip(__all__, functions):
 __all__ += ['composes', 'juxts']
 
 for fidget in __all__:
-    callable = locals()[fidget.capitalize()]
-    locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (callable,), {})()
-    locals()[fidget].function = Compose([callable])
+    _callable = locals()[fidget.capitalize()]
+    locals()[fidget] = type('_{}_'.format(fidget.capitalize()), (_callable,), {})()
+    locals()[fidget].function = Compose([_callable])
 
 
 # In[9]:
@@ -223,4 +227,27 @@ Composes._attributes.append({
 Composes._attributes.append({
     key: getattr(Composes, _attribute_('', value)) 
     for key, value in [['call']*2, ['do', 'lshift'], ['pipe',  'getitem'], ['ifthen','xor'], ['step', 'and'], ['ifnot', 'or']]})
+
+
+#         from pandas import *
+# 
+#         (
+#             composes.Path('/Users/tonyfast/gists/')
+#             .rglob('*.ipynb').take(3)
+#             / [str, composes.read_text() * composes(as_version=4)[__import__('nbformat').reads]]
+#             * composes.dict().valmap(composes.get('cells')[DataFrame]) 
+#             * concat
+#         )()
+# 
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
 

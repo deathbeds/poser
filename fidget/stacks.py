@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 from toolz.curried import *
@@ -14,10 +14,10 @@ except:
     from fidgets import *
     from fidgets import Compose, Does, Groups, Reduces, Maps, Filters, Stars, Flips, Composes, calls
 
-__all__ = 'a', 'an', 'the', 'then', 'stack'
+__all__ = 'a', 'an', 'the', 'then', 'stacks'
 
 
-# In[16]:
+# In[2]:
 
 
 class Stacks(Composes): 
@@ -44,26 +44,24 @@ class Stacks(Composes):
     def pop(self, index=-1):
         self.function = self.function[:-1]
         return self
-
+    
     groups = partialmethod(push, Groups)
     filters = partialmethod(push, Filters)
     stars = partialmethod(push, Stars)    
     does = partialmethod(push, Does)    
     reduces = partialmethod(push, Reduces)
     maps = partialmethod(push, Maps)
+    composes = partialmethod(push, Composes)
 
 
-# In[13]:
+# In[3]:
 
 
 stacks = type('_Stacks_', (Stacks,), dict())()
 stacks.function = Compose([Stacks])
 
-
-# In[14]:
-
-
 a = an = the = then= stacks
 
-for article in __all__: setattr(Stacks, article, property(identity))
+for article in list(__all__) : 
+    setattr(Stacks, article, property(identity))
 

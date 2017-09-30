@@ -5,7 +5,7 @@
 # 
 # Collections of special callable objects.
 
-# In[15]:
+# In[1]:
 
 
 from functools import total_ordering, singledispatch
@@ -187,6 +187,14 @@ class step(Condition):
 # In[11]:
 
 
+class exception(Exception):
+    def __bool__(self):
+        return False
+
+
+# In[12]:
+
+
 class excepts(functor):
     """Allow acception when calling a function"""
     __slots__ = ('exceptions', 'function')
@@ -201,7 +209,7 @@ class excepts(functor):
             return exception(e)
 
 
-# In[37]:
+# In[13]:
 
 
 if PY3:
