@@ -17,16 +17,15 @@
 
 
 try:
-    from .functions import flipped, do, starred
+    from .functions import flipped, do, starred, step, ifthen, ifnot, excepts
     from .composites import Compose, Partial, Juxtapose, calls
 except Exception as e:
-    from functions import flipped, do, starred
+    from functions import flipped, do, starred, step, ifthen, ifnot, excepts
     from composites import Compose, Partial, Juxtapose, calls
     
 from functools import wraps
 from operator import attrgetter
 from toolz.curried import groupby, compose, merge, reduce, filter, map, partial, merge, isiterable, flip, complement, interpose, concat, identity
-from collections import OrderedDict
 from inspect import signature
 from importlib import import_module
 from six import PY3
@@ -39,20 +38,6 @@ _isinstance_ = flip(isinstance)
 
 __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
-
-
-# In[3]:
-
-
-class Imports(OrderedDict):
-    def __missing__(self, key):
-        self[key] = vars(import_module(key))
-        return self
-    
-    def __setitem__(self, key, value):
-        if isinstance(value, str):
-            value = vars(import_module(value))
-        return super(Imports, self).__setitem__(key, value) or self
 
 
 # In[4]:
@@ -250,6 +235,12 @@ Pipes._attributes.append({
 
 # In[13]:
 
+
+for article in articles:
+    setattr(Pipes, article, property(identity))
+
+
+# In[14]:
 
 
 __all__ += articles
