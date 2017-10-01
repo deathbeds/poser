@@ -12,14 +12,37 @@ from functools import total_ordering, singledispatch
 from toolz.curried import first, isiterable, partial, identity, count
 from copy import copy
 from six import PY3
-from typing import Mapping, Text, Sequence
+from typing import Mapping, Text, Sequence, Callable
 from inspect import signature, getdoc
 from operator import eq
 
 __all__ = 'functor', 'flipped', 'do', 'starred', 'ifthen', 'ifnot', 'step', 'excepts'
 
 
-# In[2]:
+# In[17]:
+
+
+def into(callable):
+    @singledispatch
+    def dispatched(self): ...
+
+    @dispatched.register(Sequence)
+    def _(self):
+        return dispatched(first(self)) if count(self) else """"""
+
+    @dispatched.register(object)
+    def _(self):
+        try:
+            if hasattr(self, 'function') :
+                return dispatched(self.function)
+            return callable(self)
+        except:
+            return """"""
+        
+    return dispatched
+
+
+# In[18]:
 
 
 @total_ordering
@@ -76,9 +99,11 @@ class State(object):
 
    
     __deepcopy__ = __copy__
+    __signature__ = property(into(signature))
+    __doc__ = property(into(getdoc))
 
 
-# In[3]:
+# In[19]:
 
 
 @singledispatch
@@ -101,7 +126,7 @@ def hashed(object):
     return hash(hashable(object))
 
 
-# In[4]:
+# In[20]:
 
 
 class functor(State):
@@ -120,7 +145,7 @@ class functor(State):
         return self.__call__
 
 
-# In[5]:
+# In[21]:
 
 
 class flipped(functor):
@@ -129,7 +154,7 @@ class flipped(functor):
         return super(flipped, self).__call__(*reversed(args), **kwargs)
 
 
-# In[6]:
+# In[22]:
 
 
 class do(functor):
@@ -139,7 +164,7 @@ class do(functor):
         return args[0] if args else None
 
 
-# In[7]:
+# In[23]:
 
 
 class starred(functor):
@@ -153,7 +178,7 @@ class starred(functor):
         return super(starred, self).__call__(*args, **kwargs)
 
 
-# In[8]:
+# In[24]:
 
 
 class Condition(functor):
@@ -163,7 +188,7 @@ class Condition(functor):
         super(functor, self).__init__(condition, function)
 
 
-# In[9]:
+# In[25]:
 
 
 class ifthen(Condition):
@@ -175,7 +200,7 @@ class ifnot(Condition):
         return functor(self.condition)(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 
-# In[10]:
+# In[11]:
 
 
 class step(Condition):
@@ -184,7 +209,7 @@ class step(Condition):
         return result and super(step, self).__call__(result)
 
 
-# In[14]:
+# In[12]:
 
 
 class excepts(functor):
@@ -201,19 +226,10 @@ class excepts(functor):
             return e
 
 
-# In[13]:
+# In[15]:
 
 
 if PY3:
-    def doc(self):
-        return isiterable(self) and count(self) and getdoc(first(self)) or getdoc(self.function)
-    
     for func in __all__:
-        setattr(locals()[func], '__doc__', property(doc))
-
-
-# In[ ]:
-
-
-
+        setattr(locals()[func], '__doc__', property(into(getdoc)))
 

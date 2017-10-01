@@ -1,6 +1,7 @@
 
 # coding: utf-8
 
+# 
 # # fidgets
 # 
 # * pipes - compose functions in serial to pipe arguments through.
@@ -13,34 +14,33 @@
 # * groups
 # * reduces
 
-# In[84]:
+# In[1]:
 
 
 try:
-    from .functions import flipped, do, starred, step, ifthen, ifnot, excepts
+    from .functions import flipped, do, starred, step, ifthen, ifnot, excepts, into, getdoc
     from .composites import Compose, Partial, Juxtapose, calls
 except Exception as e:
-    from functions import flipped, do, starred, step, ifthen, ifnot, excepts
+    from functions import flipped, do, starred, step, ifthen, ifnot, excepts, into, getdoc
     from composites import Compose, Partial, Juxtapose, calls
     
 from functools import wraps, partialmethod
 from operator import attrgetter
 from toolz.curried import groupby, compose, merge, reduce, filter, map, partial, merge, isiterable, flip, complement, interpose, concat, identity
-from inspect import signature
 from importlib import import_module
 from six import PY3
 _attribute_ = "__{}{}__".format
 _isinstance_ = flip(isinstance)
 
 
-# In[85]:
+# In[2]:
 
 
 __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-# In[86]:
+# In[3]:
 
 
 def _composed(callable):
@@ -50,16 +50,16 @@ def _composed(callable):
     return wraps(callable)(composed)
 
 
-def _curried(callable):
-    def curried(*args):
+def _classed(callable):
+    def classed(*args):
         function = callable
         for arg in args:
             function = function(arg)
         return function
-    return wraps(callable)(curried)
+    return wraps(callable)(classed)
 
 
-# In[119]:
+# In[4]:
 
 
 class Operations(object):    
@@ -104,27 +104,16 @@ class Operations(object):
         for dict in reversed(self._attributes):
             dict = getattr(dict, '__dict__', dict)
             if attribute in dict:
-                callable = dict[attribute]
-                
-                doc = callable.__doc__
-                try:
-                    sig = signature(callable)
-                except:
-                    sig=None
-
-                callable = partial(self.__getitem__, callable)
-                
-                PY3 and setattr(callable, '__doc__', doc)
-                sig and setattr(callable, '__signature__', sig)
-                
-                return callable
+                def wrapper(*args, **kwargs):
+                    return self.__getitem__(dict[attribute], *args, **kwargs)
+                return wraps(dict[attribute])(wrapper)
         raise AttributeError("No attribute {}".format(attribute))
 
     def __dir__(self):
-        return set(concat(map(dir, self._attributes)))
+        return set(concat((dict.keys if isinstance(attr, dict) else dir)(attr) for attr in self._attributes))
 
 
-# In[120]:
+# In[5]:
 
 
 class Factory(Partial):
@@ -135,9 +124,7 @@ class Factory(Partial):
     def __getitem__(self, object=slice(None), *args, **kwargs):
         self = self.function() if self._factory_ else self
         
-        return super(Factory, self).__getitem__(
-            object() if isinstance(object, Factory) and object._factory_ else object, 
-            *args, **kwargs)
+        return super(Factory, self).__getitem__(object, *args, **kwargs)
     
     def __lshift__(self, object):
         return Does()[object] if self._factory_ else self[do(object)]
@@ -147,21 +134,19 @@ class Factory(Partial):
  
 
 
-# In[121]:
+# In[24]:
 
 
 class Composes(Factory, Operations): 
     @property
     def __doc__(self):
-        return '\n'.join([
-            (getattr(function, 'func', function).__doc__ or "") + "\n---\n" 
-            for function in self])
+        return '\n---\n'.join(filter(bool, map(getdoc, self)))
 
 class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[122]:
+# In[25]:
 
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
@@ -183,12 +168,13 @@ from pathlib import Path
 Operations._attributes.append({
      k: flipped(getattr(Path, k)) for k in dir(Path) if k[0]!='_' and callable(getattr(Path, k))
 })
+Operations._attributes.append(globals())
 Operations._attributes.append(__import__('json'))
 Operations._attributes.append(__import__('itertools'))
 Operations._attributes.append(__import__('collections'))
 Operations._attributes.append(__import__('six').moves.builtins)
 Operations._attributes.append({
-    key: _curried(value) if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
+    key: _classed(value) if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
     for key, value in vars(__import__('operator')).items() if key[0].islower()
 })
 Operations._attributes.append({
@@ -197,7 +183,7 @@ Operations._attributes.append({
 })
 
 
-# In[123]:
+# In[26]:
 
 
 for name, function in zip(__all__, functions):
@@ -211,7 +197,7 @@ for fidget in __all__:
     locals()[fidget].function = Compose([_callable])
 
 
-# In[124]:
+# In[27]:
 
 
 Composes._attributes.append({
@@ -219,6 +205,14 @@ Composes._attributes.append({
 Composes._attributes.append({
     key: getattr(Composes, _attribute_('', value)) 
     for key, value in [['call']*2, ['do', 'lshift'], ['pipe',  'getitem'], ['ifthen','xor'], ['step', 'and'], ['ifnot', 'or']]})
+
+
+# In[28]:
+
+
+if PY3:    
+    for func in __all__:
+        setattr(locals()[func], '__doc__', property(into(getdoc)))
 
 
 #         from pandas import *
@@ -231,3 +225,9 @@ Composes._attributes.append({
 #             * concat
 #         )()
 # 
+
+# In[ ]:
+
+
+
+

@@ -5,13 +5,13 @@
 # 
 # Collections of special callable objects.
 
-# In[6]:
+# In[10]:
 
 
 try:
-    from .functions import State, functor
+    from .functions import State, functor, into, getdoc
 except:
-    from functions import State, functor
+    from functions import State, functor, into, getdoc
     
 from functools import singledispatch
 from toolz.curried import compose, first, isiterable, partial, identity, count
@@ -19,18 +19,20 @@ from copy import copy
 from six import iteritems, PY3
 from types import LambdaType
 from typing import Mapping, Text, Sequence
-from inspect import getsource, getdoc
+from inspect import getsource
 
 __all__ = 'Compose', 'Juxtapose'
 
 
-# In[12]:
+# In[11]:
 
 
 class Functions(State):  
     """Base class for chainable functions."""
     __slots__ = ('function',)
-    def __getitem__(self, object=slice(None)):   
+    def __getitem__(self, object=slice(None)):
+        if object is getdoc:
+            return self[:]
         if isinstance(object, int): 
             return self.function[object]
         return object != slice(None) and self.append(object) or self 
@@ -64,7 +66,7 @@ class Functions(State):
         return self
 
 
-# In[14]:
+# In[12]:
 
 
 class Callable(Functions):
@@ -88,7 +90,7 @@ class Callable(Functions):
         return partial(self.function, *self.args, **self.keywords)
 
 
-# In[15]:
+# In[4]:
 
 
 class Compose(Callable):
@@ -120,7 +122,7 @@ class Compose(Callable):
         return first(args)
 
 
-# In[26]:
+# In[5]:
 
 
 class Juxtapose(Callable):
@@ -134,7 +136,7 @@ class Juxtapose(Callable):
         return self.type([calls(function)(*args, **kwargs) for function in self]) 
 
 
-# In[32]:
+# In[6]:
 
 
 @singledispatch
@@ -149,7 +151,7 @@ def _(object): return Juxtapose(object, type(object))
 calls.register(object, functor)
 
 
-# In[33]:
+# In[7]:
 
 
 class Partial(Callable):
@@ -179,13 +181,10 @@ class Partial(Callable):
             self._wrapper(self.function), *self.args, **self.keywords)
 
 
-# In[37]:
+# In[8]:
 
 
 if PY3:
-    def doc(self):
-        return isiterable(self) and count(self) and getdoc(first(self)) or getdoc(self.function)
-    
     for func in __all__:
-        setattr(locals()[func], '__doc__', property(doc))
+        setattr(locals()[func], '__doc__', property(into(getdoc)))
 
