@@ -45,6 +45,8 @@ class Stacks(Composes):
         self.function = self.function[:-1]
         return self
     
+    pipe = __getitem__
+    
     groups = partialmethod(push, Groups)
     filters = partialmethod(push, Filters)
     stars = partialmethod(push, Stars)    

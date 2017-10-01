@@ -13,7 +13,7 @@
 # * groups
 # * reduces
 
-# In[1]:
+# In[84]:
 
 
 try:
@@ -33,14 +33,14 @@ _attribute_ = "__{}{}__".format
 _isinstance_ = flip(isinstance)
 
 
-# In[2]:
+# In[85]:
 
 
 __all__ = ['flips', 'stars', 'does', 'maps', 'filters', 'groups', 'reduces']
 functions = (flipped, starred, do, map, filter, groupby, reduce)
 
 
-# In[3]:
+# In[86]:
 
 
 def _composed(callable):
@@ -59,39 +59,34 @@ def _curried(callable):
     return wraps(callable)(curried)
 
 
-# In[4]:
+# In[119]:
 
 
 class Operations(object):    
     _attributes = list()
-    def __xor__(self, object):
-        self = self[:]  # noqa: F823
-        if not isiterable(object) and isinstance(object, type):
-            object = (object,)
-            
-        if isiterable(object):
-            if all(map(_isinstance_(type), object)) and all(map(flip(issubclass)(BaseException), object)):
-                self.function = Compose(excepts(object, self.function))
-                return self
-            
-            if all(map(_isinstance_(BaseException), object)):
-                object = tuple(map(type, object))
-                
-            if all(map(_isinstance_(type), object)):
-                object = _isinstance_(object)
 
-        self.function = Compose([ifthen(Compose([object]), self.function)])
-        return self
-
-    def __or__(self, object):
+    def _and_(self, callable, object):
         self = self[:]
-        self.function = Compose([ifnot(self.function, Compose([object]))])
+        self.function = Composes()[Compose([callable(self.function, Compose([object]))])]
         return self
     
-    def __and__(self, object):
+    __or__ = partialmethod(_and_, ifnot)
+    __and__ = partialmethod(_and_, step)
+    
+    def __xor__(self, object):
+        object = type(object) is type and (object,) or object
         self = self[:]
-        self.function = Compose([step(self.function, Compose([object]))])
+        self.function = Composes()[
+            Compose([excepts(object, self.function)])]
         return self
+
+    def __pow__(self, object):
+        object = type(object) is type and (object,) or object
+        self = self[:]
+        self.function = Composes()[
+            Compose([ifthen(callable(object) and object or _isinstance_(object), self.function)])]
+        return self
+
     
     def __pos__(self):
         return self[bool]
@@ -117,9 +112,6 @@ class Operations(object):
                 except:
                     sig=None
 
-                #                 if callable in merge(map(vars, type(self).__mro__)).values():
-                #                     callable = partial(callable, self)
-                #                 else:
                 callable = partial(self.__getitem__, callable)
                 
                 PY3 and setattr(callable, '__doc__', doc)
@@ -132,7 +124,7 @@ class Operations(object):
         return set(concat(map(dir, self._attributes)))
 
 
-# In[5]:
+# In[120]:
 
 
 class Factory(Partial):
@@ -151,11 +143,11 @@ class Factory(Partial):
         return Does()[object] if self._factory_ else self[do(object)]
 
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    __invert__, __pow__ = Partial.__reversed__, Operations.__xor__
+    __invert__= Partial.__reversed__
  
 
 
-# In[6]:
+# In[121]:
 
 
 class Composes(Factory, Operations): 
@@ -169,7 +161,7 @@ class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[7]:
+# In[122]:
 
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
@@ -205,7 +197,7 @@ Operations._attributes.append({
 })
 
 
-# In[8]:
+# In[123]:
 
 
 for name, function in zip(__all__, functions):
@@ -219,7 +211,7 @@ for fidget in __all__:
     locals()[fidget].function = Compose([_callable])
 
 
-# In[9]:
+# In[124]:
 
 
 Composes._attributes.append({
@@ -239,15 +231,3 @@ Composes._attributes.append({
 #             * concat
 #         )()
 # 
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-

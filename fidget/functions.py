@@ -184,15 +184,7 @@ class step(Condition):
         return result and super(step, self).__call__(result)
 
 
-# In[11]:
-
-
-class exception(Exception):
-    def __bool__(self):
-        return False
-
-
-# In[12]:
+# In[14]:
 
 
 class excepts(functor):
@@ -206,7 +198,7 @@ class excepts(functor):
         try:
             return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
-            return exception(e)
+            return e
 
 
 # In[13]:
