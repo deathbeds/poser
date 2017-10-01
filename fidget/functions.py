@@ -56,10 +56,7 @@ class State(object):
     
     def __exit__(self, exc_type, exc_value, traceback):
         pass
-    
-    def __abs__(self):
-        return self.__call__
-    
+        
     def __lt__(self, other):
         if isinstance(other, State):
             return (len(self) < len(other)) and all(eq(*i) for i in zip(self, other))
@@ -118,6 +115,9 @@ class functor(State):
     
     def __repr__(self):
         return repr(self.function)
+    
+    def __abs__(self):
+        return self.__call__
 
 
 # In[5]:
