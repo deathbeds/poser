@@ -211,7 +211,8 @@ class call(stack):
         return new.append(object)
     
     args, kwargs = tuple(), dict()    
-    def __call__(self, *args, **kwargs):        
+    def __call__(self, *args, **kwargs):     
+        self = type(self)()
         self.args, self.kwargs = args, kwargs
         return self
 
@@ -239,4 +240,7 @@ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'flo
 
 
 a = an = the = then = f = call()
+
+
+
 

@@ -20,7 +20,7 @@
 
 
 
-    {0: [4, 5, 6, 7, 8, 9], 1: [3]}
+    {}
 
 
 
@@ -104,4 +104,9 @@
 
     !jupyter nbconvert --to markdown readme.ipynb
     !pyreverse -o png -bmy -fALL fidget
+
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 1978 bytes to readme.md
+    parsing /Users/tonyfast/fidget/fidget.py...
 
