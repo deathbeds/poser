@@ -23,6 +23,7 @@ setuptools.setup(
     license="BSD-3-Clause",
     keywords="IPython Magic Jupyter",
     url="http://github.com/tonyfast/fidget",
+    py_modules=['fidget']
     packages=setuptools.find_packages(),
     #     long_description=read("readme.rst"),
     classifiers=[
