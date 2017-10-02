@@ -63,15 +63,17 @@ def _classed(callable):
 
 
 class Operations(object):    
-    _attributes = list()
+    _getattr_ = list()
 
-    def _and_(self, callable, object):
+    def __and__(self, callable, object):
         self = self[:]
-        self.function = Composes()[Compose([callable(self.function, Compose([object]))])]
+        self.function = Composes()[Compose([step(self.function, Compose([object]))])]
         return self
-    
-    __or__ = partialmethod(_and_, ifnot)
-    __and__ = partialmethod(_and_, step)
+
+    def __or__(self, callable, object):
+        self = self[:]
+        self.function = Composes()[Compose([ifnot(self.function, Compose([object]))])]
+        return self
     
     def __xor__(self, object):
         object = type(object) is type and (object,) or object
@@ -97,11 +99,9 @@ class Operations(object):
     def __round__(self, n):
         self.function.function = list(interpose(n, self.function.function))
         return self
-    
-    _attributes = list()
 
     def __getattr__(self, attribute):
-        for dict in reversed(self._attributes):
+        for dict in reversed(self._getattr_):
             dict = getattr(dict, '__dict__', dict)
             if attribute in dict:
                 def wrapper(*args, **kwargs):
@@ -110,7 +110,7 @@ class Operations(object):
         raise AttributeError("No attribute {}".format(attribute))
 
     def __dir__(self):
-        return set(concat((dict.keys if isinstance(attr, dict) else dir)(attr) for attr in self._attributes))
+        return set(concat((dict.keys if isinstance(attr, dict) else dir)(attr) for attr in self._getattr_))
 
 
 # In[5]:
@@ -134,7 +134,7 @@ class Factory(Partial):
  
 
 
-# In[24]:
+# In[6]:
 
 
 class Composes(Factory, Operations): 
@@ -146,7 +146,7 @@ class Juxts(Factory):
     _wrapper, _composition = map(staticmethod, (tuple, Juxtapose))
 
 
-# In[25]:
+# In[7]:
 
 
 for op, func in (('matmul', 'groupby'), ('truediv', 'map'), ('floordiv', 'filter'), ('mod', 'reduce')):
@@ -162,28 +162,27 @@ for attr in ['add', 'sub', 'mul', 'matmul','div', 'truediv', 'floordiv', 'mod', 
     setattr(Composes, _attribute_('i', attr), getattr(Composes, _attribute_('', attr)))
     setattr(Composes, _attribute_('r', attr), _right_fallback(_attribute_('', attr)))
 
-Operations._attributes = list()
-Operations._attributes.append(__import__('pathlib'))
+Operations._getattr_ = list()
+Operations._getattr_.append(__import__('pathlib'))
 from pathlib import Path
-Operations._attributes.append({
+Operations._getattr_.append({
      k: flipped(getattr(Path, k)) for k in dir(Path) if k[0]!='_' and callable(getattr(Path, k))
 })
-Operations._attributes.append(globals())
-Operations._attributes.append(__import__('json'))
-Operations._attributes.append(__import__('itertools'))
-Operations._attributes.append(__import__('collections'))
-Operations._attributes.append(__import__('six').moves.builtins)
-Operations._attributes.append({
+Operations._getattr_.append(__import__('json'))
+Operations._getattr_.append(__import__('itertools'))
+Operations._getattr_.append(__import__('collections'))
+Operations._getattr_.append(__import__('six').moves.builtins)
+Operations._getattr_.append({
     key: _classed(value) if key in ['attrgetter', 'methodcaller', 'itemgetter'] else flipped(value)
     for key, value in vars(__import__('operator')).items() if key[0].islower()
 })
-Operations._attributes.append({
+Operations._getattr_.append({
     key: _composed(value) if any(map(key.endswith, ('filter', 'map'))) else value
     for key, value in vars(__import__('toolz')).items() if key[0].islower()
 })
 
 
-# In[26]:
+# In[8]:
 
 
 for name, function in zip(__all__, functions):
@@ -197,17 +196,17 @@ for fidget in __all__:
     locals()[fidget].function = Compose([_callable])
 
 
-# In[27]:
+# In[9]:
 
 
-Composes._attributes.append({
+Composes._getattr_.append({
     f.__name__: _composed(f) for f in (groupby, reduce, filter, map)})
-Composes._attributes.append({
+Composes._getattr_.append({
     key: getattr(Composes, _attribute_('', value)) 
     for key, value in [['call']*2, ['do', 'lshift'], ['pipe',  'getitem'], ['ifthen','xor'], ['step', 'and'], ['ifnot', 'or']]})
 
 
-# In[28]:
+# In[10]:
 
 
 if PY3:    

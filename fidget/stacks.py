@@ -19,7 +19,7 @@ except:
 __all__ = 'a', 'an', 'the', 'then', 'stacks'
 
 
-# In[5]:
+# In[2]:
 
 
 class Stacks(Composes): 
@@ -73,30 +73,4 @@ a = an = the = then= stacks
 
 for article in list(__all__) : 
     setattr(Stacks, article, property(identity))
-
-
-# In[4]:
-
-
-s = stacks.range().list()
-s.groups()[lambda x: x/2]
-print(s.__doc__)
-
-
-# In[10]:
-
-
-from toolz.curried import concat
-
-
-# In[ ]:
-
-
-s
-
-
-# In[14]:
-
-
-r = stacks.list()
 
