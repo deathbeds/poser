@@ -2,20 +2,9 @@
 
 ```python
     from fidget import *
-```
-
-
-    from fidget import *
-
-
-
-```python
-    %reload_ext literacy
-```
-
 
     %reload_ext literacy
-
+```
 
 
 ```python
@@ -31,49 +20,88 @@
 
 
 
-    {1: [3, 4, 5], 2: [6, 7, 8], 3: [9]}
+    {0: [4, 5, 6, 7, 8, 9], 1: [3]}
+
+
+
+
+```python
+    from pandas import *
+
+    df = (
+        the.Path('/Users/tonyfast/gists/')
+        .rglob('*.ipynb')
+        .map(
+            the[a.identity(), a.read_text().loads()^Exception]
+        )
+        .filter(the.second()**Exception)
+        .dict()
+        .valmap(a.get('cells', default=[]) * DataFrame)
+    )[concat].do(a.len()["""{} cells""".format].print())()
+
+    (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+```
+
+
+    from pandas import *
+
+    df = (
+        the.Path('/Users/tonyfast/gists/')
+        .rglob('*.ipynb')
+        .map(
+            the[a.identity(), a.read_text().loads()^Exception]
+        )
+        .filter(the.second()**Exception)
+        .dict()
+        .valmap(a.get('cells', default=[]) * DataFrame)
+    )[concat].do(a.len()["""{} cells""".format].print())()
+
+    (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+
+
+    3065 cells
+
+
+
+
+
+    {fidget.call: 5,
+     _frozen_importlib.ModuleSpec: 1,
+     function: 9,
+     abc.ABCMeta: 14,
+     toolz.functoolz.curry: 2,
+     tuple: 1,
+     str: 6,
+     type: 4,
+     builtin_function_or_method: 1,
+     _frozen_importlib_external.SourceFileLoader: 1,
+     NoneType: 1,
+     dict: 1}
 
 
 
 
 ```bash
     %%bash 
-    jupyter nbconvert --to python fidget/*.ipynb
+    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True fidget.ipynb
 ```
 
 
     %%bash 
-    jupyter nbconvert --to python fidget/*.ipynb
+    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True fidget.ipynb
 
 
-    [NbConvertApp] Converting notebook fidget/__init__.ipynb to python
-    [NbConvertApp] Writing 167 bytes to fidget/__init__.py
-    [NbConvertApp] Converting notebook fidget/callables.ipynb to python
-    [NbConvertApp] Writing 9878 bytes to fidget/callables.py
-    [NbConvertApp] Converting notebook fidget/fidgets.ipynb to python
-    [NbConvertApp] Writing 7481 bytes to fidget/fidgets.py
+    [NbConvertApp] Converting notebook fidget.ipynb to python
+    [NbConvertApp] Writing 8292 bytes to fidget.py
 
 
 
 ```python
     !jupyter nbconvert --to markdown readme.ipynb
-    !pyreverse -o png fidget
+    !pyreverse -o png -bmy -fALL fidget
 ```
 
 
     !jupyter nbconvert --to markdown readme.ipynb
-    !pyreverse -o png fidget
+    !pyreverse -o png -bmy -fALL fidget
 
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 1023 bytes to readme.md
-    parsing fidget/__init__.py...
-    parsing /Users/tonyfast/fidget/fidget/__init__.py...
-    parsing /Users/tonyfast/fidget/fidget/callables.py...
-    parsing /Users/tonyfast/fidget/fidget/fidgets.py...
-
-
-
-```python
-
-```
