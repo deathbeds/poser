@@ -240,24 +240,3 @@ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'flo
 
 a = an = the = then = f = call()
 
-
-from pandas import *
-
-
-(
-    the.Path('/Users/tonyfast/gists/')
-    .rglob('*.ipynb')
-    .map(
-        the[a.identity(), a.read_text().loads()^Exception]
-    )
-    .filter(the.second()**Exception)
-    .dict()
-    .valmap(a.get('cells', default=[]) * DataFrame)
-)[concat]()
-
-
-(the * globals * dict.items @ the.second().type() * then.valmap(len))()
-
-
-
-
