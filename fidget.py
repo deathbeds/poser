@@ -12,42 +12,6 @@ dunder = '__{}__'.format
 
 
 class compose(UserList):
-    _attributes_ = list([
-        str, __import__('six').moves.builtins, __import__('pathlib'), __import__('json'), 
-        __import__('pathlib').Path, __import__('toolz').curried, __import__('operator'), __import__('collections'),
-    ])
-
-    def __getattr__(self, attr):
-        if hasattr(type(self), attr):
-            return getattr(type(self), attr)(self)
-        for object in self._attributes_:
-            decorate = isinstance(object, type) and flip or compose
-            object = getattr(object, '__dict__', object)
-            if attr in object:
-                @wraps(object[attr])
-                def wrapper(*args, **kwargs):
-                    return self.append(partial(decorate(object[attr]), *args, **kwargs))
-                return wrapper
-        raise AttributeError(attr)
-        
-    def __getitem__(self, object):
-        if object == slice(None):
-            return self
-        if isinstance(object, tuple):
-            object = juxt(object)
-        if callable(object):
-            return self.append(object)
-        return super().__getitem__(object)
-
-        
-    def __dir__(self):
-        return list(super().__dir__()) + list(concat(map(lambda x: getattr(x, '__dict__', x).keys(), self._attributes_)))
-    
-    def __call__(self, *args, **kwargs):
-        for callable in self:
-            args, kwargs = [callable(*args, **kwargs)], dict()
-        return args[0] if len(args) else None    
-    
     __kwdefaults__ = ['data', list()],
         
     def __new__(cls, *args, **kwargs):
@@ -71,7 +35,42 @@ class compose(UserList):
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
             setattr(self, slot, arg)
+
+    _attributes_ = list([
+        str, __import__('six').moves.builtins, __import__('pathlib'), __import__('json'), 
+        __import__('pathlib').Path, __import__('toolz').curried, __import__('operator'), __import__('collections'),
+    ])
+
+    def __getattr__(self, attr):
+        if hasattr(type(self), attr):
+            return getattr(type(self), attr)(self)
+        for object in self._attributes_:
+            decorate = isinstance(object, type) and flip or compose
+            object = getattr(object, '__dict__', object)
+            if attr in object:
+                def wrapper(*args, **kwargs):
+                    return self.append(partial(decorate(object[attr]), *args, **kwargs))
+                return wraps(object[attr])(wrapper)
+        raise AttributeError(attr)
         
+    def __getitem__(self, object):
+        if object == slice(None):
+            return self
+        if isinstance(object, tuple):
+            object = juxt(object)
+        if callable(object):
+            return self.append(object)
+        return super().__getitem__(object)
+
+        
+    def __dir__(self):
+        return list(super().__dir__()) + list(concat(map(lambda x: getattr(x, '__dict__', x).keys(), self._attributes_)))
+    
+    def __call__(self, *args, **kwargs):
+        for callable in self:
+            args, kwargs = [callable(*args, **kwargs)], dict()
+        return args[0] if len(args) else None    
+            
     def __getstate__(self):
         return tuple(map(partial(getattr, self), self.__slots__))
     
@@ -93,10 +92,6 @@ class compose(UserList):
                 
     def __repr__(self):
         return ':'.join(map(repr, self.__getstate__()))
-    __deepcopy__ = __copy__ 
-
-    __abs__ = __call__
-    __enter__ = __copy__
     
     def _condition_attr_(self, callable, object):
         return type(self)().append(callable(self, object))
@@ -105,9 +100,7 @@ class compose(UserList):
         return getattr(super(), attr)(*args) or self
     
     def _right_attr_(self, attr, other):
-        return getattr(
-            compose([other]), attr.replace('__r', '__')
-        )(self)
+        return getattr(compose([other]), attr)(self)
 
     def __pow__(self, object):
         if isinstance(object, type):
@@ -115,6 +108,9 @@ class compose(UserList):
         if not isinstance(object, tuple):
             object = partial(flip(isinstance), object)
         return self._condition_attr_(ifthen, object)
+
+    __abs__ = __call__
+    __enter__ = __deepcopy__ = __copy__
 
 
 class juxt(compose):
@@ -236,11 +232,8 @@ compose.__lshift__ = property(partial(flip(compose.__getattr__), 'do'))
 
 for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift']:
     setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
-    setattr(cls, dunder('r'+other), partialmethod(cls._right_attr_, dunder('r'+other)))
+    setattr(cls, dunder('r'+other), partialmethod(cls._right_attr_, dunder(other)))
 
 
 a = an = the = then = f = call()
-
-
-
 
