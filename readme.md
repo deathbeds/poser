@@ -7,20 +7,42 @@
 ```
 
 
+    from fidget import *
+
+    %reload_ext literacy
+
+
+
 ```python
-    f = the.range(3) @ (lambda x: x//2)
+    f = the.range() @ (lambda x: x//2)
     f (10)
 ```
 
 
-    f = the.range(3) @ (lambda x: x//2)
+    f = the.range() @ (lambda x: x//2)
     f (10)
 
 
 
 
 
-    {1: [3], 2: [4, 5], 3: [6, 7], 4: [8, 9]}
+    {0: [0, 1], 1: [2, 3], 2: [4, 5], 3: [6, 7], 4: [8, 9]}
+
+
+
+
+```python
+    list(f)
+```
+
+
+    list(f)
+
+
+
+
+
+    [[functools.partial([<class 'range'>]), functools.partial([<function groupby at 0x10fc01950>], <function <lambda> at 0x110bd6f28>)]]
 
 
 
@@ -95,7 +117,7 @@
 
 
     [NbConvertApp] Converting notebook fidget.ipynb to python
-    [NbConvertApp] Writing 8320 bytes to fidget.py
+    [NbConvertApp] Writing 8479 bytes to fidget.py
 
 
 
@@ -104,8 +126,13 @@
     !pyreverse -o png -bmy -fALL fidget
 ```
 
+
+    !jupyter nbconvert --to markdown readme.ipynb
+    !pyreverse -o png -bmy -fALL fidget
+
+
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 2117 bytes to readme.md
+    [NbConvertApp] Writing 2565 bytes to readme.md
     parsing /Users/tonyfast/fidget/fidget.py...
 
 

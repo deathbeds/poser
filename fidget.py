@@ -3,12 +3,27 @@
 
 from functools import total_ordering, singledispatch, partialmethod, wraps
 from itertools import zip_longest, chain
+from collections import ChainMap
 from toolz.curried import first, isiterable, partial, identity, count, get, concat
 from copy import copy
 __all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
 from collections import UserList, OrderedDict
 
 dunder = '__{}__'.format
+
+
+class attributes(ChainMap):
+    def __getitem__(self, key):
+        for mapping in self.maps:
+            try:
+                object = getattr(mapping, '__dict__', mapping)[key]
+                return object
+            except KeyError:
+                pass
+        raise AttributeError(key)
+        
+    def __dir__(self):
+        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
 
 
 class compose(UserList):
@@ -36,22 +51,20 @@ class compose(UserList):
                     arg = type(default)(arg)
             setattr(self, slot, arg)
 
-    _attributes_ = list([
-        str, __import__('six').moves.builtins, __import__('pathlib'), __import__('json'), 
-        __import__('pathlib').Path, __import__('toolz').curried, __import__('operator'), __import__('collections'),
-    ])
-
+    _attributes_ = attributes(*map(__import__, ['builtins', 'pathlib', 'operator', 'json', 'toolz']))
+            
     def __getattr__(self, attr):
         if hasattr(type(self), attr):
             return getattr(type(self), attr)(self)
-        for object in self._attributes_:
-            decorate = isinstance(object, type) and flip or compose
-            object = getattr(object, '__dict__', object)
-            if attr in object:
-                def wrapper(*args, **kwargs):
-                    return self.append(partial(decorate(object[attr]), *args, **kwargs))
-                return wraps(object[attr])(wrapper)
-        raise AttributeError(attr)
+        
+        object = self._attributes_[attr]
+        
+        def wrapper(*args, **kwargs):
+            callable = compose(object)
+            if args or kwargs:
+                callable = partial(callable, *args, **kwargs)
+            return self.append(callable)
+        return wraps(object)(wrapper)
         
     def __getitem__(self, object):
         if object == slice(None):
@@ -64,7 +77,7 @@ class compose(UserList):
 
         
     def __dir__(self):
-        return list(super().__dir__()) + list(concat(map(lambda x: getattr(x, '__dict__', x).keys(), self._attributes_)))
+        return list(super().__dir__()) + dir(self._attributes_)
     
     def __call__(self, *args, **kwargs):
         for callable in self:
@@ -111,6 +124,9 @@ class compose(UserList):
 
     __abs__ = __call__
     __enter__ = __deepcopy__ = __copy__
+
+
+compose._attributes_ = compose._attributes_.new_child(__import__('pathlib').Path)
 
 
 class juxt(compose):
@@ -200,13 +216,14 @@ class stack(compose):
 
 
 class call(stack):
+    args, kwargs = tuple(), dict()    
+    
     def append(self, object):
         new = type(self).__mro__[1]()
         if self.args or self.kwargs:
             object = partial(object, *self.args, **self.kwargs)
         return new.append(object)
     
-    args, kwargs = tuple(), dict()    
     def __call__(self, *args, **kwargs):     
         self = type(self)()
         self.args, self.kwargs = args, kwargs
