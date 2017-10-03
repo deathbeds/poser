@@ -16,8 +16,7 @@ class attributes(ChainMap):
     def __getitem__(self, key):
         for mapping in self.maps:
             try:
-                object = getattr(mapping, '__dict__', mapping)[key]
-                return object
+                return (isinstance(mapping, type) and flip or compose)(getattr(mapping, '__dict__', mapping)[key])
             except KeyError:
                 pass
         raise AttributeError(key)
@@ -52,19 +51,16 @@ class compose(UserList):
             setattr(self, slot, arg)
 
     _attributes_ = attributes(*map(__import__, ['builtins', 'pathlib', 'operator', 'json', 'toolz']))
-            
+         
     def __getattr__(self, attr):
         if hasattr(type(self), attr):
             return getattr(type(self), attr)(self)
-        
-        object = self._attributes_[attr]
-        
         def wrapper(*args, **kwargs):
-            callable = compose(object)
+            callable = self._attributes_[attr]
             if args or kwargs:
                 callable = partial(callable, *args, **kwargs)
             return self.append(callable)
-        return wraps(object)(wrapper)
+        return wraps(self._attributes_[attr].data[0])(wrapper)
         
     def __getitem__(self, object):
         if object == slice(None):
@@ -75,7 +71,6 @@ class compose(UserList):
             return self.append(object)
         return super().__getitem__(object)
 
-        
     def __dir__(self):
         return list(super().__dir__()) + dir(self._attributes_)
     

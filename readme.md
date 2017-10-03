@@ -32,22 +32,6 @@
 
 
 ```python
-    list(f)
-```
-
-
-    list(f)
-
-
-
-
-
-    [[functools.partial([<class 'range'>]), functools.partial([<function groupby at 0x10fc01950>], <function <lambda> at 0x110bd6f28>)]]
-
-
-
-
-```python
     from pandas import *
 
     df = (
@@ -90,18 +74,18 @@
 
 
 
-    {_frozen_importlib.ModuleSpec: 1,
+    {abc.ABCMeta: 14,
      function: 9,
-     abc.ABCMeta: 14,
+     toolz.functoolz.curry: 2,
      fidget.call: 5,
      builtin_function_or_method: 1,
      tuple: 1,
-     toolz.functoolz.curry: 2,
      str: 6,
      type: 4,
-     dict: 1,
      _frozen_importlib_external.SourceFileLoader: 1,
-     NoneType: 1}
+     NoneType: 1,
+     _frozen_importlib.ModuleSpec: 1,
+     dict: 1}
 
 
 
@@ -117,7 +101,7 @@
 
 
     [NbConvertApp] Converting notebook fidget.ipynb to python
-    [NbConvertApp] Writing 8479 bytes to fidget.py
+    [NbConvertApp] Writing 8476 bytes to fidget.py
 
 
 
