@@ -22,8 +22,8 @@ setuptools.setup(
     description="A Test Harness in a DataFrame",
     license="BSD-3-Clause",
     keywords="IPython Magic Jupyter",
-    url="http://github.com/tonyfast/fidget",
-    py_modules=['fidget']
+    url="http://github.com/tonyfast/articles",
+    py_modules=['articles']
     packages=setuptools.find_packages(),
     #     long_description=read("readme.rst"),
     classifiers=[
