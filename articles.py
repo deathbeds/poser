@@ -1,8 +1,10 @@
 
 # coding: utf-8
 
-from functools import total_ordering, singledispatch, partialmethod, wraps
-from itertools import zip_longest, chain
+# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.   
+
+from functools import singledispatch, partialmethod, wraps
+from itertools import zip_longest
 from collections import ChainMap
 from toolz.curried import first, isiterable, partial, identity, count, get, concat
 from copy import copy
@@ -19,8 +21,7 @@ class attributes(ChainMap):
                 object = getattr(mapping, '__dict__', mapping)[key]
                 return (
                     not isinstance(object, compose) 
-                    and isinstance(mapping, type) and flip or compose
-                )(object)
+                    and isinstance(mapping, type) and flip or compose)(object)
             except KeyError:
                 pass
         raise AttributeError(key)
@@ -42,17 +43,19 @@ class compose(UserList):
         super().__init__()
         for i, (slot, arg) in enumerate(zip_longest(self.__slots__, args)):
             default = self.__kwdefaults__[slot]
-            if i >= len(args):
-                arg = copy(default)
-                
-            arg = kwargs.pop(slot, arg)
+
+            arg = kwargs.pop(slot, copy(default) if i >= len(args) else arg)
             
+            if slot == 'data' and isinstance(arg, dict): arg = arg.items()
+
             if isiterable(default):
                 if not isiterable(arg):
                     arg = type(default)([arg])
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
+                    
             setattr(self, slot, arg)
+            
 
     _attributes_ = attributes(*map(__import__, ['builtins', 'pathlib', 'operator', 'json', 'toolz']))
          
@@ -69,7 +72,7 @@ class compose(UserList):
     def __getitem__(self, object):
         if object == slice(None):
             return self
-        if isinstance(object, tuple):
+        if isiterable(object):
             object = juxt(object)
         if callable(object):
             return self.append(object)
@@ -79,8 +82,8 @@ class compose(UserList):
         return list(super().__dir__()) + dir(self._attributes_)
     
     def __call__(self, *args, **kwargs):
-        for callable in self:
-            args, kwargs = [callable(*args, **kwargs)], dict()
+        for value in self:
+            args, kwargs = (value if not callable(value) else [value(*args, **kwargs)]), dict()
         return args[0] if len(args) else None    
             
     def __getstate__(self):
@@ -129,8 +132,16 @@ compose._attributes_ = compose._attributes_.new_child(__import__('pathlib').Path
 
 
 class juxt(compose):
+    __kwdefaults__ = ['data', list()], ['type', tuple]
+    def __init__(self, *args):
+        super().__init__(*args)
+        if isiterable(args[0]):
+            self.type = type(args[0])
+            
     def __call__(self, *args, **kwargs):
-        return tuple((isinstance(callable, tuple) and juxt or identity)(callable)(*args, **kwargs) for callable in self)
+        return self.type((
+            (not isinstance(callable, str) and isiterable(callable)) 
+            and juxt or identity)(compose(callable))(*args, **kwargs) for callable in self)
 
 
 class flip(compose):
