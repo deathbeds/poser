@@ -76,7 +76,7 @@ Convert the single Jupyter notebook to a python script.
 
 ## `articles` structure
 
-
+![](classes_No_Name.png)
 
 
 ```python
@@ -84,7 +84,7 @@ Convert the single Jupyter notebook to a python script.
     !pyreverse -o png -bmy -fALL articles
 ```
 
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 1532 bytes to readme.md
+    parsing /Users/tonyfast/fidget/articles.py...
 
-```python
-
-```
