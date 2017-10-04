@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.   
+# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
 
 from functools import singledispatch, partialmethod, wraps
 from itertools import zip_longest
@@ -51,17 +51,16 @@ class compose(UserList):
         super().__init__()
         for i, (slot, arg) in enumerate(zip_longest(self.__slots__, args)):
             default = self.__kwdefaults__[slot]
-
-            arg = kwargs.pop(slot, copy(default) if i >= len(args) else arg)
+            if i >= len(args):
+                arg = copy(default)
+                
+            arg = kwargs.pop(slot, arg)
             
-            if slot == 'data' and isinstance(arg, dict): arg = arg.items()
-
             if isiterable(default):
                 if not isiterable(arg):
                     arg = type(default)([arg])
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
-                    
             setattr(self, slot, arg)
          
     # getattr stays here because some operations are defined below
@@ -353,6 +352,12 @@ class stack(compose):
 
     def __bool__(self):
         return any(map(bool, self))
+    
+def _pop(self, *args):
+    self.data.pop(*args)
+    return self
+
+stack.pop = _pop
 
 
 extra_methods(append_methods(stack, {'pop', 'append'}))
