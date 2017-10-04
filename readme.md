@@ -71,7 +71,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 8736 bytes to articles.py
+    [NbConvertApp] Writing 8813 bytes to articles.py
 
 
 ## `articles` structure
@@ -85,6 +85,11 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 1532 bytes to readme.md
+    [NbConvertApp] Writing 1709 bytes to readme.md
     parsing /Users/tonyfast/fidget/articles.py...
 
+
+
+```python
+
+```

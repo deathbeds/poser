@@ -1,12 +1,12 @@
 
 # coding: utf-8
 
-# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.   
+# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
 
 from functools import singledispatch, partialmethod, wraps
 from itertools import zip_longest
 from collections import ChainMap
-from toolz.curried import first, isiterable, partial, identity, count, get, concat
+from toolz.curried import first, flip, isiterable, partial, identity, count, get, concat
 from copy import copy
 __all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
 from collections import UserList, OrderedDict
@@ -14,22 +14,19 @@ from collections import UserList, OrderedDict
 dunder = '__{}__'.format
 
 
-class attributes(ChainMap):
-    def __getitem__(self, key):
-        for mapping in self.maps:
-            try:
-                object = getattr(mapping, '__dict__', mapping)[key]
-                return (
-                    not isinstance(object, compose) 
-                    and isinstance(mapping, type) and flip or compose)(object)
-            except KeyError:
-                pass
-        raise AttributeError(key)
+def methods(cls):
+    # attach all list methods to the cls
+    for attr in dir(UserList):
+        if attr[0].islower():
+            setattr(cls, attr, partialmethod(cls._list_attr_, attr))
         
-    def __dir__(self):
-        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
+    # attach the *, +, >>, - operators
+    for other in ['mul', 'add', 'rshift' ,'sub']:
+        setattr(cls, dunder(other), getattr(cls, 'append'))
+    return cls
 
 
+@methods
 class compose(UserList):
     __kwdefaults__ = ['data', list()],
         
@@ -43,21 +40,17 @@ class compose(UserList):
         super().__init__()
         for i, (slot, arg) in enumerate(zip_longest(self.__slots__, args)):
             default = self.__kwdefaults__[slot]
-
-            arg = kwargs.pop(slot, copy(default) if i >= len(args) else arg)
+            if i >= len(args):
+                arg = copy(default)
+                
+            arg = kwargs.pop(slot, arg)
             
-            if slot == 'data' and isinstance(arg, dict): arg = arg.items()
-
             if isiterable(default):
                 if not isiterable(arg):
                     arg = type(default)([arg])
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
-                    
             setattr(self, slot, arg)
-            
-
-    _attributes_ = attributes(*map(__import__, ['builtins', 'pathlib', 'operator', 'json', 'toolz']))
          
     def __getattr__(self, attr):
         if hasattr(type(self), attr):
@@ -72,7 +65,7 @@ class compose(UserList):
     def __getitem__(self, object):
         if object == slice(None):
             return self
-        if isiterable(object):
+        if isinstance(object, tuple):
             object = juxt(object)
         if callable(object):
             return self.append(object)
@@ -82,8 +75,8 @@ class compose(UserList):
         return list(super().__dir__()) + dir(self._attributes_)
     
     def __call__(self, *args, **kwargs):
-        for value in self:
-            args, kwargs = (value if not callable(value) else [value(*args, **kwargs)]), dict()
+        for callable in self:
+            args, kwargs = [callable(*args, **kwargs)], dict()
         return args[0] if len(args) else None    
             
     def __getstate__(self):
@@ -108,14 +101,9 @@ class compose(UserList):
     def __repr__(self):
         return ':'.join(map(repr, self.__getstate__()))
     
-    def _condition_attr_(self, callable, object):
-        return type(self)().append(callable(self, object))
     
     def _list_attr_(self, attr, *args):
         return getattr(super(), attr)(*args) or self
-    
-    def _right_attr_(self, attr, other):
-        return getattr(compose([other]), attr)(self)
 
     def __pow__(self, object):
         if isinstance(object, type):
@@ -126,22 +114,17 @@ class compose(UserList):
 
     __abs__ = __call__
     __enter__ = __deepcopy__ = __copy__
-
-
-compose._attributes_ = compose._attributes_.new_child(__import__('pathlib').Path)
+    
+    __truediv__ = property(partial(flip(__getattr__), 'map'))
+    __floordiv__ = property(partial(flip(__getattr__), 'filter'))
+    __matmul__ = property(partial(flip(__getattr__), 'groupby'))
+    __mod__ = property(partial(flip(__getattr__), 'reduce'))
+    __lshift__ = property(partial(flip(__getattr__), 'do'))
 
 
 class juxt(compose):
-    __kwdefaults__ = ['data', list()], ['type', tuple]
-    def __init__(self, *args):
-        super().__init__(*args)
-        if isiterable(args[0]):
-            self.type = type(args[0])
-            
     def __call__(self, *args, **kwargs):
-        return self.type((
-            (not isinstance(callable, str) and isiterable(callable)) 
-            and juxt or identity)(compose(callable))(*args, **kwargs) for callable in self)
+        return tuple((isinstance(callable, tuple) and juxt or identity)(callable)(*args, **kwargs) for callable in self)
 
 
 class flip(compose):
@@ -199,6 +182,7 @@ class excepts(compose):
             return e
 
 
+@methods
 class stack(compose):
     __kwdefaults__ = ['data', list([compose()])], 
     
@@ -207,9 +191,6 @@ class stack(compose):
         self.data = list(map(copy, self.data))
 
     def _list_attr_(self, attr, *args):
-        if attr == 'pop':
-            self.data.pop(*args)
-            return self
         try:
             self[-1]._list_attr_(attr, *args)
         except AttributeError:
@@ -223,6 +204,12 @@ class stack(compose):
 
     def __bool__(self):
         return any(map(bool, self))
+    
+def _pop(self, *args):
+    self.data.pop(*args)
+    return self
+
+stack.pop = _pop
 
 
 class call(stack):
@@ -242,28 +229,44 @@ class call(stack):
         self = type(self)()
         self.args, self.kwargs = args, kwargs
         return self
+    
 
 
-for cls in [compose, stack, call]:
-    for attr in dir(UserList):
-        if attr[0].islower() and call is not cls:
-            setattr(cls, attr, partialmethod(cls._list_attr_, attr))
-        
-    for other in ['mul', 'add', 'rshift' ,'sub']:
-        setattr(cls, dunder(other), getattr(cls, 'append'))
+def _condition_attr_(self, callable, object):
+    """"""
+    return type(self)().append(callable(self, object))
 
-compose.__and__ = partialmethod(compose._condition_attr_, step)
-compose.__or__ = partialmethod(compose._condition_attr_, ifnot)
-compose.__xor__ = partialmethod(compose._condition_attr_, excepts)
-compose.__truediv__ = property(partial(flip(compose.__getattr__), 'map'))
-compose.__floordiv__ = property(partial(flip(compose.__getattr__), 'filter'))
-compose.__matmul__ = property(partial(flip(compose.__getattr__), 'groupby'))
-compose.__mod__ = property(partial(flip(compose.__getattr__), 'reduce'))
-compose.__lshift__ = property(partial(flip(compose.__getattr__), 'do'))
+def _right_attr_(self, attr, other):
+    return getattr(compose([other]), attr)(self)
+
+
+compose.__and__ = partialmethod(_condition_attr_, step)
+compose.__or__ = partialmethod(_condition_attr_, ifnot)
+compose.__xor__ = partialmethod(_condition_attr_, excepts)
 
 for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift']:
     setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
-    setattr(cls, dunder('r'+other), partialmethod(cls._right_attr_, dunder(other)))
+    setattr(compose, dunder('r'+other), partialmethod(_right_attr_, dunder(other)))
+
+
+class attributes(ChainMap):
+    def __getitem__(self, key):
+        for mapping in self.maps:
+            try:
+                object = getattr(mapping, '__dict__', mapping)[key]
+                return (
+                    not isinstance(object, compose) 
+                    and isinstance(mapping, type) and flip or compose
+                )(object)
+            except KeyError:
+                pass
+        raise AttributeError(key)
+        
+    def __dir__(self):
+        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
+
+
+compose._attributes_ = attributes(*map(__import__, ['builtins', 'pathlib', 'operator', 'json', 'toolz'])).new_child(__import__('pathlib').Path)
 
 
 a = an = the = then = f = call()
