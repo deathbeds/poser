@@ -6,16 +6,6 @@
 > Inspired by toolz and underscore.chain.
 
 
-```bash
-    %%bash 
-    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
-```
-
-    [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12711 bytes to articles.py
-
-
-
 ```python
     from articles import *    
     assert a == an == the
@@ -65,7 +55,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    ([3, 4, 5, 6, 7, 8, 9], [3, 4, 5, 6, 7, 8, 9])
+    ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [3, 4, 5, 6, 7, 8, 9])
 
 
 
@@ -79,28 +69,26 @@ Use the `getattr` method to append `the._attributes` objects togethers.
         print(i, getattr(a, i))
 ```
 
-    __add__ <bound method call.append of [[]]>
-    __sub__ <bound method call.append of [[]]>
-    __mul__ <bound method call.append of [[]]>
-    __truediv__ <function map at 0x10eddd6a8>
-    __floordiv__ <function filter at 0x10eddd6a8>
-    __matmul__ <function groupby at 0x10eddd6a8>
-    __mod__ <function reduce at 0x10eddd6a8>
+    __add__ <bound method call.__getitem__ of call>[λ>[]]>
+    __sub__ <bound method call.__getitem__ of call>[λ>[]]>
+    __mul__ <bound method call.__getitem__ of call>[λ>[]]>
+    __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
+    __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
+    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x109190950>)
+    __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
 
-
-## 
 
 ### classes
 
 
 ```python
-    (then**(int,))(10)
+    (then**(int,))(10), (then**(int,))('10')
 ```
 
 
 
 
-    10
+    (True, False)
 
 
 
@@ -116,28 +104,43 @@ Use the `getattr` method to append `the._attributes` objects togethers.
         .valmap(a.get('cells', default=[]) * DataFrame)
     )[concat].do(a.len()["""{} cells""".format].print())()
 
+#     (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+```
+
+    
+    KeyboardInterrupt
+    
+
+
+
+```python
+    from pandas import *
+
+    df = (
+        the.Path('/Users/tonyfast/gists/').rglob('*.ipynb')
+        .map(the[a.identity(), a.read_text().loads()^Exception])
+        .filter(the.second()**dict).take(10).dict()
+        .valmap(a.get('cells', default=[]) * DataFrame)
+    )[concat]()
+
     (the * globals * dict.items @ the.second().type() * then.valmap(len))()
 ```
 
-    289 notebooks
-    3065 cells
 
 
 
-
-
-    {abc.ABCMeta: 15,
-     _frozen_importlib.ModuleSpec: 1,
-     function: 16,
+    {_frozen_importlib.ModuleSpec: 1,
+     abc.ABCMeta: 15,
      articles.call: 5,
      builtin_function_or_method: 2,
-     tuple: 1,
-     str: 4,
-     type: 3,
+     type: 4,
+     str: 5,
      dict: 1,
      _frozen_importlib_external.SourceFileLoader: 1,
      NoneType: 1,
-     toolz.functoolz.curry: 2}
+     tuple: 1,
+     toolz.functoolz.curry: 6,
+     function: 9}
 
 
 
@@ -156,12 +159,11 @@ Convert the single Jupyter notebook to a python script.
 ```
 
 
-```python
-
-```
-
-
 ```bash
     %%bash 
     jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
 ```
+
+    [NbConvertApp] Converting notebook articles.ipynb to python
+    [NbConvertApp] Writing 12219 bytes to articles.py
+

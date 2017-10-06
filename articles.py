@@ -6,7 +6,8 @@
 from functools import singledispatch, partialmethod, wraps
 from itertools import zip_longest
 from collections import ChainMap
-from toolz.curried import first, isiterable, partial, identity, count, get, concat, flip
+from operator import attrgetter
+from toolz.curried import first, isiterable, partial, identity, count, get, concat, flip, map, groupby, filter, reduce
 from copy import copy
 __all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
 from operator import not_
@@ -15,26 +16,8 @@ from collections import UserList, OrderedDict
 dunder = '__{}__'.format
 
 
-def append_methods(cls, ignore=set()):
-    """Methods to append functions to a composition."""
-    # mimic **all** list methods onto the **cls**
-    for attr in dir(UserList):
-        if attr not in ignore and attr[0].islower():
-            setattr(cls, attr, partialmethod(list_attr, attr))
-    # attach the *, +, >>, - operators to the **cls**s
-    for other in ['mul', 'add', 'rshift' ,'sub']:
-        setattr(cls, dunder(other), getattr(cls, 'append'))        
-    return cls
-
-
-def list_attr(self, attr, *args): 
-    """Surrogate function to map userlist attributes to the composition"""
-    return getattr(self.data, attr)(*args) or self
-
-
 # # Composition
 
-@append_methods
 class compose(UserList):
     """The main class for function composition."""
     
@@ -45,6 +28,7 @@ class compose(UserList):
         if not isinstance(cls.__kwdefaults__, OrderedDict):
             cls.__kwdefaults__ = OrderedDict(cls.__kwdefaults__)
         cls.__slots__ = tuple(cls.__kwdefaults__.keys())
+        cls.__iter__ = partialmethod(iter)
         return super().__new__(cls)
     
     def __init__(self, *args, **kwargs):
@@ -62,29 +46,43 @@ class compose(UserList):
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
             setattr(self, slot, arg)
-         
-    # getattr stays here because some operations are defined below
-    def __getattr__(self, attr):
-        if hasattr(type(self), attr):
-            return getattr(type(self), attr)(self)
+                                
+    def __getattr__(self, attr, *args, **kwargs):
+        try:
+            return object.__getattr__(self, attr)
+        except: pass
+        value = callable(attr) and attr or self._attributes_[attr]
+        if attr is value:
+            if args or kwargs:
+                return self[partial(value, *args, **kwargs)]
+            return self[value]
         def wrapper(*args, **kwargs):
-            callable = self._attributes_[attr]
-            if args or kwargs:                    
-                callable = partial_attr(callable, *args, **kwargs)
-            return self.append(callable)
-        return wraps(self._attributes_[attr].data[0])(wrapper)
+            nonlocal value
+            self[partial(value, *args, **kwargs) if args or kwargs else value]
+            return self
+        return wraps(getattr(value, 'func', value))(wrapper)
         
+    __truediv__ = partialmethod(__getattr__, map)
+    __floordiv__ = partialmethod(__getattr__, filter)
+    __matmul__ = partialmethod(__getattr__, groupby)
+    __mod__ = partialmethod(__getattr__, reduce)
+
+
     def __getitem__(self, object):
         # An empty slice returns self
         if object == slice(None):
-            return self
+            return self        
+        if isinstance(object, (int, slice)): 
+            try:
+                return self.data[object]
+            except IndexError as e:
+                raise e
         # An iterable object is evaluated a callable map.
-        if isiterable(object) and not isinstance(object, str):
+        if isiterable(object) and not isinstance(object, (str, compose)):
             object = juxt(object)
         # An other object is included in the composition.
-        if callable(object):
-            return self.append(object)
-        return super().__getitem__(object)
+        return self.append(object) or self
+
 
     def __dir__(self):
         """List the attributes available on the object."""
@@ -92,32 +90,30 @@ class compose(UserList):
     
     def __call__(self, *args, **kwargs):
         """Call an iterable as a function evaluating the arguments in serial."""
+        
+        try:
+            if args[0] in attrgetter('tqdm', 'tqdm_notebook')(__import__('tqdm')):
+                self, args = args[0](self), args[1:]
+        except: pass
+            
         for value in self:
             args, kwargs = (
                 # Return the value of non-callables, they are constants
-                value if not callable(value) 
+                [value] if not callable(value) 
                 # Otherwise call the function
                 else [value(*args, **kwargs)]), dict()
         return args[0] if len(args) else None    
     
+    def __lshift__(self, object): return compose([self, do(object)])
+    def __xor__(self, object): return compose([excepts(object, self)])
+    def __or__(self, object): return ifnot(self, object)
+    def __and__(self, object): return ifthen(self, object)
+    def __pow__(self, object): return instance(object)
     
-    def __pow__(self, object):
-        """a**(int,) is equivalent to typing checking"""
-        
-        # Make sure the object is a tuple if it is in a class.
-        if isinstance(object, type):
-            object = object,
-            
-        if isinstance(object, tuple):
-            object = partial(flip(isinstance), object)
-        
-        # Step through the function if the condition is true
-        return condition_attr(self, flip(ifthen), object)
     
     def __copy__(self):
-        new = type(self)()
-        new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
-        new.data = list(map(copy, self))
+        new = type(self)(*map(copy, self.__getstate__()))
+        new.data = list(map(copy, self.data))
         return new
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -139,25 +135,52 @@ class compose(UserList):
     
     # State operations
     def __getstate__(self):
-        return tuple(map(partial(getattr, self), self.__slots__))
+        return tuple(map(self.__dict__.get, self.__slots__))
     
     def __setstate__(self, state):
         for key, value in zip(self.__slots__, state):
             setattr(self, key, value)
 
     def __repr__(self):
-        return ':'.join(map(repr, self.__getstate__()))
+        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()))
         
     
     def __hash__(self):
         return hash(tuple(self))
+    
+    __name__ = property(__repr__)
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    
+    _attributes_ = dict()
+    
+    def __dir__(self):
+        return super().__dir__() + dir(self._attributes_)
 
 
-def partial_attr(callable: 'compose', *args, **kwargs):
-    # Attributes with partials are called immediately on the chain like `attrgetter`.
-    if type(callable[0]) is __import__('functools').partial:
-        return callable(*args, **kwargs) 
-    return partial(callable, *args, **kwargs) 
+class attributes(ChainMap):
+    def __getitem__(self, key):
+        for mapping in self.maps:
+            try:
+                return (
+                    type(mapping) is type and flip or identity
+                )(getattr(mapping, '__dict__', mapping)[key])
+            except KeyError: 
+                pass
+        try:
+            return self.new_child(type(key) is str and __import__(key) or key)
+        except:
+            raise AttributeError(key)
+        
+    def __dir__(self):
+        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
+
+compose._attributes_ = attributes()['builtins']['pathlib'][__import__('pathlib').Path].new_child({
+        k: (
+            partial if k.endswith('getter')  
+            # some need to flip
+            else flip)(v)
+        for k, v in vars(__import__('operator')).items()
+    })['json']['toolz']
 
 
 # ## Compositions
@@ -165,19 +188,19 @@ def partial_attr(callable: 'compose', *args, **kwargs):
 class juxt(compose):
     """Any mapping is a callable, call each of its elements."""
     __kwdefaults__ = ['data', list()], ['type', tuple]
-    def __init__(self, *args):
-        super().__init__(*args)
-        if isiterable(args[0]) and not isinstance(args[0], type(self).__mro__[1]):
-            self.type = type(args[0])
-            
+    def __init__(self, data=None, _type=tuple):
+        super().__init__()
+        if isiterable(data) and not isinstance(data, type(self).__mro__[1]):
+            self.type = type(data)
+        self.data = list(data.items()) if issubclass(self.type, dict) else list(data) or list()
+
     def __call__(self, *args, **kwargs):
         result = list()
-        for callable in self:
+        for callable in self.data:
             if not isinstance(callable, (str, compose)) and isiterable(callable):
                 callable = juxt(callable)
-            
             if not isinstance(callable, compose):
-                callable = compose([callable])
+                callable = compose([callable])            
             result.append(callable(*args, **kwargs))
         return self.type(result)
 
@@ -209,7 +232,13 @@ class star(compose):
 # ## Conditional Compositions
 
 class condition(compose):
+    condition = None
     __kwdefaults__ = ['condition', compose()], ['data', list()]
+    
+    def __call__(self, *args, **kwargs):
+        if not self: 
+            return True
+        return super().__call__(*args, **kwargs)
 
 
 class ifthen(condition):
@@ -223,18 +252,22 @@ class ifnot(condition):
         return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 
-class step(condition):
-    """Evaluate a function only if a condition is true."""
-    def __call__(self, *args, **kwargs):
-        result = self.condition(*args, **kwargs)
-        return result and super(step, self).__call__(result)
+class instance(ifthen):
+    """Evaluate a function if a condition is true."""
+    def __init__(self, object=None, data=None):        
+        if isinstance(object, type):
+            object = object,            
+        if isinstance(object, tuple):
+            object = partial(flip(isinstance), object)
+        super().__init__(object, data or list())
 
 
 # ## Exception compositon
 
 class excepts(compose):
     """Allow acception when calling a function"""
-    __kwdefaults__ = ['data', identity], ['exceptions', tuple()], 
+    exceptions = None
+    __kwdefaults__ = ['exceptions', tuple()], ['data', compose()]
     
     def __call__(self, *args, **kwargs):
         try:
@@ -243,85 +276,11 @@ class excepts(compose):
             return e
 
 
-append_methods(condition, {'append'})
-
-
 # ## Generic attributes
 # 
 # Append attributes to the composition object from other Python namespaces.
 # 
 #     'builtins', 'pathlib', 'operator', 'json', 'toolz'
-
-@singledispatch
-def resolve_attr(parent, object):
-    """How to resolve decorated attribute values."""
-    return (isinstance(object, compose) and identity or compose)(object)
-
-@resolve_attr.register(partial)
-def _resolve_attr(parent, object):
-    return object
-
-@resolve_attr.register(type)
-def _resolve_attr(parent, object):
-    return flip(object)
-
-
-class attributes(ChainMap):
-    def __getitem__(self, key):
-        for mapping in self.maps:
-            try:
-                return resolve_attr(mapping, getattr(mapping, '__dict__', mapping)[key],)
-            except KeyError: 
-                pass
-        try:
-            return self.new_child(type(key) is str and __import__(key) or key)
-        except:
-            raise AttributeError(key)
-        
-    def __dir__(self):
-        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
-        
-compose._attributes_ = attributes()['builtins']['pathlib'][__import__('pathlib').Path].new_child(
-    {
-        k: (
-            partial if k.endswith('getter')  
-            # some need to flip
-            else flip) (v)
-        for k, v in vars(__import__('operator')).items()
-    }
-)['json']['toolz']
-
-
-def condition_attr(self, callable, object):
-    """Append attributes for condition compositions."""
-    return type(self)().append(callable(self, object))
-
-def right_attr(self, attr, other):
-    """Add the right attribute operations to the function"""
-    return getattr(compose([other]), attr)(self)
-
-def extra_methods(cls):
-    cls.__and__ = partialmethod(condition_attr, step)
-    cls.__or__ = partialmethod(condition_attr, ifnot)
-    cls.__xor__ = partialmethod(condition_attr, excepts)
-    cls.__truediv__ = property(partial(flip(cls.__getattr__), 'map'))
-    cls.__floordiv__ = property(partial(flip(cls.__getattr__), 'filter'))
-    cls.__matmul__ = property(partial(flip(cls.__getattr__), 'groupby'))
-    cls.__mod__ = property(partial(flip(cls.__getattr__), 'reduce'))
-    cls.__lshift__ = property(partial(flip(cls.__getattr__), 'do'))
-
-    for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift']:
-        setattr(cls, dunder('i'+other), getattr(compose, dunder(other)))
-        setattr(cls, dunder('r'+other), partialmethod(right_attr, dunder(other)))
-        
-        
-    return cls
-
-
-extra_methods(compose)
-
-
-# # Composition Stack
 
 class stack(compose):
     """A composition stack with push and pop methods.  It chains compositions together
@@ -334,64 +293,71 @@ class stack(compose):
         # nested copy
         self.data = list(map(copy, self.data))
 
-    def push(self, type=compose):
-        self.data.append(type())
-        return self
+    def push(self, type=compose, *args):
+        if not isinstance(type, compose):
+            type = type(*args)
+        not self and self.pop()
+        return self.append(type) or self
     
     def pop(self, *args):
         self.data.pop(*args)
         return self
-
-    def append(self, *args, **kwargs):
+    
+    def __getitem__(self, *args, **kwargs):
+        if object == slice(None):
+            return self        
+        if args and isinstance(args[0], (int, slice)): 
+            try:
+                return self.data[args[0]]
+            except IndexError as e:
+                raise e
         try:
-            self.data[-1].append(*args, **kwargs)
+            self.data[-1].__getitem__(*args, **kwargs)
         except AttributeError:
             self.push()
-            self.data[-1].append(*args, **kwargs)
+            self.data[-1].__getitem__(*args, **kwargs)
         return self    
+    
+    __getattr__ = compose.__getattr__
 
     def __bool__(self):
-        return any(map(bool, self))
+        return any(self)
     
-def _pop(self, *args):
-    self.data.pop(*args)
-    return self
+    stack = partialmethod(push)
+    ifthen = partialmethod(push, ifthen)
+    ifnot = partialmethod(push, ifnot)
+    excepts = partialmethod(push, excepts)
+    __pow__ = instance = partialmethod(push, instance)   
+    do = partialmethod(push, do)
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
-stack.pop = _pop
 
+def right_attr(self, attr, other):
+    """Add the right attribute operations to the function"""
+    return getattr(type(self)([other]), attr)(self)
 
-extra_methods(append_methods(stack, {'pop', 'append'}))
+for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift']:
+    setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
+    setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
 
-
-# # Composition Factory
-# 
-# `call` is a stack factory.  Use call to:
-# 
-# * Create partial - `a(*args, **kwargs)`
-# * Generate new compositions.
 
 class call(stack):
-    args, kwargs = tuple(), dict()    
-    
-    def append(self, object=None):
-        if self.args or self.kwargs:
-            object = partial(object, *self.args, **self.kwargs)
-        return stack().append(object)
-    
-    def __getitem__(self, object):
-        if object == slice(None):  
-            return stack()
-        return super().__getitem__(object)
-    
-    def __pow__(self, object):
-        return stack()**object
-    
+    args, kwargs = tuple(), dict()
+                                
+    def __getattr__(self, attr):
+        return stack().__getattr__(attr)
+
+    def __getitem__(self, attr, *args, **kwargs):
+        if attr == slice(None): return stack()
+        return stack().__getitem__(attr, *args, **kwargs)
+        
     def __call__(self, *args, **kwargs):     
         self = type(self)()
         self.args, self.kwargs = args, kwargs
         return self
-        
-extra_methods(append_methods(call, {'append'}))
+    
+    def __pow__(self, object): return stack()**object
+    __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
 a = an = the = then = f = call()
