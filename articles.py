@@ -3,11 +3,11 @@
 
 # `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
 
-from functools import singledispatch, partialmethod, wraps
+from functools import singledispatch, partialmethod, wraps, partial
 from itertools import zip_longest
 from collections import ChainMap
 from operator import attrgetter
-from toolz.curried import first, isiterable, partial, identity, count, get, concat, flip, map, groupby, filter, reduce
+from toolz.curried import first, isiterable, identity, count, get, concat, flip, map, groupby, filter, reduce
 from copy import copy
 __all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
 from operator import not_
@@ -58,7 +58,10 @@ class compose(UserList):
             return self[value]
         def wrapper(*args, **kwargs):
             nonlocal value
-            self[partial(value, *args, **kwargs) if args or kwargs else value]
+            self[
+                value(*args, **kwargs) if type(value) is partial
+                else partial(value, *args, **kwargs) if args or kwargs
+                else value]
             return self
         return wraps(getattr(value, 'func', value))(wrapper)
         
@@ -161,9 +164,9 @@ class attributes(ChainMap):
     def __getitem__(self, key):
         for mapping in self.maps:
             try:
-                return (
-                    type(mapping) is type and flip or identity
-                )(getattr(mapping, '__dict__', mapping)[key])
+                value = getattr(mapping, '__dict__', mapping)[key]
+                if callable(value):
+                    return (type(mapping) is type and flip or identity)(value)
             except KeyError: 
                 pass
         try:
@@ -171,19 +174,19 @@ class attributes(ChainMap):
         except:
             raise AttributeError(key)
         
-    def __dir__(self):
-        return concat(map(lambda x: getattr(x, '__dict__', x).keys(), self.maps))
+    def __dir__(self): 
+        return concat(map(lambda x: [
+            k for k, v in getattr(x, '__dict__', x).items() if callable(v)
+        ], self.maps))
 
 compose._attributes_ = attributes()['builtins']['pathlib'][__import__('pathlib').Path].new_child({
         k: (
-            partial if k.endswith('getter')  
+            partial if k.endswith('getter') or k.endswith('caller')
             # some need to flip
             else flip)(v)
         for k, v in vars(__import__('operator')).items()
-    })['json']['toolz']
+    })['json']['requests'][__import__('requests').Response]['toolz']
 
-
-# ## Compositions
 
 class juxt(compose):
     """Any mapping is a callable, call each of its elements."""
@@ -229,8 +232,6 @@ class star(compose):
         return super(star, self).__call__(*args, **kwargs)
 
 
-# ## Conditional Compositions
-
 class condition(compose):
     condition = None
     __kwdefaults__ = ['condition', compose()], ['data', list()]
@@ -262,8 +263,6 @@ class instance(ifthen):
         super().__init__(object, data or list())
 
 
-# ## Exception compositon
-
 class excepts(compose):
     """Allow acception when calling a function"""
     exceptions = None
@@ -275,12 +274,6 @@ class excepts(compose):
         except self.exceptions as e:
             return e
 
-
-# ## Generic attributes
-# 
-# Append attributes to the composition object from other Python namespaces.
-# 
-#     'builtins', 'pathlib', 'operator', 'json', 'toolz'
 
 class stack(compose):
     """A composition stack with push and pop methods.  It chains compositions together

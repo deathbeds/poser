@@ -74,7 +74,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
     __mul__ <bound method call.__getitem__ of call>[λ>[]]>
     __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
     __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
-    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x109190950>)
+    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x110154a60>)
     __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
 
 
@@ -94,22 +94,26 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 ```python
-    from pandas import *
-
-    df = (
-        the.Path('/Users/tonyfast/gists/').rglob('*.ipynb')
-        .map(the[a.identity(), a.read_text().loads()^Exception])
-        .filter(-the.second()**Exception).dict()
-        .do(a.len()["""{} notebooks""".format].print())
-        .valmap(a.get('cells', default=[]) * DataFrame)
-    )[concat].do(a.len()["""{} cells""".format].print())()
-
-#     (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+(a**int*range | a**str*str.upper)("1")
 ```
 
-    
-    KeyboardInterrupt
-    
+
+
+
+    '1'
+
+
+
+
+```python
+(a**int*range | a**str*str.upper)('10asdf')
+```
+
+
+
+
+    '10ASDF'
+
 
 
 
@@ -129,18 +133,18 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    {_frozen_importlib.ModuleSpec: 1,
-     abc.ABCMeta: 15,
-     articles.call: 5,
-     builtin_function_or_method: 2,
+    {abc.ABCMeta: 15,
+     _frozen_importlib.ModuleSpec: 1,
+     function: 9,
      type: 4,
+     builtin_function_or_method: 2,
+     tuple: 1,
      str: 5,
      dict: 1,
+     articles.call: 5,
      _frozen_importlib_external.SourceFileLoader: 1,
      NoneType: 1,
-     tuple: 1,
-     toolz.functoolz.curry: 6,
-     function: 9}
+     toolz.functoolz.curry: 6}
 
 
 
@@ -158,6 +162,11 @@ Convert the single Jupyter notebook to a python script.
     !pyreverse -o png -bmy -fALL articles
 ```
 
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 3328 bytes to readme.md
+    parsing /Users/tonyfast/fidget/articles.py...
+
+
 
 ```bash
     %%bash 
@@ -165,5 +174,10 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12219 bytes to articles.py
+    [NbConvertApp] Writing 12231 bytes to articles.py
 
+
+
+```python
+
+```
