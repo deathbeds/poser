@@ -189,11 +189,6 @@ class juxt(compose):
         return self.type(result)
 
 
-# class flip(compose):
-#     """Call a function with the positional arguments reversed"""
-#     def __call__(self, *args, **kwargs):
-#         return super(flip, self).__call__(*reversed(args), **kwargs)
-
 class do(compose):
     """Call a function and return input argument."""
     def __call__(self, *args, **kwargs):
