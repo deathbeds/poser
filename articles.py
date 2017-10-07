@@ -3,16 +3,26 @@
 
 # `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
 
-from functools import singledispatch, partialmethod, wraps, partial
-from itertools import zip_longest
+from functools import singledispatch, partialmethod, wraps
+from itertools import zip_longest, starmap
 from collections import ChainMap
 from operator import attrgetter
-from toolz.curried import first, isiterable, identity, count, get, concat, flip, map, groupby, filter, reduce
+from toolz.curried import first, isiterable, identity, count, get, concat, flip, memoize, cons
+from toolz import map, groupby, filter, reduce
 from copy import copy
-__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'memoize'
-from operator import not_
+__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'compose', 'stack', 'memoize'
+from operator import not_, eq
 from collections import UserList, OrderedDict
 dunder = '__{}__'.format
+
+
+class partial(__import__('functools').partial):
+    def __eq__(self, other):
+        if isinstance(other, partial):
+            result = True
+            for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])):
+                result &= (a is b) or (a == b)
+        return locals().get('result', False)
 
 
 # # Composition
@@ -45,6 +55,8 @@ class compose(UserList):
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
             setattr(self, slot, arg)
+        self.data = list(self.data)
+            
                                 
     def __getattr__(self, attr, *args, **kwargs):
         try:
