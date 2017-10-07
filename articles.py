@@ -296,6 +296,7 @@ class stack(compose):
         self.data = list(map(copy, self.data))
 
     def push(self, type=compose, *args):
+        if isinstance(self, call): self = stack()
         if not isinstance(type, compose):
             type = type(*args)
         not self and self.pop()
@@ -331,6 +332,7 @@ class stack(compose):
     stack = partialmethod(push)
     __pow__ = instance = partialmethod(push, instance)   
     do = partialmethod(push, do)
+    def __lshift__(self, other): return self.do()[other]
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
