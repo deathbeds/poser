@@ -74,7 +74,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
     __mul__ <bound method call.__getitem__ of call>[λ>[]]>
     __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
     __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
-    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x110154a60>)
+    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x111afeb70>)
     __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
 
 
@@ -133,18 +133,18 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    {abc.ABCMeta: 15,
-     _frozen_importlib.ModuleSpec: 1,
-     function: 9,
-     type: 4,
+    {function: 9,
+     articles.call: 5,
      builtin_function_or_method: 2,
      tuple: 1,
      str: 5,
-     dict: 1,
-     articles.call: 5,
+     abc.ABCMeta: 15,
+     toolz.functoolz.curry: 5,
      _frozen_importlib_external.SourceFileLoader: 1,
      NoneType: 1,
-     toolz.functoolz.curry: 6}
+     _frozen_importlib.ModuleSpec: 1,
+     dict: 1,
+     type: 5}
 
 
 
@@ -163,7 +163,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3328 bytes to readme.md
+    [NbConvertApp] Writing 3152 bytes to readme.md
     parsing /Users/tonyfast/fidget/articles.py...
 
 
@@ -174,7 +174,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12231 bytes to articles.py
+    [NbConvertApp] Writing 12298 bytes to articles.py
 
 
 

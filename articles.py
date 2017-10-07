@@ -12,7 +12,6 @@ from copy import copy
 __all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
 from operator import not_
 from collections import UserList, OrderedDict
-
 dunder = '__{}__'.format
 
 
@@ -28,7 +27,6 @@ class compose(UserList):
         if not isinstance(cls.__kwdefaults__, OrderedDict):
             cls.__kwdefaults__ = OrderedDict(cls.__kwdefaults__)
         cls.__slots__ = tuple(cls.__kwdefaults__.keys())
-        cls.__iter__ = partialmethod(iter)
         return super().__new__(cls)
     
     def __init__(self, *args, **kwargs):
@@ -40,6 +38,8 @@ class compose(UserList):
                 
             arg = kwargs.pop(slot, arg)
             
+            if slot == 'data' and arg is None:
+                arg = list()
             if isiterable(default):
                 if not isiterable(arg):
                     arg = type(default)([arg])
@@ -88,7 +88,6 @@ class compose(UserList):
 
 
     def __dir__(self):
-        """List the attributes available on the object."""
         return list(super().__dir__()) + dir(self._attributes_)
     
     def __call__(self, *args, **kwargs):
@@ -109,9 +108,9 @@ class compose(UserList):
     
     def __lshift__(self, object): return compose([self, do(object)])
     def __xor__(self, object): return compose([excepts(object, self)])
-    def __or__(self, object): return ifnot(self, object)
-    def __and__(self, object): return ifthen(self, object)
-    def __pow__(self, object): return instance(object)
+    def __or__(self, object=None): return ifnot(self, object)
+    def __and__(self, object=None): return ifthen(self, object)
+    def __pow__(self, object=None): return instance(object)
     
     
     def __copy__(self):
@@ -119,16 +118,12 @@ class compose(UserList):
         new.data = list(map(copy, self.data))
         return new
 
-    def __exit__(self, exc_type, exc_value, traceback):
-        pass
+    def __exit__(self, exc_type, exc_value, traceback): pass
     
     __enter__ = __deepcopy__ = __copy__
-    
-    # Unary operations. 
     __abs__ = __call__
     
     def __pos__(self): return self[bool]
-    
     def __neg__(self): return self[not_]
     
     def __reversed__(self): 
@@ -158,6 +153,10 @@ class compose(UserList):
     
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
+    
+    ifthen = __and__
+    ifnot = __or__
+    excepts = __xor__
 
 
 class attributes(ChainMap):
@@ -179,7 +178,7 @@ class attributes(ChainMap):
             k for k, v in getattr(x, '__dict__', x).items() if callable(v)
         ], self.maps))
 
-compose._attributes_ = attributes()['builtins']['pathlib'][__import__('pathlib').Path].new_child({
+compose._attributes_ = attributes()['builtins']['collections']['pathlib'][__import__('pathlib').Path].new_child({
         k: (
             partial if k.endswith('getter') or k.endswith('caller')
             # some need to flip
@@ -313,16 +312,12 @@ class stack(compose):
     
     __getattr__ = compose.__getattr__
 
-    def __bool__(self):
-        return any(self)
+    def __bool__(self): return any(self)
     
     stack = partialmethod(push)
-    ifthen = partialmethod(push, ifthen)
-    ifnot = partialmethod(push, ifnot)
-    excepts = partialmethod(push, excepts)
     __pow__ = instance = partialmethod(push, instance)   
     do = partialmethod(push, do)
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
 def right_attr(self, attr, other):
@@ -340,9 +335,11 @@ class call(stack):
     def __getattr__(self, attr):
         return stack().__getattr__(attr)
 
-    def __getitem__(self, attr, *args, **kwargs):
+    def __getitem__(self, attr):
         if attr == slice(None): return stack()
-        return stack().__getitem__(attr, *args, **kwargs)
+        if self.args or self.kwargs:
+            attr = partial(attr, *self.args, **self.kwargs)
+        return stack().__getitem__(attr)
         
     def __call__(self, *args, **kwargs):     
         self = type(self)()
