@@ -74,7 +74,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
     __mul__ <bound method call.__getitem__ of call>[λ>[]]>
     __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
     __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
-    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x111afeb70>)
+    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x10a98bae8>)
     __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
 
 
@@ -133,18 +133,18 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    {function: 9,
-     articles.call: 5,
-     builtin_function_or_method: 2,
+    {abc.ABCMeta: 15,
+     toolz.functoolz.curry: 3,
+     _frozen_importlib.ModuleSpec: 1,
+     function: 10,
+     dict: 1,
      tuple: 1,
      str: 5,
-     abc.ABCMeta: 15,
-     toolz.functoolz.curry: 5,
+     type: 8,
+     builtin_function_or_method: 4,
      _frozen_importlib_external.SourceFileLoader: 1,
      NoneType: 1,
-     _frozen_importlib.ModuleSpec: 1,
-     dict: 1,
-     type: 5}
+     articles.call: 5}
 
 
 

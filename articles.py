@@ -169,34 +169,6 @@ class compose(UserList):
     excepts = __xor__
 
 
-class attributes(ChainMap):
-    def __getitem__(self, key):
-        for mapping in self.maps:
-            try:
-                value = getattr(mapping, '__dict__', mapping)[key]
-                if callable(value):
-                    return (type(mapping) is type and flip or identity)(value)
-            except KeyError: 
-                pass
-        try:
-            return self.new_child(type(key) is str and __import__(key) or key)
-        except:
-            raise AttributeError(key)
-        
-    def __dir__(self): 
-        return concat(map(lambda x: [
-            k for k, v in getattr(x, '__dict__', x).items() if callable(v)
-        ], self.maps))
-
-compose._attributes_ = attributes()['builtins']['collections']['pathlib'][__import__('pathlib').Path].new_child({
-        k: (
-            partial if k.endswith('getter') or k.endswith('caller')
-            # some need to flip
-            else flip)(v)
-        for k, v in vars(__import__('operator')).items()
-    })['json']['requests'][__import__('requests').Response]['toolz']
-
-
 class juxt(compose):
     """Any mapping is a callable, call each of its elements."""
     __kwdefaults__ = ['data', list()], ['type', tuple]
@@ -282,6 +254,34 @@ class excepts(compose):
             return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
             return e
+
+
+class attributes(ChainMap):
+    def __getitem__(self, key):
+        for mapping in self.maps:
+            try:
+                value = getattr(mapping, '__dict__', mapping)[key]
+                if callable(value):
+                    return (type(mapping) is type and flip or identity)(value)
+            except KeyError: 
+                pass
+        try:
+            return self.new_child(type(key) is str and __import__(key) or key)
+        except:
+            raise AttributeError(key)
+        
+    def __dir__(self): 
+        return concat(map(lambda x: [
+            k for k, v in getattr(x, '__dict__', x).items() if callable(v)
+        ], self.maps))
+
+compose._attributes_ = attributes()['builtins']['collections']['pathlib'][__import__('pathlib').Path].new_child({
+        k: (
+            partial if k.endswith('getter') or k.endswith('caller')
+            # some need to flip
+            else flip)(v)
+        for k, v in vars(__import__('operator')).items()
+    })['json']['requests'][__import__('requests').Response]['toolz'].new_child(dict(fnmatch=flip(__import__('fnmatch').fnmatch)))
 
 
 class stack(compose):
