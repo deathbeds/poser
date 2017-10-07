@@ -70,7 +70,7 @@ class compose(UserList):
         def wrapper(*args, **kwargs):
             nonlocal value
             self[
-                value(*args, **kwargs) if type(value) is partial
+                value(*args, **kwargs) if type(value) in [partial]
                 else partial(value, *args, **kwargs) if args or kwargs
                 else value]
             return self
@@ -187,6 +187,11 @@ class juxt(compose):
                 callable = compose([callable])            
             result.append(callable(*args, **kwargs))
         return self.type(result)
+
+
+class flip(compose):
+    def __call__(self, *args, **kwargs):
+        return super().__call__(*reversed(args), **kwargs)
 
 
 class do(compose):
