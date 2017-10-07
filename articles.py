@@ -9,7 +9,7 @@ from collections import ChainMap
 from operator import attrgetter
 from toolz.curried import first, isiterable, identity, count, get, concat, flip, map, groupby, filter, reduce
 from copy import copy
-__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 
+__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'memoize'
 from operator import not_
 from collections import UserList, OrderedDict
 dunder = '__{}__'.format
@@ -19,7 +19,6 @@ dunder = '__{}__'.format
 
 class compose(UserList):
     """The main class for function composition."""
-    
     # __kwdefaults__ contains default arguments and values
     __kwdefaults__ = ['data', list()],
         
@@ -140,8 +139,7 @@ class compose(UserList):
             setattr(self, key, value)
 
     def __repr__(self):
-        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()))
-        
+        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()))   
     
     def __hash__(self):
         return hash(tuple(self))
@@ -311,7 +309,11 @@ class stack(compose):
         return self    
     
     __getattr__ = compose.__getattr__
+    
 
+    @property
+    def compose(self): return compose(list(concat(self.data)))
+    
     def __bool__(self): return any(self)
     
     stack = partialmethod(push)
