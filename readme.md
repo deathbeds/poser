@@ -174,7 +174,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12298 bytes to articles.py
+    [NbConvertApp] Writing 12201 bytes to articles.py
 
 
 
