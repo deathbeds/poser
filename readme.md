@@ -127,21 +127,25 @@ Use the `getattr` method to append `the._attributes` objects togethers.
         .valmap(a.get('cells', default=[]) * DataFrame)
     )[concat]()
 
-    (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+    (the * globals * dict.items @ the.second().type() * a.valmap(len))()
 ```
 
 
-    ---------------------------------------------------------------------------
 
-    NameError                                 Traceback (most recent call last)
 
-    <ipython-input-11-1754bbbcfb0c> in <module>()
-          8 )[concat]()
-          9 
-    ---> 10 (the * globals * dict.items @ the.second().type() * then.valmap(len))()
-    
+    {_frozen_importlib.ModuleSpec: 1,
+     function: 10,
+     abc.ABCMeta: 18,
+     builtin_function_or_method: 4,
+     tuple: 1,
+     str: 5,
+     type: 10,
+     NoneType: 1,
+     toolz.functoolz.curry: 3,
+     _frozen_importlib_external.SourceFileLoader: 1,
+     dict: 1,
+     determiners.call: 4}
 
-    NameError: name 'then' is not defined
 
 
 ## Development
