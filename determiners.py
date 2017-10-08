@@ -10,7 +10,7 @@ from operator import attrgetter, not_, eq, methodcaller, itemgetter
 from toolz.curried import first, isiterable, identity, count, get, concat, flip, memoize, cons
 from toolz import map, groupby, filter, reduce
 from copy import copy
-__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'compose', 'stack', 'memoize', 'each', 'some'
+__all__ = 'a', 'an', 'the', 'each', 'some', 'star', 'flip', 'do', 'compose', 'composite', 'λ'
 from collections import UserList, OrderedDict
 dunder = '__{}__'.format
 
@@ -251,7 +251,6 @@ class FalseException(compose):
     __kwdefaults__ = ('exception', None),
     def __bool__(self): return False
 
-
 class excepts(compose):
     """Allow acception when calling a function"""
     exceptions = None
@@ -292,8 +291,8 @@ compose._attributes_ = attributes()['builtins']['collections']['pathlib'][__impo
     })['json']['requests'][__import__('requests').Response]['toolz'].new_child(dict(fnmatch=flip(__import__('fnmatch').fnmatch)))
 
 
-class stack(compose):
-    """A composition stack with push and pop methods.  It chains compositions together
+class composite(compose):
+    """A composite composition with push and pop methods.  It chains compositions together
     allowing a chainable api to map, filter, reduce, and groupby functions.|
     """
     __kwdefaults__ = ['data', list([compose()])], 
@@ -304,7 +303,7 @@ class stack(compose):
         self.data = list(map(copy, self.data))
 
     def push(self, type=compose, *args):
-        if isinstance(self, call): self = stack()
+        if isinstance(self, call): self = composite()
         if not isinstance(type, compose):
             type = type(*args)
         not self and self.pop()
@@ -342,7 +341,7 @@ class stack(compose):
     
     def __bool__(self): return any(self)
     
-    stack = partialmethod(push)
+    composite = partialmethod(push)
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
@@ -355,17 +354,17 @@ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'flo
     setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
 
 
-class call(stack):
+class call(composite):
     args, kwargs = tuple(), dict()
                                 
     def __getattr__(self, attr):
-        return stack().__getattr__(attr)
+        return composite().__getattr__(attr)
 
     def __getitem__(self, attr):
-        if attr == slice(None): return stack()
+        if attr == slice(None): return composite()
         if self.args or self.kwargs:
             attr = partial(attr, *self.args, **self.kwargs)
-        return stack().__getitem__(attr)
+        return composite().__getitem__(attr)
         
     def __call__(self, *args, **kwargs):     
         self = type(self)()
@@ -375,5 +374,5 @@ class call(stack):
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
-a = an = the = then = f = call()
+a = an = the = λ = call()
 

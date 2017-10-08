@@ -1,13 +1,13 @@
 
-# `articles` compose functions
+# `determiners` compose functions
 
-`articles` are cracked out Python lists that are `callable`. 
+`determiners` are cracked out Python lists that are `callable`. 
 
 > Inspired by toolz and underscore.chain.
 
 
 ```python
-    from articles import *    
+    from determiners import *    
     assert a == an == the
 ```
 
@@ -61,7 +61,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 ### operators
 
-`articles` include the full python data model including incremental and right operators.
+`determiners` include the full python data model including incremental and right operators.
 
 
 ```python
@@ -74,7 +74,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
     __mul__ <bound method call.__getitem__ of call>[λ>[]]>
     __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
     __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
-    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x10a98bae8>)
+    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x10a20fc80>)
     __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
 
 
@@ -82,7 +82,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 ```python
-    (then**(int,))(10), (then**(int,))('10')
+    (an**(int,))(10), (an**(int,))('10')
 ```
 
 
@@ -131,50 +131,41 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 ```
 
 
+    ---------------------------------------------------------------------------
 
+    NameError                                 Traceback (most recent call last)
 
-    {abc.ABCMeta: 15,
-     toolz.functoolz.curry: 3,
-     _frozen_importlib.ModuleSpec: 1,
-     function: 10,
-     dict: 1,
-     tuple: 1,
-     str: 5,
-     type: 8,
-     builtin_function_or_method: 4,
-     _frozen_importlib_external.SourceFileLoader: 1,
-     NoneType: 1,
-     articles.call: 5}
+    <ipython-input-11-1754bbbcfb0c> in <module>()
+          8 )[concat]()
+          9 
+    ---> 10 (the * globals * dict.items @ the.second().type() * then.valmap(len))()
+    
 
+    NameError: name 'then' is not defined
 
 
 ## Development
 
 Convert the single Jupyter notebook to a python script.
 
-## `articles` structure
+## `determiners` structure
 
 ![](classes_No_Name.png)
 
 
 ```python
     !jupyter nbconvert --to markdown readme.ipynb
-    !pyreverse -o png -bmy -fALL articles
+    !pyreverse -o png -bmy -fALL determiners
 ```
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3152 bytes to readme.md
-    parsing /Users/tonyfast/fidget/articles.py...
-
 
 
 ```bash
     %%bash 
-    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
+    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True determiners.ipynb
 ```
 
-    [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12827 bytes to articles.py
+    [NbConvertApp] Converting notebook determiners.ipynb to python
+    [NbConvertApp] Writing 13069 bytes to determiners.py
 
 
 
