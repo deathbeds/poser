@@ -6,12 +6,11 @@
 from functools import singledispatch, partialmethod, wraps
 from itertools import zip_longest, starmap
 from collections import ChainMap
-from operator import attrgetter
+from operator import attrgetter, not_, eq, methodcaller, itemgetter
 from toolz.curried import first, isiterable, identity, count, get, concat, flip, memoize, cons
 from toolz import map, groupby, filter, reduce
 from copy import copy
-__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'compose', 'stack', 'memoize'
-from operator import not_, eq
+__all__ = 'a', 'an', 'the', 'then', 'f', 'star', 'flip', 'do', 'copy', 'compose', 'stack', 'memoize', 'each', 'some'
 from collections import UserList, OrderedDict
 dunder = '__{}__'.format
 
@@ -44,7 +43,6 @@ class compose(UserList):
             default = self.__kwdefaults__[slot]
             if i >= len(args):
                 arg = copy(default)
-                
             arg = kwargs.pop(slot, arg)
             
             if slot == 'data' and arg is None:
@@ -117,7 +115,7 @@ class compose(UserList):
                 else [value(*args, **kwargs)]), dict()
         return args[0] if len(args) else None    
     
-    def __lshift__(self, object): return compose([self, do(object)])
+    def __lshift__(self, object): return self[do(object)]
     def __xor__(self, object): return compose([excepts(object, self)])
     def __or__(self, object=None): return ifnot(self, object)
     def __and__(self, object=None): return ifthen(self, object)
@@ -163,10 +161,16 @@ class compose(UserList):
     
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
-    
-    ifthen = __and__
-    ifnot = __or__
-    excepts = __xor__
+
+
+class each(compose):
+    def __call__(self, *args, **kwargs):
+        return starmap(super().__call__, zip(*args))
+
+
+class some(compose):
+    def __call__(self, *args, **kwargs):
+        return filter(super().__call__, *args)
 
 
 class juxt(compose):
@@ -243,6 +247,11 @@ class instance(ifthen):
         super().__init__(object, data or list())
 
 
+class FalseException(compose):
+    __kwdefaults__ = ('exception', None),
+    def __bool__(self): return False
+
+
 class excepts(compose):
     """Allow acception when calling a function"""
     exceptions = None
@@ -252,7 +261,7 @@ class excepts(compose):
         try:
             return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
-            return e
+            return FalseException(e)
 
 
 class attributes(ChainMap):
@@ -322,6 +331,11 @@ class stack(compose):
     
     __getattr__ = compose.__getattr__
     
+    ifthen = compose.__and__
+    ifnot = compose.__or__
+    excepts = compose.__xor__
+    do = compose.__lshift__
+    __pow__ = instance = partialmethod(push, instance)   
 
     @property
     def compose(self): return compose(list(concat(self.data)))
@@ -329,9 +343,6 @@ class stack(compose):
     def __bool__(self): return any(self)
     
     stack = partialmethod(push)
-    __pow__ = instance = partialmethod(push, instance)   
-    do = partialmethod(push, do)
-    def __lshift__(self, other): return self.do()[other]
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
@@ -361,7 +372,6 @@ class call(stack):
         self.args, self.kwargs = args, kwargs
         return self
     
-    def __pow__(self, object): return stack()**object
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
