@@ -162,6 +162,11 @@ Convert the single Jupyter notebook to a python script.
     !pyreverse -o png -bmy -fALL determiners
 ```
 
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 3180 bytes to readme.md
+    parsing /Users/tonyfast/fidget/determiners.py...
+
+
 
 ```bash
     %%bash 
@@ -169,7 +174,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook determiners.ipynb to python
-    [NbConvertApp] Writing 13069 bytes to determiners.py
+    [NbConvertApp] Writing 13964 bytes to determiners.py
 
 
 

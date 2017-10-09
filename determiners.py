@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# `articles` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
+# `determiners` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
 
 from functools import singledispatch, partialmethod, wraps
 from itertools import zip_longest, starmap
@@ -13,15 +13,6 @@ from copy import copy
 __all__ = 'a', 'an', 'the', 'each', 'some', 'star', 'flip', 'do', 'compose', 'composite', 'λ'
 from collections import UserList, OrderedDict
 dunder = '__{}__'.format
-
-
-class partial(__import__('functools').partial):
-    def __eq__(self, other):
-        if isinstance(other, partial):
-            result = True
-            for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])):
-                result &= (a is b) or (a == b)
-        return locals().get('result', False)
 
 
 # # Composition
@@ -53,7 +44,7 @@ class compose(UserList):
                 if not isinstance(arg, type(default)):
                     arg = type(default)(arg)
             setattr(self, slot, arg)
-        self.data = list(self.data)
+        self.data = list(map(copy, self.data))
             
                                 
     def __getattr__(self, attr, *args, **kwargs):
@@ -67,11 +58,14 @@ class compose(UserList):
             return self[value]
         def wrapper(*args, **kwargs):
             nonlocal value
-            self[
+            data = self.data[-1] if isinstance(self, composite) else self
+            data[
                 value(*args, **kwargs) if type(value) in [partial]
                 else partial(value, *args, **kwargs) if args or kwargs
                 else value]
+            
             return self
+        
         return wraps(getattr(value, 'func', value))(wrapper)
         
     __truediv__ = partialmethod(__getattr__, map)
@@ -115,17 +109,21 @@ class compose(UserList):
                 else [value(*args, **kwargs)]), dict()
         return args[0] if len(args) else None    
     
-    def __lshift__(self, object): return self[do(object)]
-    def __xor__(self, object): return compose([excepts(object, self)])
-    def __or__(self, object=None): return ifnot(self, object)
-    def __and__(self, object=None): return ifthen(self, object)
-    def __pow__(self, object=None): return instance(object)
-    
+    def __lshift__(self, object): 
+        return do(object)
+    def __xor__(self, object): 
+        return excepts(object, self)
+    def __or__(self, object=None): 
+        return ifnot(self, object)
+    def __and__(self, object=None): 
+        return ifthen(self, object)
+    def __pow__(self, object=None): 
+        return instance(object, self)
     
     def __copy__(self):
-        new = type(self)(*map(copy, self.__getstate__()))
-        new.data = list(map(copy, self.data))
-        return new
+        compose = type(self)(*map(copy, self.__getstate__()))
+        compose.data = list(filter(bool, map(copy, self.data)))
+        return compose
 
     def __exit__(self, exc_type, exc_value, traceback): pass
     
@@ -155,18 +153,20 @@ class compose(UserList):
         return hash(tuple(self))
     
     __name__ = property(__repr__)
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
     
     _attributes_ = dict()
     
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
+    
+    def __bool__(self): return any(self.data)
+    
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 
 class each(compose):
     def __call__(self, *args, **kwargs):
         return starmap(super().__call__, zip(*args))
-
 
 class some(compose):
     def __call__(self, *args, **kwargs):
@@ -237,6 +237,7 @@ class ifnot(condition):
         return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 
+
 class instance(ifthen):
     """Evaluate a function if a condition is true."""
     def __init__(self, object=None, data=None):        
@@ -261,6 +262,16 @@ class excepts(compose):
             return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
             return FalseException(e)
+
+
+class partial(__import__('functools').partial):
+    def __eq__(self, other):
+        result = False
+        if isinstance(other, partial):
+            result = True
+            for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])):
+                result &= (a is b) or (a == b)
+        return result
 
 
 class attributes(ChainMap):
@@ -297,74 +308,69 @@ class composite(compose):
     """
     __kwdefaults__ = ['data', list([compose()])], 
     
-    def __init__(self, *args):
-        super().__init__(*args)
-        # nested copy
-        self.data = list(map(copy, self.data))
-
+    def __getattr__(self, attr):
+        if isinstance(self, factory): self = composite()
+        def wrapped(*args, **kwargs):
+            nonlocal self, attr
+            self.data[-1] = getattr(self.data[-1], attr)(*args, **kwargs)
+            return self
+        return wraps(super(composite, self).__getattr__(attr))(wrapped)
+        
     def push(self, type=compose, *args):
-        if isinstance(self, call): self = composite()
+        self = self[:]
         if not isinstance(type, compose):
             type = type(*args)
         not self and self.pop()
         return self.append(type) or self
     
-    def pop(self, *args):
-        self.data.pop(*args)
-        return self
-    
+
     def __getitem__(self, *args, **kwargs):
-        if object == slice(None):
-            return self        
+        if isinstance(self, factory): self = composite()
+        if object == slice(None): return self
         if args and isinstance(args[0], (int, slice)): 
             try:
                 return self.data[args[0]]
             except IndexError as e:
                 raise e
         try:
-            self.data[-1].__getitem__(*args, **kwargs)
+            self[-1].__getitem__(*args, **kwargs)
         except AttributeError:
             self.push()
-            self.data[-1].__getitem__(*args, **kwargs)
+            self[-1].__getitem__(*args, **kwargs)
         return self    
+        
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
     
-    __getattr__ = compose.__getattr__
-    
-    ifthen = compose.__and__
-    ifnot = compose.__or__
-    excepts = compose.__xor__
-    do = compose.__lshift__
-    __pow__ = instance = partialmethod(push, instance)   
-
     @property
-    def compose(self): return compose(list(concat(self.data)))
-    
-    def __bool__(self): return any(self)
-    
-    composite = partialmethod(push)
-    __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
+    def compose(self): 
+        return compose(list(concat(self)))
 
+
+for cls in [ifthen, ifnot, excepts, do, instance]: 
+    setattr(composite, cls.__name__, partialmethod(composite.push, cls))
 
 def right_attr(self, attr, other):
-    """Add the right attribute operations to the function"""
     return getattr(type(self)([other]), attr)(self)
 
-for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift']:
+def op_attr(self, attr, other): return self.__getattr__(attr)(other)
+
+for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
     setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
     setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
+    
+for other in ['and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
+    setattr(composite, dunder(other), partialmethod(op_attr, dunder(other)))
 
 
-class call(composite):
+class factory(composite):
     args, kwargs = tuple(), dict()
-                                
-    def __getattr__(self, attr):
-        return composite().__getattr__(attr)
 
     def __getitem__(self, attr):
-        if attr == slice(None): return composite()
+        if attr == slice(None): 
+            return composite()
         if self.args or self.kwargs:
             attr = partial(attr, *self.args, **self.kwargs)
-        return composite().__getitem__(attr)
+        return super().__getitem__(attr)
         
     def __call__(self, *args, **kwargs):     
         self = type(self)()
@@ -374,5 +380,28 @@ class call(composite):
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 
-a = an = the = λ = call()
+a = an = the = λ = factory()
+
+
+class stargetter:
+    def __init__(self, attr, *args, **kwargs):
+        self.attr, self.args, self.kwargs = attr, args, kwargs
+
+    def __call__(self, object):
+        object = attrgetter(self.attr)(object)
+        if callable(object):
+            return object(*self.args, **self.kwargs)
+        return object
+
+
+class this_attributes(attributes):
+    def __getitem__(self, attr):
+        return partial(stargetter, attr)
+    
+class this(compose):
+    _attributes_ = this_attributes()
+    def __getitem__(self, attr):
+        if isinstance(attr, str):
+            return self[itemgetter(attr)]
+        return super().__getitem__(attr)
 
