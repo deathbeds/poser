@@ -69,50 +69,27 @@ Use the `getattr` method to append `the._attributes` objects togethers.
         print(i, getattr(a, i))
 ```
 
-    __add__ <bound method call.__getitem__ of call>[λ>[]]>
-    __sub__ <bound method call.__getitem__ of call>[λ>[]]>
-    __mul__ <bound method call.__getitem__ of call>[λ>[]]>
-    __truediv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'map'>)
-    __floordiv__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <class 'filter'>)
-    __matmul__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <function groupby at 0x10a20fc80>)
-    __mod__ functools.partial(<bound method compose.__getattr__ of call>[λ>[]]>, <built-in function reduce>)
+    __add__ <bound method factory.__getitem__ of factory>[λ>[]]>
+    __sub__ <bound method factory.__getitem__ of factory>[λ>[]]>
+    __mul__ <bound method factory.__getitem__ of factory>[λ>[]]>
+    __truediv__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__truediv__')
+    __floordiv__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__floordiv__')
+    __matmul__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__matmul__')
+    __mod__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__mod__')
 
 
 ### classes
 
 
 ```python
-    (an**(int,))(10), (an**(int,))('10')
+    f = a**int*range | a**str*str.upper
+    f(10), f('abc'), f(10.)
 ```
 
 
 
 
-    (True, False)
-
-
-
-
-```python
-(a**int*range | a**str*str.upper)("1")
-```
-
-
-
-
-    '1'
-
-
-
-
-```python
-(a**int*range | a**str*str.upper)('10asdf')
-```
-
-
-
-
-    '10ASDF'
+    (range(0, 10), 'ABC', False)
 
 
 
@@ -123,7 +100,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
     df = (
         the.Path('/Users/tonyfast/gists/').rglob('*.ipynb')
         .map(the[a.identity(), a.read_text().loads()^Exception])
-        .filter(the.second()**dict).take(10).dict()
+        .filter(the.second()).take(10).dict()
         .valmap(a.get('cells', default=[]) * DataFrame)
     )[concat]()
 
@@ -134,17 +111,17 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
     {_frozen_importlib.ModuleSpec: 1,
-     function: 10,
-     abc.ABCMeta: 18,
-     builtin_function_or_method: 4,
+     function: 9,
+     abc.ABCMeta: 19,
+     dict: 1,
      tuple: 1,
      str: 5,
      type: 10,
-     NoneType: 1,
-     toolz.functoolz.curry: 3,
+     builtin_function_or_method: 4,
+     toolz.functoolz.curry: 2,
      _frozen_importlib_external.SourceFileLoader: 1,
-     dict: 1,
-     determiners.call: 4}
+     NoneType: 1,
+     determiners.factory: 4}
 
 
 
@@ -157,27 +134,22 @@ Convert the single Jupyter notebook to a python script.
 ![](classes_No_Name.png)
 
 
-```python
-    !jupyter nbconvert --to markdown readme.ipynb
-    !pyreverse -o png -bmy -fALL determiners
-```
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3180 bytes to readme.md
-    parsing /Users/tonyfast/fidget/determiners.py...
-
-
-
 ```bash
     %%bash 
     jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True determiners.ipynb
 ```
 
     [NbConvertApp] Converting notebook determiners.ipynb to python
-    [NbConvertApp] Writing 13964 bytes to determiners.py
+    [NbConvertApp] Writing 12644 bytes to determiners.py
 
 
 
 ```python
-
+    !jupyter nbconvert --to markdown readme.ipynb
+    !pyreverse -o png -bmy -fALL determiners
 ```
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 4342 bytes to readme.md
+    parsing /Users/tonyfast/fidget/determiners.py...
+

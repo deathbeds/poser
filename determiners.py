@@ -1,101 +1,27 @@
 
 # coding: utf-8
 
-# `determiners` are `callable` user defined lists in python. Use arthimetic and list operations to compose dense higher-order functions.
-
-from functools import singledispatch, partialmethod, wraps
+from collections import UserList
+from functools import partialmethod, wraps
+from inspect import getfullargspec
 from itertools import zip_longest, starmap
-from collections import ChainMap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
-from toolz.curried import first, isiterable, identity, count, get, concat, flip, memoize, cons
+from toolz.curried import isiterable, identity, concat, flip, cons
 from toolz import map, groupby, filter, reduce
 from copy import copy
-__all__ = 'a', 'an', 'the', 'each', 'some', 'star', 'flip', 'do', 'compose', 'composite', 'λ'
-from collections import UserList, OrderedDict
 dunder = '__{}__'.format
+__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ'
 
 
-# # Composition
-
-class compose(UserList):
-    """The main class for function composition."""
-    # __kwdefaults__ contains default arguments and values
-    __kwdefaults__ = ['data', list()],
-        
-    def __new__(cls, *args, **kwargs):
-        if not isinstance(cls.__kwdefaults__, OrderedDict):
-            cls.__kwdefaults__ = OrderedDict(cls.__kwdefaults__)
-        cls.__slots__ = tuple(cls.__kwdefaults__.keys())
-        return super().__new__(cls)
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__()
-        for i, (slot, arg) in enumerate(zip_longest(self.__slots__, args)):
-            default = self.__kwdefaults__[slot]
-            if i >= len(args):
-                arg = copy(default)
-            arg = kwargs.pop(slot, arg)
-            
-            if slot == 'data' and arg is None:
-                arg = list()
-            if isiterable(default):
-                if not isiterable(arg):
-                    arg = type(default)([arg])
-                if not isinstance(arg, type(default)):
-                    arg = type(default)(arg)
-            setattr(self, slot, arg)
-        self.data = list(map(copy, self.data))
-            
-                                
-    def __getattr__(self, attr, *args, **kwargs):
-        try:
-            return object.__getattr__(self, attr)
-        except: pass
-        value = callable(attr) and attr or self._attributes_[attr]
-        if attr is value:
-            if args or kwargs:
-                return self[partial(value, *args, **kwargs)]
-            return self[value]
-        def wrapper(*args, **kwargs):
-            nonlocal value
-            data = self.data[-1] if isinstance(self, composite) else self
-            data[
-                value(*args, **kwargs) if type(value) in [partial]
-                else partial(value, *args, **kwargs) if args or kwargs
-                else value]
-            
-            return self
-        
-        return wraps(getattr(value, 'func', value))(wrapper)
-        
-    __truediv__ = partialmethod(__getattr__, map)
-    __floordiv__ = partialmethod(__getattr__, filter)
-    __matmul__ = partialmethod(__getattr__, groupby)
-    __mod__ = partialmethod(__getattr__, reduce)
-
-
-    def __getitem__(self, object):
-        # An empty slice returns self
-        if object == slice(None):
-            return self        
-        if isinstance(object, (int, slice)): 
-            try:
-                return self.data[object]
-            except IndexError as e:
-                raise e
-        # An iterable object is evaluated a callable map.
-        if isiterable(object) and not isinstance(object, (str, compose)):
-            object = juxt(object)
-        # An other object is included in the composition.
-        return self.append(object) or self
-
-
-    def __dir__(self):
-        return list(super().__dir__()) + dir(self._attributes_)
+class functions(UserList):
+    """A composition of functions."""
+    def __init__(self, data=None):
+        if data and not isiterable(data):
+            data = [data]
+        super().__init__(data or list())
     
     def __call__(self, *args, **kwargs):
-        """Call an iterable as a function evaluating the arguments in serial."""
-        
+        """Call an iterable as a function evaluating the arguments in serial."""        
         try:
             if args[0] in attrgetter('tqdm', 'tqdm_notebook')(__import__('tqdm')):
                 self, args = args[0](self), args[1:]
@@ -105,24 +31,12 @@ class compose(UserList):
             args, kwargs = (
                 # Return the value of non-callables, they are constants
                 [value] if not callable(value) 
-                # Otherwise call the function
                 else [value(*args, **kwargs)]), dict()
         return args[0] if len(args) else None    
-    
-    def __lshift__(self, object): 
-        return do(object)
-    def __xor__(self, object): 
-        return excepts(object, self)
-    def __or__(self, object=None): 
-        return ifnot(self, object)
-    def __and__(self, object=None): 
-        return ifthen(self, object)
-    def __pow__(self, object=None): 
-        return instance(object, self)
-    
+        
     def __copy__(self):
         compose = type(self)(*map(copy, self.__getstate__()))
-        compose.data = list(filter(bool, map(copy, self.data)))
+        compose.data = list(map(copy, self.data))
         return compose
 
     def __exit__(self, exc_type, exc_value, traceback): pass
@@ -130,138 +44,32 @@ class compose(UserList):
     __enter__ = __deepcopy__ = __copy__
     __abs__ = __call__
     
-    def __pos__(self): return self[bool]
-    def __neg__(self): return self[not_]
-    
     def __reversed__(self): 
-        return type(self)(super().__reversed__())
+        self.data = type(self.data)(reversed(self.data))
+        return self
     
-    __invert__ = __reversed__
-    
-    # State operations
-    def __getstate__(self):
-        return tuple(map(self.__dict__.get, self.__slots__))
-    
-    def __setstate__(self, state):
-        for key, value in zip(self.__slots__, state):
-            setattr(self, key, value)
-
     def __repr__(self):
         return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()))   
-    
-    def __hash__(self):
-        return hash(tuple(self))
-    
     __name__ = property(__repr__)
     
-    _attributes_ = dict()
-    
-    def __dir__(self):
-        return super().__dir__() + dir(self._attributes_)
-    
+    def __hash__(self): return hash(tuple(self))
     def __bool__(self): return any(self.data)
-    
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    def __getstate__(self, state=None):
+        keys = getfullargspec(type(self)).args[1:]
+        if state is None:
+            return tuple(map(self.__dict__.get, keys))
+        for key, value in zip(keys, state):
+            setattr(self, key, value)
+            
+    __setstate__ = __getstate__
 
-
-class each(compose):
-    def __call__(self, *args, **kwargs):
-        return starmap(super().__call__, zip(*args))
-
-class some(compose):
-    def __call__(self, *args, **kwargs):
-        return filter(super().__call__, *args)
-
-
-class juxt(compose):
-    """Any mapping is a callable, call each of its elements."""
-    __kwdefaults__ = ['data', list()], ['type', tuple]
-    def __init__(self, data=None, _type=tuple):
-        super().__init__()
-        if isiterable(data) and not isinstance(data, type(self).__mro__[1]):
-            self.type = type(data)
-        self.data = list(data.items()) if issubclass(self.type, dict) else list(data) or list()
-
-    def __call__(self, *args, **kwargs):
-        result = list()
-        for callable in self.data:
-            if not isinstance(callable, (str, compose)) and isiterable(callable):
-                callable = juxt(callable)
-            if not isinstance(callable, compose):
-                callable = compose([callable])            
-            result.append(callable(*args, **kwargs))
-        return self.type(result)
-
-
-class flip(compose):
-    def __call__(self, *args, **kwargs):
-        return super().__call__(*reversed(args), **kwargs)
-
-
-class do(compose):
-    """Call a function and return input argument."""
-    def __call__(self, *args, **kwargs):
-        super(do, self).__call__(*args, **kwargs)
-        return args[0] if args else None
-
-
-class star(compose):
-    """Call a function starring the arguments for sequences and starring the keywords for containers."""
-    def __call__(self, *args, **kwargs):
-        args = args[0] if len(args) is 1 else (args,)
-        if not isiterable(args): 
-            args = [(args,)]
-        if isinstance(args, dict):
-            args = kwargs.update(args) or tuple()
-        return super(star, self).__call__(*args, **kwargs)
-
-
-class condition(compose):
-    condition = None
-    __kwdefaults__ = ['condition', compose()], ['data', list()]
-    
-    def __call__(self, *args, **kwargs):
-        if not self: 
-            return True
-        return super().__call__(*args, **kwargs)
-
-
-class ifthen(condition):
-    """Evaluate a function if a condition is true."""
-    def __call__(self, *args, **kwargs):
-        return self.condition(*args, **kwargs) and super(ifthen, self).__call__(*args, **kwargs)
-
-class ifnot(condition):
-    """Evaluate a function if a condition is false."""
-    def __call__(self, *args, **kwargs):
-        return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
-
-
-
-class instance(ifthen):
-    """Evaluate a function if a condition is true."""
-    def __init__(self, object=None, data=None):        
-        if isinstance(object, type):
-            object = object,            
-        if isinstance(object, tuple):
-            object = partial(flip(isinstance), object)
-        super().__init__(object, data or list())
-
-
-class FalseException(compose):
-    __kwdefaults__ = ('exception', None),
-    def __bool__(self): return False
-
-class excepts(compose):
-    """Allow acception when calling a function"""
-    exceptions = None
-    __kwdefaults__ = ['exceptions', tuple()], ['data', compose()]
-    
-    def __call__(self, *args, **kwargs):
-        try:
-            return super(excepts, self).__call__(*args, **kwargs)
-        except self.exceptions as e:
-            return FalseException(e)
+    def __getitem__(self, object):
+        if object == slice(None): return self        
+        if isinstance(object, (int, slice)): 
+            try:
+                return self.data[object]
+            except IndexError as e: raise e
+        return self.append(object) or self
 
 
 class partial(__import__('functools').partial):
@@ -274,39 +82,166 @@ class partial(__import__('functools').partial):
         return result
 
 
-class attributes(ChainMap):
+class attributes(functions):
     def __getitem__(self, key):
-        for mapping in self.maps:
+        try:
+            return super().__getitem__(type(key) is str and __import__(key) or key)
+        except:
+            raise AttributeError(key)
+
+    def __call__(self, key):
+        for mapping in reversed(self):
             try:
                 value = getattr(mapping, '__dict__', mapping)[key]
                 if callable(value):
-                    return (type(mapping) is type and flip or identity)(value)
-            except KeyError: 
-                pass
-        try:
-            return self.new_child(type(key) is str and __import__(key) or key)
-        except:
-            raise AttributeError(key)
-        
-    def __dir__(self): 
-        return concat(map(lambda x: [
-            k for k, v in getattr(x, '__dict__', x).items() if callable(v)
-        ], self.maps))
+                    return (type(mapping) is type and flipped or identity)(value)
+            except KeyError as e: pass
+        else: raise e
 
-compose._attributes_ = attributes()['builtins']['collections']['pathlib'][__import__('pathlib').Path].new_child({
-        k: (
-            partial if k.endswith('getter') or k.endswith('caller')
-            # some need to flip
-            else flip)(v)
+    def __dir__(self): 
+        return [
+            key for object in self.data 
+            for key, value in getattr(object, dunder('dict'), object).items()
+            if callable(value)]
+
+
+class compose(functions):
+    """A composition of functions."""
+    _attributes_ = attributes()
+    
+    def __getattr__(self, attr, *args, **kwargs):
+        try:
+            return object.__getattr__(self, attr)
+        except: pass
+        
+        value = callable(attr) and attr or self._attributes_(attr)
+        if attr is value:
+            if args or kwargs:
+                return self[partial(value, *args, **kwargs)]
+            return self[value]
+        def wrapper(*args, **kwargs):
+            nonlocal value
+            (self.data[-1] if isinstance(self, composite) else self)[
+                value(*args, **kwargs) if type(value) == partial
+                else partial(value, *args, **kwargs) if args or kwargs
+                else value]
+            
+            return self
+        
+        return wraps(getattr(value, 'func', value))(wrapper)
+        
+    __truediv__  = partialmethod(__getattr__, map)
+    __floordiv__ = partialmethod(__getattr__, filter)
+    __matmul__   = partialmethod(__getattr__, groupby)
+    __mod__      = partialmethod(__getattr__, reduce)
+
+
+    def __getitem__(self, object):
+        if isiterable(object) and not isinstance(object, (str, compose)):
+            object = juxt(object)
+        return super().__getitem__(object)
+    
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    
+    def __lshift__(self, object):          return do(object)
+    def __xor__(self, object):             return excepts(object, self)
+    def __or__(self, object=None):         return ifnot(self, object)
+    def __and__(self, object=None):        return ifthen(self, object)
+    def __pow__(self, object=None):        return instance(object, self)
+    
+    __pos__ = partialmethod(__getitem__, bool)
+    __neg__ = partialmethod(__getitem__, not_)
+    __invert__ = functions.__reversed__
+    
+    def __dir__(self):
+        return super().__dir__() + dir(self._attributes_)
+    
+class do(compose):
+    """Call a function and return input argument."""
+    def __call__(self, *args, **kwargs):
+        super(do, self).__call__(*args, **kwargs)
+        return args[0] if args else None
+    
+class flipped(compose):
+    def __call__(self, *args, **kwargs):
+        return super().__call__(*reversed(args), **kwargs)
+    
+compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path][{
+        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()
-    })['json']['requests'][__import__('requests').Response]['toolz'].new_child(dict(fnmatch=flip(__import__('fnmatch').fnmatch)))
+}]['json']['requests'][__import__('requests').Response]['toolz'][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
+
+
+class juxt(compose):
+    """Any mapping is a callable, call each of its elements."""
+    def __init__(self, data=None, type=None):
+        if isiterable(data) and not isinstance(data, self.__class__.__mro__[1]):
+            self.type = type or data.__class__ or tuple
+        super().__init__(
+            list(data.items()) if issubclass(self.type, dict) else list(data) or list())
+
+    def __call__(self, *args, **kwargs):
+        result = list()
+        for callable in self.data:
+            if not isinstance(callable, (str, compose)) and isiterable(callable):
+                callable = juxt(callable)
+            if not isinstance(callable, compose):
+                callable = compose([callable])            
+            result.append(callable(*args, **kwargs))
+        return self.type(result)
+
+
+class condition(compose):
+    def __init__(self, condition=None, data=None):
+        setattr(self, 'condition', condition) or super().__init__(data)
+
+    def __call__(self, *args, **kwargs):
+        if not self:  return True
+        return super().__call__(*args, **kwargs)
+
+class ifthen(condition):
+    """Evaluate a function if a condition is true."""
+    def __call__(self, *args, **kwargs):
+        return self.condition(*args, **kwargs) and super(ifthen, self).__call__(*args, **kwargs)
+
+class ifnot(condition):
+    """Evaluate a function if a condition is false."""
+    def __call__(self, *args, **kwargs):
+        return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
+
+class instance(ifthen):
+    """Evaluate a function if a condition is true."""
+    def __init__(self, condition=None, data=None):        
+        if isinstance(condition, type):
+            condition = condition,            
+        if isinstance(condition, tuple):
+            condition = partial(flip(isinstance), condition)
+        super().__init__(condition, data or list())
+
+
+class FalseException(compose):
+    def __init__(self, exception):        
+        self.exception = exception
+    def __bool__(self):  return False
+
+class excepts(compose):
+    """Allow acception when calling a function"""
+    def __init__(self, exceptions=None, data=None):
+        setattr(self, 'exceptions', exceptions) or super().__init__(data)
+    
+    def __call__(self, *args, **kwargs):
+        try:
+            return super(excepts, self).__call__(*args, **kwargs)
+        except self.exceptions as e:
+            return FalseException(e)
 
 
 class composite(compose):
     """A composite composition with push and pop methods.  It chains compositions together
     allowing a chainable api to map, filter, reduce, and groupby functions.|
     """
-    __kwdefaults__ = ['data', list([compose()])], 
+    def __init__(self, data=None):
+        super().__init__([data or compose()])
     
     def __getattr__(self, attr):
         if isinstance(self, factory): self = composite()
@@ -340,10 +275,6 @@ class composite(compose):
         return self    
         
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    
-    @property
-    def compose(self): 
-        return compose(list(concat(self)))
 
 
 for cls in [ifthen, ifnot, excepts, do, instance]: 
@@ -352,7 +283,10 @@ for cls in [ifthen, ifnot, excepts, do, instance]:
 def right_attr(self, attr, other):
     return getattr(type(self)([other]), attr)(self)
 
-def op_attr(self, attr, other): return self.__getattr__(attr)(other)
+def op_attr(self, attr, other): 
+    if isinstance(self, factory): self = self[:]
+    self[-1] = self[-1].__getattribute__(attr)(other)
+    return self
 
 for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
     setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
@@ -379,7 +313,6 @@ class factory(composite):
     
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
-
 a = an = the = λ = factory()
 
 
@@ -393,9 +326,8 @@ class stargetter:
             return object(*self.args, **self.kwargs)
         return object
 
-
 class this_attributes(attributes):
-    def __getitem__(self, attr):
+    def __call__(self, attr):
         return partial(stargetter, attr)
     
 class this(compose):
@@ -404,4 +336,19 @@ class this(compose):
         if isinstance(attr, str):
             return self[itemgetter(attr)]
         return super().__getitem__(attr)
+
+class star(compose):
+    """Call a function starring the arguments for sequences and starring the keywords for containers."""
+    def __call__(self, *args, **kwargs):
+        args = args[0] if len(args) is 1 else (args,)
+        if not isiterable(args): 
+            args = [(args,)]
+        if isinstance(args, dict):
+            args = kwargs.update(args) or tuple()
+        return super(star, self).__call__(*args, **kwargs)
+
+
+# !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True determiners.ipynb
+
+
 
