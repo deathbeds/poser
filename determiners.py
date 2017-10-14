@@ -21,17 +21,10 @@ class functions(UserList):
         super().__init__(data or list())
     
     def __call__(self, *args, **kwargs):
-        """Call an iterable as a function evaluating the arguments in serial."""        
-        try:
-            if args[0] in attrgetter('tqdm', 'tqdm_notebook')(__import__('tqdm')):
-                self, args = args[0](self), args[1:]
-        except: pass
-            
+        """Call an iterable as a function evaluating the arguments in serial."""                    
         for value in self:
             args, kwargs = (
-                # Return the value of non-callables, they are constants
-                [value] if not callable(value) 
-                else [value(*args, **kwargs)]), dict()
+                [value(*args, **kwargs)] if callable(value) else [value]), dict()
         return args[0] if len(args) else None    
         
     def __copy__(self):
@@ -73,8 +66,7 @@ class functions(UserList):
 
 
 class partial(__import__('functools').partial):
-    def __eq__(self, other):
-        result = False
+    def __eq__(self, other, result = False):
         if isinstance(other, partial):
             result = True
             for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])):
@@ -125,7 +117,6 @@ class compose(functions):
                 value(*args, **kwargs) if type(value) == partial
                 else partial(value, *args, **kwargs) if args or kwargs
                 else value]
-            
             return self
         
         return wraps(getattr(value, 'func', value))(wrapper)
@@ -156,8 +147,13 @@ class compose(functions):
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
     
+compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path][{
+        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
+        for k, v in vars(__import__('operator')).items()
+}]['json']['requests'][__import__('requests').Response]['toolz'][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
+
+
 class do(compose):
-    """Call a function and return input argument."""
     def __call__(self, *args, **kwargs):
         super(do, self).__call__(*args, **kwargs)
         return args[0] if args else None
@@ -165,11 +161,6 @@ class do(compose):
 class flipped(compose):
     def __call__(self, *args, **kwargs):
         return super().__call__(*reversed(args), **kwargs)
-    
-compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path][{
-        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
-        for k, v in vars(__import__('operator')).items()
-}]['json']['requests'][__import__('requests').Response]['toolz'][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
 
 
 class juxt(compose):
@@ -196,8 +187,7 @@ class condition(compose):
         setattr(self, 'condition', condition) or super().__init__(data)
 
     def __call__(self, *args, **kwargs):
-        if not self:  return True
-        return super().__call__(*args, **kwargs)
+        return super().__call__(*args, **kwargs) if self else True
 
 class ifthen(condition):
     """Evaluate a function if a condition is true."""
@@ -253,8 +243,7 @@ class composite(compose):
         
     def push(self, type=compose, *args):
         self = self[:]
-        if not isinstance(type, compose):
-            type = type(*args)
+        if not isinstance(type, compose): type = type(*args)
         not self and self.pop()
         return self.append(type) or self
     
@@ -276,32 +265,35 @@ class composite(compose):
         
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
-
 for cls in [ifthen, ifnot, excepts, do, instance]: 
     setattr(composite, cls.__name__, partialmethod(composite.push, cls))
 
+
 def right_attr(self, attr, other):
-    return getattr(type(self)([other]), attr)(self)
+    return op_attr(type(self)(compose(other)), attr, self)
 
 def op_attr(self, attr, other): 
     if isinstance(self, factory): self = self[:]
-    self[-1] = self[-1].__getattribute__(attr)(other)
+    if isinstance(self, composite):
+        self.data[-1] = object.__getattribute__(self.data[-1], attr)(other)
+    else:
+        self = object.__getattribute__(self, attr)(other)
     return self
-
-for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
-    setattr(compose, dunder('i'+other), getattr(compose, dunder(other)))
-    setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
     
 for other in ['and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
     setattr(composite, dunder(other), partialmethod(op_attr, dunder(other)))
+    
+for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
+    setattr(compose, dunder('i'+other), partialmethod(op_attr, dunder(other)))
+    setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
+    setattr(composite, dunder('r'+other), partialmethod(right_attr, dunder(other)))
 
 
 class factory(composite):
     args, kwargs = tuple(), dict()
 
     def __getitem__(self, attr):
-        if attr == slice(None): 
-            return composite()
+        if attr == slice(None): return composite()
         if self.args or self.kwargs:
             attr = partial(attr, *self.args, **self.kwargs)
         return super().__getitem__(attr)
@@ -326,11 +318,12 @@ class stargetter:
             return object(*self.args, **self.kwargs)
         return object
 
-class this_attributes(attributes):
-    def __call__(self, attr):
-        return partial(stargetter, attr)
     
 class this(compose):
+    class this_attributes(attributes):
+        def __call__(self, attr):
+            return partial(stargetter, attr)
+
     _attributes_ = this_attributes()
     def __getitem__(self, attr):
         if isinstance(attr, str):
@@ -349,6 +342,3 @@ class star(compose):
 
 
 # !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True determiners.ipynb
-
-
-

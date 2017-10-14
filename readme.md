@@ -82,14 +82,27 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 ```python
-    f = a**int*range | a**str*str.upper
-    f(10), f('abc'), f(10.)
+    (a**str&str.upper)(10.)
 ```
 
 
 
 
-    (range(0, 10), 'ABC', False)
+    False
+
+
+
+
+```python
+    f = a**int*range | a**str*str.upper
+    f(10), f('abc')#, f(10.)
+    f
+```
+
+
+
+
+    composite>[ifnot>instance>partial(<function flip at 0x1055c7bf8>, (<class 'int'>,)):[<class 'range'>]:[instance>partial(<function flip at 0x1055c7bf8>, (<class 'str'>,)):[<method 'upper' of 'str' objects>]]]
 
 
 
@@ -110,18 +123,18 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    {_frozen_importlib.ModuleSpec: 1,
+    {abc.ABCMeta: 18,
      function: 9,
-     abc.ABCMeta: 19,
-     dict: 1,
+     _frozen_importlib.ModuleSpec: 1,
+     toolz.functoolz.curry: 2,
+     determiners.factory: 4,
+     builtin_function_or_method: 4,
      tuple: 1,
      str: 5,
      type: 10,
-     builtin_function_or_method: 4,
-     toolz.functoolz.curry: 2,
-     _frozen_importlib_external.SourceFileLoader: 1,
      NoneType: 1,
-     determiners.factory: 4}
+     _frozen_importlib_external.SourceFileLoader: 1,
+     dict: 1}
 
 
 
@@ -140,7 +153,7 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook determiners.ipynb to python
-    [NbConvertApp] Writing 12644 bytes to determiners.py
+    [NbConvertApp] Writing 12500 bytes to determiners.py
 
 
 
@@ -150,6 +163,6 @@ Convert the single Jupyter notebook to a python script.
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 4342 bytes to readme.md
+    [NbConvertApp] Writing 2942 bytes to readme.md
     parsing /Users/tonyfast/fidget/determiners.py...
 
