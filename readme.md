@@ -1,14 +1,14 @@
 
-# `determiners` compose functions
+# `articles` compose functions
 
-`determiners` are cracked out Python lists that are `callable`. 
+`articles` are cracked out Python lists that are `callable`. 
 
 > Inspired by toolz and underscore.chain.
 
 
 ```python
-    from determiners import *    
-    assert a == an == the
+    from articles import *    
+    assert a == an == the == λ
 ```
 
 ## Usage
@@ -61,7 +61,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 ### operators
 
-`determiners` include the full python data model including incremental and right operators.
+`articles` include the full python data model including incremental and right operators.
 
 
 ```python
@@ -102,7 +102,7 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    composite>[ifnot>instance>partial(<function flip at 0x1055c7bf8>, (<class 'int'>,)):[<class 'range'>]:[instance>partial(<function flip at 0x1055c7bf8>, (<class 'str'>,)):[<method 'upper' of 'str' objects>]]]
+    composite>[ifnot>instance>partial(<function flip at 0x102edebf8>, (<class 'int'>,)):[<class 'range'>]:[instance>partial(<function flip at 0x102edebf8>, (<class 'str'>,)):[<method 'upper' of 'str' objects>]]]
 
 
 
@@ -123,18 +123,18 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 
 
-    {abc.ABCMeta: 18,
+    {_frozen_importlib_external.SourceFileLoader: 1,
      function: 9,
+     dict: 1,
      _frozen_importlib.ModuleSpec: 1,
-     toolz.functoolz.curry: 2,
-     determiners.factory: 4,
+     abc.ABCMeta: 18,
      builtin_function_or_method: 4,
      tuple: 1,
+     articles.factory: 4,
      str: 5,
      type: 10,
      NoneType: 1,
-     _frozen_importlib_external.SourceFileLoader: 1,
-     dict: 1}
+     toolz.functoolz.curry: 2}
 
 
 
@@ -142,27 +142,27 @@ Use the `getattr` method to append `the._attributes` objects togethers.
 
 Convert the single Jupyter notebook to a python script.
 
-## `determiners` structure
+## `articles` structure
 
 ![](classes_No_Name.png)
 
 
 ```bash
     %%bash 
-    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True determiners.ipynb
+    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
 ```
 
-    [NbConvertApp] Converting notebook determiners.ipynb to python
-    [NbConvertApp] Writing 12500 bytes to determiners.py
+    [NbConvertApp] Converting notebook articles.ipynb to python
+    [NbConvertApp] Writing 12497 bytes to articles.py
 
 
 
 ```python
     !jupyter nbconvert --to markdown readme.ipynb
-    !pyreverse -o png -bmy -fALL determiners
+    !pyreverse -o png -bmy -fALL articles
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 2942 bytes to readme.md
+    [NbConvertApp] Writing 3238 bytes to readme.md
     parsing /Users/tonyfast/fidget/determiners.py...
 
