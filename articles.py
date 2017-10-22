@@ -10,7 +10,7 @@ from toolz.curried import isiterable, identity, concat, flip, cons
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this'
 
 
 class functions(UserList):
@@ -31,6 +31,8 @@ class functions(UserList):
         compose = type(self)(*map(copy, self.__getstate__()))
         compose.data = list(map(copy, self.data))
         return compose
+    
+    copy = __copy__
 
     def __exit__(self, exc_type, exc_value, traceback): pass
     
