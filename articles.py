@@ -149,10 +149,10 @@ class compose(functions):
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
     
-compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path][{
+compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path]['toolz'][{
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()
-}]['json']['requests'][__import__('requests').Response]['toolz'][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
+}]['json']['requests'][__import__('requests').Response][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
 
 
 class do(compose):
