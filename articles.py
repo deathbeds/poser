@@ -10,7 +10,7 @@ from toolz.curried import isiterable, identity, concat, flip, cons
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this', 'juxt'
 
 
 class functions(UserList):
@@ -84,13 +84,10 @@ class attributes(functions):
             raise AttributeError(key)
 
     def __call__(self, key):
-        for mapping in reversed(self):
-            try:
-                value = getattr(mapping, '__dict__', mapping)[key]
-                if callable(value):
-                    return (type(mapping) is type and flipped or identity)(value)
-            except KeyError as e: pass
-        else: raise e
+        for mapping in reversed(self.data):
+            value = getattr(mapping, '__dict__', mapping).get(key, None)
+            if value and callable(value):
+                return (type(mapping) is type and flipped or identity)(value)
 
     def __dir__(self): 
         return [
@@ -121,6 +118,7 @@ class compose(functions):
                 else value]
             return self
         
+        
         return wraps(getattr(value, 'func', value))(wrapper)
         
     __truediv__  = partialmethod(__getattr__, map)
@@ -149,10 +147,10 @@ class compose(functions):
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
     
-compose._attributes_['inspect']['builtins']['collections']['pathlib'][__import__('pathlib').Path]['toolz'][{
+compose._attributes_[dict(fnmatch=flip(__import__('fnmatch').fnmatch))][{
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()
-}]['json']['requests'][__import__('requests').Response][dict(fnmatch=flip(__import__('fnmatch').fnmatch))];
+}]['inspect']['builtins']['itertools']['collections']['pathlib'][__import__('pathlib').Path]['json']['requests']['toolz'];
 
 
 class do(compose):
@@ -244,15 +242,14 @@ class composite(compose):
         return wraps(super(composite, self).__getattr__(attr))(wrapped)
         
     def push(self, type=compose, *args):
-        self = self[:]
-        if not isinstance(type, compose): type = type(*args)
-        not self and self.pop()
-        return self.append(type) or self
+        self[type(*args)]
+        not self.data[0] and self.pop(0)
+        return self
     
 
     def __getitem__(self, *args, **kwargs):
         if isinstance(self, factory): self = composite()
-        if object == slice(None): return self
+        if args[0] == slice(None): return self
         if args and isinstance(args[0], (int, slice)): 
             try:
                 return self.data[args[0]]
@@ -319,7 +316,6 @@ class stargetter:
         if callable(object):
             return object(*self.args, **self.kwargs)
         return object
-
     
 class this(compose):
     class this_attributes(attributes):
