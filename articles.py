@@ -150,7 +150,7 @@ class compose(functions):
 compose._attributes_[dict(fnmatch=flip(__import__('fnmatch').fnmatch))][{
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()
-}]['inspect']['builtins']['itertools']['collections']['pathlib'][__import__('pathlib').Path]['json']['requests']['toolz'];
+}]['io']['inspect']['builtins']['itertools']['collections']['pathlib'][__import__('pathlib').Path]['json']['requests']['toolz'];
 
 
 class do(compose):
