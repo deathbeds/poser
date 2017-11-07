@@ -6,7 +6,7 @@ from functools import partialmethod, wraps
 from inspect import getfullargspec
 from itertools import zip_longest, starmap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
-from toolz.curried import isiterable, identity, concat, flip, cons
+from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
@@ -290,15 +290,17 @@ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'flo
 
 
 class factory(composite):
-    args, kwargs = tuple(), dict()
-
+    __slots__ = 'args', 'kwargs'
+    
     def __getitem__(self, attr):
-        if attr == slice(None): return composite()
-        if self.args or self.kwargs:
+        if attr == slice(None): attr = composite()
+        if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             attr = partial(attr, *self.args, **self.kwargs)
         return super().__getitem__(attr)
         
-    def __call__(self, *args, **kwargs):     
+    def __call__(self, *args, **kwargs):
+        if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
+            return self[:](*concatv(self.args, args), **merge(self.kwargs, kwargs))
         self = type(self)()
         self.args, self.kwargs = args, kwargs
         return self
