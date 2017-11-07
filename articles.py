@@ -269,6 +269,7 @@ for cls in [ifthen, ifnot, excepts, do, instance]:
 
 
 def right_attr(self, attr, other):
+    self = self[:]
     return op_attr(type(self)(compose(other)), attr, self)
 
 def op_attr(self, attr, other): 
@@ -339,4 +340,6 @@ class star(compose):
         return super(star, self).__call__(*args, **kwargs)
 
 
-# !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
+if __name__ == '__main__':
+    get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
+
