@@ -106,14 +106,16 @@ class compose(functions):
         except: pass
         
         value = callable(attr) and attr or self._attributes_(attr)
+        # If there is no attribute
         if attr is value:
             if args or kwargs:
                 return self[partial(value, *args, **kwargs)]
             return self[value]
+    
         def wrapper(*args, **kwargs):
             nonlocal value
             (self.data[-1] if isinstance(self, composite) else self)[
-                value(*args, **kwargs) if type(value) == partial
+                value.func(*args, **kwargs) if isinstance(value,  partial)
                 else partial(value, *args, **kwargs) if args or kwargs
                 else value]
             return self
@@ -147,10 +149,10 @@ class compose(functions):
     def __dir__(self):
         return super().__dir__() + dir(self._attributes_)
     
-compose._attributes_[dict(fnmatch=flip(__import__('fnmatch').fnmatch))][{
+compose._attributes_[dict(fnmatch=flip(__import__('fnmatch').fnmatch))]['io']['inspect']['builtins']['itertools']['collections']['pathlib'][__import__('pathlib').Path]['json']['requests']['toolz'][{
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()
-}]['io']['inspect']['builtins']['itertools']['collections']['pathlib'][__import__('pathlib').Path]['json']['requests']['toolz'];
+}];
 
 
 class do(compose):
