@@ -6,19 +6,23 @@ from functools import partialmethod, wraps
 from inspect import getfullargspec
 from itertools import zip_longest, starmap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
-from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge
+from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this', 'juxt'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this', 'juxt', 'parallel', 'memo'
 
 
 class functions(UserList):
     """A composition of functions."""
+    @property
+    def __annotations__(self):
+        return dict()
     def __init__(self, data=None):
         if data and not isiterable(data):
             data = [data]
         super().__init__(data or list())
+        self.__qualname__ = __name__ + '.' + type(self).__name__
     
     def __call__(self, *args, **kwargs):
         """Call an iterable as a function evaluating the arguments in serial."""                    
@@ -37,16 +41,17 @@ class functions(UserList):
     def __exit__(self, exc_type, exc_value, traceback): pass
     
     __enter__ = __deepcopy__ = __copy__
-    __abs__ = __call__
+    def __abs__(self):
+        return self.__call__
     
     def __reversed__(self): 
         self.data = type(self.data)(reversed(self.data))
         return self
     
-    def __repr__(self):
-        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()))   
+    def __repr__(self, i=0):
+        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()[i:]))   
     __name__ = property(__repr__)
-    
+        
     def __hash__(self): return hash(tuple(self))
     def __bool__(self): return any(self.data)
     def __getstate__(self, state=None):
@@ -166,6 +171,7 @@ class flipped(compose):
 
 
 class juxt(compose):
+    __slots__ = 'data', 'type'
     """Any mapping is a callable, call each of its elements."""
     def __init__(self, data=None, type=None):
         if isiterable(data) and not isinstance(data, self.__class__.__mro__[1]):
@@ -263,7 +269,7 @@ class composite(compose):
             self.push()
             self[-1].__getitem__(*args, **kwargs)
         return self    
-        
+    
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
 
 for cls in [ifthen, ifnot, excepts, do, instance]: 
@@ -310,6 +316,34 @@ class factory(composite):
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
 a = an = the = λ = factory()
+
+
+class memo(composite):
+    def __init__(self, cache=None, data=None):
+        self.cache = cache or dict()
+        super().__init__(data)
+
+    def memoize(self): return memoize(super().__call__, cache=self.cache)
+    
+    __call__ = property(memoize)
+
+    __repr__ = partialmethod(composite.__repr__, 1)
+
+
+class parallel(composite):
+    def __init__(self, jobs, data=None):
+        self.jobs = jobs
+        super().__init__(data)
+        
+    def map(self, function):
+        return super().__getattr__('map')(__import__('joblib').delayed(function))
+
+    __truediv__ = map
+    
+    def __call__(self, *args, **kwargs):
+        return __import__('joblib').Parallel(self.jobs)(super().__call__(*args, **kwargs))
+        
+    __repr__ = partialmethod(composite.__repr__, 1)
 
 
 class stargetter:
