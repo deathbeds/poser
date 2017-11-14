@@ -19,10 +19,9 @@ class functions(UserList):
     __slots__ = 'data',
         
     def __init__(self, data=None):
-        data = getattr(data, 'data', data)
-        if data and not isiterable(data):
+        if data and not isiterable(data): 
             data = [data]
-        super().__init__(data or list())
+        super().__init__(data)
         self.__qualname__ = __name__ + '.' + type(self).__name__
     
     def __call__(self, *args, **kwargs):
@@ -31,17 +30,15 @@ class functions(UserList):
             args, kwargs = (
                 [value(*args, **kwargs)] if callable(value) else [value]), dict()
         return args[0] if len(args) else None    
+    
+    def __getitem__(self, object):
+        if object == slice(None): return self        
+        if isinstance(object, (int, slice)): 
+            try:
+                return self.data[object]
+            except IndexError as e: raise e
+        return self.append(object) or self
         
-    def __copy__(self):
-        compose = type(self)(*map(copy, self.__getstate__()))
-        compose.data = list(map(copy, self.data))
-        return compose
-    
-    copy = __copy__
-
-    def __exit__(self, exc_type, exc_value, traceback): pass
-    
-    __enter__ = __deepcopy__ = __copy__
     def __abs__(self):
         return self.__call__
     
@@ -64,16 +61,7 @@ class functions(UserList):
                 return self[partial(attr, *args, **kwargs)]
             return self[attr]
         raise AttributeError(attr)
-
-    
-    def __getitem__(self, object):
-        if object == slice(None): return self        
-        if isinstance(object, (int, slice)): 
-            try:
-                return self.data[object]
-            except IndexError as e: raise e
-        return self.append(object) or self
-    
+        
     @property
     def _first(self):
         out = self
@@ -88,15 +76,19 @@ class functions(UserList):
     def __signature__(self):
         return signature(self._first)
     
-    def __magic__(self, name):
-        from IPython import get_ipython
-        ip = get_ipython()
-        if ip:            
-            def magic_wrapper(line, cell=None):
-                if not(cell is None):
-                    line += '\n'+cell
-                return self(line)
-            ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
+    def __getstate__(self):
+        return tuple(getattr(self, slot) for slot in self.__slots__)
+    
+    def __setstate__(self, state):
+        for attr, value in zip(self.__slots__, state): setattr(self, attr, value)
+            
+    def __copy__(self, memo=None):
+        new = type(self)()
+        return new.__setstate__(self.__getstate__()) or new
+    
+    def __exit__(self, exc_type, exc_value, traceback): pass
+    copy = __copy__
+    __enter__ = __deepcopy__ = __copy__
 
 
 class partial(__import__('functools').partial):
@@ -109,10 +101,8 @@ class partial(__import__('functools').partial):
 
 
 class attributes(ChainMap):
-    def new_child(self, m=None):
-        from importlib import  import_module
-        if type(m) is str:
-            m = import_module(m)
+    def load(self, m=None):
+        m = type(m) is str and __import__('importlib').import_module(m) or m
         self.maps.append(getattr(m, '__dict__', m))
 
 
@@ -136,15 +126,7 @@ class compose(functions):
                         else value]
                     return self
                 return wraps(getattr(value, 'func', value))(wrapper)
-            raise e
-    
-    def __getstate__(self):
-        return tuple(getattr(self, slot) for slot in self.__slots__)
-    
-    def __setstate__(self, state):
-        for attr, value in zip(self.__slots__, state):
-            setattr(self, attr, value)
-        
+            raise e        
     __truediv__  = partialmethod(__getattr__, map)
     __floordiv__ = partialmethod(__getattr__, filter)
     __matmul__   = partialmethod(__getattr__, groupby)
@@ -170,14 +152,24 @@ class compose(functions):
     def __dir__(self):
         return super().__dir__() + list(self._attributes_.keys())
     
+    def __magic__(self, name):
+        from IPython import get_ipython
+        ip = get_ipython()
+        if ip:            
+            def magic_wrapper(line, cell=None):
+                if not(cell is None):
+                    line += '\n'+cell
+                return self(line)
+            ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
+    
 for attrs in [
     dict(fnmatch=flip(__import__('fnmatch').fnmatch)),
     'io', 'inspect', 'builtins', 'itertools', 'collections', 'pathlib', 'json', 'requests', 'toolz',{
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()}
 ]:
-    compose._attributes_.new_child(attrs)
-    
+    compose._attributes_.load(attrs)
+
 del attrs
 
 
@@ -278,7 +270,6 @@ class composite(compose):
         not self.data[0] and self.pop(0)
         return self
     
-
     def __getitem__(self, *args, **kwargs):
         if isinstance(self, factory): self = composite()
         if args[0] == slice(None): return self
@@ -298,7 +289,6 @@ class composite(compose):
 
 for cls in [ifthen, ifnot, excepts, do, instance]: 
     setattr(composite, cls.__name__, partialmethod(composite.push, cls))
-
 
 
 def right_attr(self, attr, other):
@@ -323,26 +313,26 @@ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'flo
 
 
 class factory(composite):
-    __slots__ = 'args', 'kwargs', 'data'
-    def __init__(self):
-        self.args, self.kwargs, self.data = None, None, list()
+    __slots__ = 'args', 'kwargs'
+    def __init__(self, args=None, kwargs=None):
+        self.args, self.kwargs = args, kwargs
         
     def __getitem__(self, attr):
-        if attr == slice(None): return compose() if isinstance(self, factory) else self
+        if attr == slice(None): return composite()
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             attr = partial(attr, *self.args, **self.kwargs)
-        return super().__getitem__(attr)
-        
+        return composite()[attr]
+            
     def __call__(self, *args, **kwargs):
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
-            return new[:](*concatv(self.args, args), **merge(self.kwargs, kwargs))
+            return next(concatv(self.args, args))
         self = type(self)()
         self.args, self.kwargs = args, kwargs
         return self
     
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
-a = an = the = λ = factory()
+a = an = the = λ = factory(composite)
 
 
 class memo(composite):
@@ -351,26 +341,21 @@ class memo(composite):
         super().__init__(data)
 
     def memoize(self): return memoize(super().__call__, cache=self.cache)
-    
     __call__ = property(memoize)
-
-    __repr__ = partialmethod(composite.__repr__, 1)
 
 
 class parallel(composite):
-    def __init__(self, jobs, data=None):
+    def __init__(self, jobs=4, data=None):
         self.jobs = jobs
         super().__init__(data)
         
     def map(self, function):
         return super().__getattr__('map')(__import__('joblib').delayed(function))
-
-    __truediv__ = map
     
     def __call__(self, *args, **kwargs):
         return __import__('joblib').Parallel(self.jobs)(super().__call__(*args, **kwargs))
         
-    __repr__ = partialmethod(composite.__repr__, 1)
+    __truediv__ = map
 
 
 class stargetter:
@@ -404,7 +389,7 @@ class star(compose):
                 kwargs.update(**input)
             else:
                 args += list(input)
-        return super(star, self).__call__(*args, **kwargs)
+        return super().__call__(*args, **kwargs)
 
 
 if __name__ == '__main__':
