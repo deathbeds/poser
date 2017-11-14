@@ -19,6 +19,7 @@ class functions(UserList):
     __slots__ = 'data',
         
     def __init__(self, data=None):
+        data = getattr(data, 'data', data)
         if data and not isiterable(data):
             data = [data]
         super().__init__(data or list())
@@ -135,7 +136,7 @@ class compose(functions):
                         else value]
                     return self
                 return wraps(getattr(value, 'func', value))(wrapper)
-        raise AttributeError(attr)
+            raise e
     
     def __getstate__(self):
         return tuple(getattr(self, slot) for slot in self.__slots__)
@@ -157,10 +158,10 @@ class compose(functions):
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
     
     def __lshift__(self, object):          return do(object)
-    def __xor__(self, object):             return excepts(object, self)
-    def __or__(self, object=None):         return ifnot(self, object)
-    def __and__(self, object=None):        return ifthen(self, object)
-    def __pow__(self, object=None):        return instance(object, self)
+    def __xor__(self, object):             return excepts(object)[self]
+    def __or__(self, object=None):         return ifnot(self)[object]
+    def __and__(self, object=None):        return ifthen(self)[object]
+    def __pow__(self, object=None):        return instance(object)[self]
     
     __pos__ = partialmethod(__getitem__, bool)
     __neg__ = partialmethod(__getitem__, not_)
