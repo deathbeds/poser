@@ -75,7 +75,7 @@ class functions(UserList):
     
     @property
     def __annotations__(self): return getattr(self._first, dunder('annotations'), {})
-
+    
     @property
     def __signature__(self):
         return signature(self._first)
@@ -109,13 +109,15 @@ class partial(__import__('functools').partial):
 
 class partial_attribute(partial):
     def __call__(self, object):
-        return self.func(object, *self.args, **self.keywords)
+        if callable(self.func):
+            return self.func(object, *self.args, **self.keywords)
+        return self.func
 
 
 class _composition_attr(object):
     def __init__(self, maps=list(), parent=None, composition=None):
         if not isiterable(maps): maps = [maps]
-        self.maps, self.composition, self.parent = list(maps), composition, parent
+        self._maps, self.composition, self.parent = list(maps), composition, parent
 
     @property
     def _current(self): 
@@ -126,9 +128,6 @@ class _composition_attr(object):
     def maps(self):
         return [getattr(object, dunder('dict'), object) for object in self._maps]
     
-    @maps.setter
-    def maps(self, value): self._maps = value
-        
     def __getitem__(self, item):
         for object in self._maps:
             if getattr(object, dunder('name'), """""") == item:
@@ -142,7 +141,7 @@ class _composition_attr(object):
         keys = list()
         for raw, object in zip(self._maps, self.maps):
             keys += [getattr(raw, dunder('name'), """""")] + list(object.keys())
-        return keys
+        return list(sorted(filter(bool, keys)))
             
     def __getattr__(self, value):
         return self.__class__(*self[value], self.composition)
@@ -165,8 +164,7 @@ class _composition_attr(object):
                 value = value.func(*args, **kwargs)
             elif args or kwargs:
                 value = partial(value, *args, **kwargs)
-        (self.composition.data[-1] if isinstance(self.composition, composite) else self.composition)[value]
-        return self.composition
+        return self.composition[value]
 
 
 class compose(functions):
@@ -174,15 +172,20 @@ class compose(functions):
     _attributes_ = list(map(__import__, [
         'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
         'collections', 'itertools', 'functools', 'pathlib', 
-        'importlib', 'inspect']))
+        'importlib', 'inspect']))    
+    @property
+    def __attributes__(self):
+        return _composition_attr(self._attributes_, None, self[:])
     
     def __getattr__(self, attr, *args, **kwargs):
+        if callable(attr):
+            return self[partial(attr, *args, **kwargs)]
         try:
             parent = super().__getattr__(attr, *args, **kwargs)
             if parent: 
                 return parent
         except AttributeError as e:
-            return getattr(_composition_attr(self._attributes_, None, self[:]), attr)
+            return getattr(self.__attributes__, attr)
         
     __truediv__  = partialmethod(__getattr__, map)
     __floordiv__ = partialmethod(__getattr__, filter)
@@ -297,7 +300,7 @@ class composite(compose):
         
     def push(self):
         return self.data.append(compose()) or self
-    
+        
     def __getitem__(self, *args, **kwargs):
         if args[0] in IGNORE: return self
         if args and isinstance(args[0], (int, slice)): 
@@ -320,16 +323,15 @@ class composite(compose):
             ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
 
 
-def right_attr(self, attr, *args):
-    self = self[:]
-    return op_attr(type(self)(compose(*args)), attr, self)
+def right_attr(self, attr, object):
+    return op_attr(type(self[:])()[object], attr, self[:])
 
-def op_attr(self, attr, *args): 
+def op_attr(self, attr, value): 
     if isinstance(self, factory): self = self[:]
     if isinstance(self, composite):
-        self.data[-1] = object.__getattribute__(self.data[-1], attr)(*args)
+        self.data[-1] = object.__getattribute__(self.data[-1], attr)(value)
     else:
-        self = object.__getattribute__(self, attr)(*args)
+        self = object.__getattribute__(self, attr)(value)
     return self
     
 for other in ['and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
@@ -372,7 +374,7 @@ a = an = the = then = λ = factory(composite)
 
 class memo(composite):
     def __init__(self, cache=None, data=None):
-        self.cache = dict() if cache is None else cache
+        self.cache = dict() if cache is None else getattr(data, 'cache', cache)
         super().__init__(data)
 
     def memoize(self): return memoize(super().__call__, cache=self.cache)
@@ -420,6 +422,14 @@ class star(compose):
             else:
                 args += list(input)
         return super().__call__(*args, **kwargs)
+
+
+def load_ipython_extension(ip=None):
+    ip = ip or __import__('IPython').get_ipython()
+    if ip:
+        ip.Completer.use_jedi = False
+
+load_ipython_extension()
 
 
 if __name__ == '__main__':
