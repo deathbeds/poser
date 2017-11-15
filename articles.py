@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-from collections import UserList, ChainMap
+from collections import UserList
 from functools import partialmethod, wraps
 from inspect import signature, getdoc, getsource
 from itertools import zip_longest, starmap
@@ -12,7 +12,7 @@ from copy import copy
 dunder = '__{}__'.format
 IGNORE = slice(None),
 __all__ = (
-    'a', 'an', 'the', 'star', 'do', 'composite', 'λ', 'this', 'juxt', 
+    'a', 'an', 'the', 'star', 'do', 'λ', 'this', 'juxt', 'compose',
     'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance')
 
 
@@ -59,20 +59,15 @@ class functions(UserList):
     def __bool__(self): return any(self.data)
     
     def __getattr__(self, attr, *args, **kwargs):
-        if attr in self.__slots__ or attr in self.__dict__:
+        try:
             return object.__getattribute__(self, attr)
-        if callable(attr):
-            if args or kwargs:
-                return self[partial(attr, *args, **kwargs)]
-            return self[attr]
-        raise AttributeError(attr)
-        
-    @property
-    def _first(self):
-        out = self
-        while isinstance(out, UserList): out = out[0]
-        return out
-    
+        except Exception as e:
+            if callable(attr):
+                if args or kwargs:
+                    return self[partial(attr, *args, **kwargs)]
+                return self[attr]
+            raise e
+            
     @property
     def __annotations__(self): return getattr(self._first, dunder('annotations'), {})
     
@@ -158,7 +153,7 @@ class _composition_attr(object):
     def __call__(self, *args, **kwargs):
         value = self._current
         if isinstance(self.parent, type):
-                value = partial_attribute(value, *args, **kwargs)
+            value = partial_attribute(value, *args, **kwargs)
         elif callable(value):
             if isinstance(value, partial) and not (value.args or value.keywords):
                 value = value.func(*args, **kwargs)
@@ -179,11 +174,9 @@ class compose(functions):
     
     def __getattr__(self, attr, *args, **kwargs):
         if callable(attr):
-            return self[partial(attr, *args, **kwargs)]
+            return self[:][partial(attr, *args, **kwargs)]
         try:
-            parent = super().__getattr__(attr, *args, **kwargs)
-            if parent: 
-                return parent
+            return super().__getattr__(attr, *args, **kwargs)
         except AttributeError as e:
             return getattr(self.__attributes__, attr)
         
@@ -273,11 +266,10 @@ class instance(ifthen):
         super().__init__(condition, data or list())
 
 
-class FalseException(compose):
-    __slots__ = 'exception',
-    def __init__(self, exception):        
-        self.exception = exception
+class FalseException(object):
+    def __init__(self, exception): self.exception = exception
     def __bool__(self):  return False
+    def __repr__(self): return repr(self.exception)
 
 class excepts(compose):
     __slots__ = 'exceptions', 'data'
@@ -285,94 +277,52 @@ class excepts(compose):
         setattr(self, 'exceptions', exceptions) or super().__init__(data)
     
     def __call__(self, *args, **kwargs):
-        try:
-            return super(excepts, self).__call__(*args, **kwargs)
+        try: return super(excepts, self).__call__(*args, **kwargs)
         except self.exceptions as e:
             return FalseException(e)
 
 
-class composite(compose):
-    """A composite composition with push and pop methods.  It chains compositions together
-    allowing a chainable api to map, filter, reduce, and groupby functions.|
-    """
-    def __init__(self, data=None):
-        super().__init__(getattr(data, 'data', data) or [compose()])
-        
-    def push(self):
-        return self.data.append(compose()) or self
-        
-    def __getitem__(self, *args, **kwargs):
-        if args[0] in IGNORE: return self
-        if args and isinstance(args[0], (int, slice)): 
-            return self.data[args[0]]
-        if not self.data:
-            self.data.append(compose())
-        self.data[-1].__getitem__(*args, **kwargs)
-        return self    
-    
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    
-    def __magic__(self, name):
-        from IPython import get_ipython
-        ip = get_ipython()
-        if ip:            
-            def magic_wrapper(line, cell=None):
-                if not(cell is None):
-                    line += '\n'+cell
-                return self(line)
-            ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
-
-
 def right_attr(self, attr, object):
-    return op_attr(type(self[:])()[object], attr, self[:])
+    return compose()[object].__getattr__(attr)(self[:])
 
 def op_attr(self, attr, value): 
     if isinstance(self, factory): self = self[:]
-    if isinstance(self, composite):
-        self.data[-1] = object.__getattribute__(self.data[-1], attr)(value)
-    else:
-        self = object.__getattribute__(self, attr)(value)
+    self = object.__getattribute__(self, attr)(value)
     return self
-    
-for other in ['and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
-    setattr(composite, dunder(other), partialmethod(op_attr, dunder(other)))
-    
+        
 for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
-    setattr(compose, dunder('i'+other), partialmethod(op_attr, dunder(other)))
+    setattr(compose, dunder('i'+other), partialmethod(op_attr, dunder(other))) 
     setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
-    setattr(composite, dunder('r'+other), partialmethod(right_attr, dunder(other)))    
 
 for key, attr in zip(('do', 'excepts', 'instance'), ('lshift', 'xor', 'pow')):
-    [setattr(cls, key, getattr(cls, dunder(attr))) for cls in [compose, composite]]
+    setattr(compose, key, getattr(compose, dunder(attr)))
 
-del other
+del other, key, attr
 
 
-class factory(composite):
+class factory(compose):
     __slots__ = 'args', 'kwargs', 'data'
     def __init__(self, args=None, kwargs=None):
         self.args, self.kwargs, self.data = args, kwargs, list()
         
     def __getitem__(self, attr):
-        if attr == slice(None): return composite()
+        if attr == slice(None): return compose()
         if attr in IGNORE: return self
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             attr = partial(attr, *self.args, **self.kwargs)
-        return composite()[attr]
+        return compose()[attr]
             
     def __call__(self, *args, **kwargs):
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             return next(concatv(self.args, args))
-        self = type(self)()
-        self.args, self.kwargs = args, kwargs
-        return self
+        return factory(args, kwargs)
     
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
-a = an = the = then = λ = factory(composite)
+a = an = the = then = λ = factory(compose)
 
 
-class memo(composite):
+class memo(compose):
     def __init__(self, cache=None, data=None):
         self.cache = dict() if cache is None else getattr(data, 'cache', cache)
         super().__init__(data)
@@ -381,7 +331,7 @@ class memo(composite):
     __call__ = property(memoize)
 
 
-class parallel(composite):
+class parallel(compose):
     def __init__(self, jobs=4, data=None):
         self.jobs = jobs
         super().__init__(data)
@@ -408,27 +358,21 @@ class this(compose):
         return wrapped
     
     def __getitem__(self, attr):
-        if isinstance(attr, str):
-            return self[itemgetter(attr)]
-        return super().__getitem__(attr)
+        return super().__getitem__(itemgetter(attr) if isinstance(attr, str) else attr)
 
 class star(compose):
     """Call a function starring the arguments for sequences and starring the keywords for containers."""
     def __call__(self, *inputs):
         args, kwargs = list(), dict()
         for input in inputs:
-            if isinstance(input, dict):
-                kwargs.update(**input)
-            else:
-                args += list(input)
+            if isinstance(input, dict): kwargs.update(**input)
+            else:                       args += list(input)
         return super().__call__(*args, **kwargs)
 
 
 def load_ipython_extension(ip=None):
     ip = ip or __import__('IPython').get_ipython()
-    if ip:
-        ip.Completer.use_jedi = False
-
+    if ip: ip.Completer.use_jedi = False
 load_ipython_extension()
 
 
