@@ -53,8 +53,8 @@ class functions(UserList):
     def __repr__(self, i=0):
         return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()[i:]))   
 
-    __name__ = property(__repr__)
-        
+    @property
+    def __name__(self): return type(self).__name__
     def __hash__(self): return hash(tuple(self))
     def __bool__(self): return any(self.data)
     
@@ -165,8 +165,7 @@ class _composition_attr(object):
                 value = value.func(*args, **kwargs)
             elif args or kwargs:
                 value = partial(value, *args, **kwargs)
-        (self.composition.data[-1] if isinstance(self.composition, composite) else self.composition
-         )[value]
+        (self.composition.data[-1] if isinstance(self.composition, composite) else self.composition)[value]
         return self.composition
 
 
@@ -348,9 +347,9 @@ del other
 
 
 class factory(composite):
-    __slots__ = 'args', 'kwargs'
+    __slots__ = 'args', 'kwargs', 'data'
     def __init__(self, args=None, kwargs=None):
-        self.args, self.kwargs = args, kwargs
+        self.args, self.kwargs, self.data = args, kwargs, list()
         
     def __getitem__(self, attr):
         if attr == slice(None): return composite()
