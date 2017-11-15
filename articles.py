@@ -3,14 +3,17 @@
 
 from collections import UserList, ChainMap
 from functools import partialmethod, wraps
-from inspect import signature
+from inspect import signature, getdoc, getsource
 from itertools import zip_longest, starmap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
 from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'flip', 'compose', 'composite', 'λ', 'this', 'juxt', 'parallel', 'memo', 'then'
+IGNORE = slice(None),
+__all__ = (
+    'a', 'an', 'the', 'star', 'do', 'composite', 'λ', 'this', 'juxt', 
+    'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance')
 
 
 class functions(UserList):
@@ -30,7 +33,7 @@ class functions(UserList):
         return args[0] if len(args) else None    
     
     def __getitem__(self, object):
-        if object == slice(None): return self        
+        if object in IGNORE: return self        
         if isinstance(object, (int, slice)): 
             return self.data[object]
         return self.append(object)
@@ -49,6 +52,7 @@ class functions(UserList):
     
     def __repr__(self, i=0):
         return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()[i:]))   
+
     __name__ = property(__repr__)
         
     def __hash__(self): return hash(tuple(self))
@@ -69,7 +73,8 @@ class functions(UserList):
         while isinstance(out, UserList): out = out[0]
         return out
     
-    __annotations__ = {}
+    @property
+    def __annotations__(self): return getattr(self._first, dunder('annotations'), {})
 
     @property
     def __signature__(self):
@@ -97,17 +102,80 @@ class partial(__import__('functools').partial):
             for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])):
                 result &= (a is b) or (a == b)
         return result
+    
+    @property
+    def __doc__(self): return getdoc(self.func)
 
 
-class attributes(ChainMap):
-    def load(self, m=None):
-        m = type(m) is str and __import__('importlib').import_module(m) or m
-        self.maps.insert(0, getattr(m, '__dict__', m))
+class partial_attribute(partial):
+    def __call__(self, object):
+        return self.func(object, *self.args, **self.keywords)
+
+
+class _composition_attr(object):
+    def __init__(self, maps=list(), parent=None, composition=None):
+        if not isiterable(maps): maps = [maps]
+        self.maps, self.composition, self.parent = list(maps), composition, parent
+
+    @property
+    def _current(self): 
+        object = self._maps[0] 
+        return slice(None) if object is getdoc else object
+    
+    @property
+    def maps(self):
+        return [getattr(object, dunder('dict'), object) for object in self._maps]
+    
+    @maps.setter
+    def maps(self, value): self._maps = value
+        
+    def __getitem__(self, item):
+        for object in self._maps:
+            if getattr(object, dunder('name'), """""") == item:
+                return object, None
+        for raw, object in zip(self._maps, self.maps):
+            if item in object:
+                return object[item], raw
+        raise KeyError(item)
+
+    def __dir__(self):
+        keys = list()
+        for raw, object in zip(self._maps, self.maps):
+            keys += [getattr(raw, dunder('name'), """""")] + list(object.keys())
+        return keys
+            
+    def __getattr__(self, value):
+        return self.__class__(*self[value], self.composition)
+    
+    def __repr__(self): return repr(self._current)
+    
+    @property
+    def __doc__(self):
+        try:
+            return getdoc(self._current) or inspect.getsource(self._current)
+        except:
+            return """No docs."""
+    
+    def __call__(self, *args, **kwargs):
+        value = self._current
+        if isinstance(self.parent, type):
+                value = partial_attribute(value, *args, **kwargs)
+        elif callable(value):
+            if isinstance(value, partial) and not (value.args or value.keywords):
+                value = value.func(*args, **kwargs)
+            elif args or kwargs:
+                value = partial(value, *args, **kwargs)
+        (self.composition.data[-1] if isinstance(self.composition, composite) else self.composition
+         )[value]
+        return self.composition
 
 
 class compose(functions):
     """A composition of functions."""
-    _attributes_ = attributes()
+    _attributes_ = list(map(__import__, [
+        'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+        'collections', 'itertools', 'functools', 'pathlib', 
+        'importlib', 'inspect']))
     
     def __getattr__(self, attr, *args, **kwargs):
         try:
@@ -115,17 +183,7 @@ class compose(functions):
             if parent: 
                 return parent
         except AttributeError as e:
-            if attr in self._attributes_:
-                value = self._attributes_.get(attr, attr)
-                def wrapper(*args, **kwargs):
-                    nonlocal value
-                    (self.data[-1] if isinstance(self, composite) else self)[
-                        value.func(*args, **kwargs) if isinstance(value,  partial)
-                        else partial(value, *args, **kwargs) if args or kwargs and callable(value)
-                        else value]
-                    return self
-                return wraps(getattr(value, 'func', value))(wrapper)
-            raise e
+            return getattr(_composition_attr(self._attributes_, None, self[:]), attr)
         
     __truediv__  = partialmethod(__getattr__, map)
     __floordiv__ = partialmethod(__getattr__, filter)
@@ -150,26 +208,12 @@ class compose(functions):
     __invert__ = functions.__reversed__
     
     def __dir__(self):
-        return super().__dir__() + list(self._attributes_.keys())
-    
-    def __magic__(self, name):
-        from IPython import get_ipython
-        ip = get_ipython()
-        if ip:            
-            def magic_wrapper(line, cell=None):
-                if not(cell is None):
-                    line += '\n'+cell
-                return self(line)
-            ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
-    
-for attrs in [
-    dict(fnmatch=flip(__import__('fnmatch').fnmatch)),
-    'io', 'inspect', 'builtins', 'itertools', 'collections', 'pathlib', 'json', 'requests', 'toolz',{
+        return super().__dir__() + dir(_composition_attr(self._attributes_))
+                
+compose._attributes_.insert( 0, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
+compose._attributes_.append({
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
-        for k, v in vars(__import__('operator')).items()}]:
-    compose._attributes_.load(attrs)
-    
-del attrs
+        for k, v in vars(__import__('operator')).items()})
 
 
 class do(compose):
@@ -251,20 +295,12 @@ class composite(compose):
     """
     def __init__(self, data=None):
         super().__init__(getattr(data, 'data', data) or [compose()])
-    
-    def __getattr__(self, attr):
-        self = self[:]
-        def wrapped(*args, **kwargs):
-            nonlocal self, attr
-            self.data[-1] = getattr(self.data[-1], attr)(*args, **kwargs)
-            return self
-        return wraps(super().__getattr__(attr))(wrapped)
-    
+        
     def push(self):
         return self.data.append(compose()) or self
     
     def __getitem__(self, *args, **kwargs):
-        if args[0] == slice(None): return self
+        if args[0] in IGNORE: return self
         if args and isinstance(args[0], (int, slice)): 
             return self.data[args[0]]
         if not self.data:
@@ -273,6 +309,16 @@ class composite(compose):
         return self    
     
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    
+    def __magic__(self, name):
+        from IPython import get_ipython
+        ip = get_ipython()
+        if ip:            
+            def magic_wrapper(line, cell=None):
+                if not(cell is None):
+                    line += '\n'+cell
+                return self(line)
+            ip.register_magic_function(wraps(self)(magic_wrapper), 'line_cell', name)
 
 
 def right_attr(self, attr, *args):
@@ -308,6 +354,7 @@ class factory(composite):
         
     def __getitem__(self, attr):
         if attr == slice(None): return composite()
+        if attr in IGNORE: return self
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             attr = partial(attr, *self.args, **self.kwargs)
         return composite()[attr]
@@ -351,7 +398,8 @@ def stargetter(attr, *args, **kwargs):
     def __call__(self, object):
         object = attrgetter(attr)(object)
         return object(*args, **kwargs) if callable(object) else object 
-    
+
+
 class this(compose):
     def __getattr__(self, attr):
         def wrapped(*args, **kwargs):
