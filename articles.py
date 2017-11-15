@@ -136,7 +136,7 @@ class _composition_attr(object):
         for raw, object in zip(self._maps, self.maps):
             if item in object:
                 return object[item], raw
-        raise KeyError(item)
+        raise AttributeError(item)
 
     def __dir__(self):
         keys = list()
