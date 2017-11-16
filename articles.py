@@ -14,6 +14,7 @@ __all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', '
 
 
 class functions(UserList):
+    """Base class  for composing functions."""
     __slots__ = 'data',
         
     def __init__(self, data=None):
@@ -133,16 +134,16 @@ compose.attributer.append({
 class attributer(object):
     """attributer discovers attributes as functions """
     def __init__(self, maps=list(), parent=None, composition=None):
-        self._maps, self.composition, self.parent = list(not isiterable(maps) and [maps] or maps), composition, parent
+        self._mapping, self.composition, self.parent = list(not isiterable(maps) and [maps] or maps), composition, parent
 
     @property
-    def _map_(self): return slice(None) if self._maps[0] is getdoc else self._maps[0]
+    def _map_(self): return slice(None) if self._mapping[0] is getdoc else self._mapping[0]
     
     @property
-    def maps(self): return [getattr(object, dunder('dict'), object) for object in self._maps]
+    def _maps_(self): return [getattr(object, dunder('dict'), object) for object in self._mapping]
     
     def __getitem__(self, item):
-        for raw, object in zip(self._maps, self.maps):
+        for raw, object in zip(self._mapping, self._maps_):
             if getattr(raw, dunder('name'), """""") == item: return object, None
             if item in object: 
                 return object[item], raw
@@ -150,7 +151,7 @@ class attributer(object):
 
     def __dir__(self):
         keys = list()
-        for raw, object in zip(self._maps, self.maps):
+        for raw, object in zip(self._mapping, self._maps_):
             keys += [getattr(raw, dunder('name'), """""")] + list(object.keys())
         return list(sorted(filter(bool, keys)))
             
