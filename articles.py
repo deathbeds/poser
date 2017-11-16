@@ -11,9 +11,7 @@ from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
 IGNORE = slice(None),
-__all__ = (
-    'a', 'an', 'the', 'star', 'do', 'λ', 'this', 'juxt', 'compose',
-    'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance')
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance'
 
 
 class functions(UserList):
@@ -128,8 +126,7 @@ class _composition_attr(object):
     def __doc__(self):
         try:
             return getdoc(self._current) or inspect.getsource(self._current)
-        except:
-            return """No docs."""
+        except: pass
     
     def __call__(self, *args, **kwargs):
         value = self._current
@@ -196,20 +193,15 @@ class do(compose):
     def __call__(self, *args, **kwargs):
         super(do, self).__call__(*args, **kwargs)
         return args[0] if args else None
-    
-class flipped(compose):
-    def __call__(self, *args, **kwargs):
-        return super().__call__(*reversed(args), **kwargs)
 
 
 class juxt(compose):
     __slots__ = 'data', 'type'
-    """Any mapping is a callable, call each of its elements."""
+    
     def __init__(self, data=None, type=None):
         if isiterable(data) and not isinstance(data, self.__class__.__mro__[1]):
             self.type = type or data.__class__ or tuple
-        super().__init__(
-            list(data.items()) if issubclass(self.type, dict) else list(data) or list())
+        super().__init__(list(data.items()) if issubclass(self.type, dict) else list(data) or list())
 
     def __call__(self, *args, **kwargs):
         result = list()
@@ -228,17 +220,14 @@ class condition(compose):
         setattr(self, 'condition', condition) or super().__init__(data)
         
 class ifthen(condition):
-    """Evaluate a function if a condition is true."""
     def __call__(self, *args, **kwargs):
         return self.condition(*args, **kwargs) and super(ifthen, self).__call__(*args, **kwargs)
 
 class ifnot(condition):
-    """Evaluate a function if a condition is false."""
     def __call__(self, *args, **kwargs):
         return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 class instance(ifthen):
-    """Evaluate a function if a condition is true."""
     def __init__(self, condition=None, data=None):        
         if isinstance(condition, type):
             condition = condition,            
@@ -316,33 +305,15 @@ class parallel(compose):
         
     __truediv__ = map
 
-
-def stargetter(attr, *args, **kwargs):
-    def __call__(self, object):
-        object = attrgetter(attr)(object)
-        return object(*args, **kwargs) if callable(object) else object 
-
-
 class memo(compose):
     def __init__(self, cache=None, data=None):
         self.cache = dict() if cache is None else getattr(data, 'cache', cache)
         super().__init__(data)
 
-    def memoize(self): return memoize(super().__call__, cache=self.cache)
-    __call__ = property(memoize)
-
-
-class this(compose):
-    def __getattr__(self, attr):
-        def wrapped(*args, **kwargs):
-            return self.data.append(partial(stargetter, attr, *args, **kwargs)) or self
-        return wrapped
-    
-    def __getitem__(self, attr):
-        return super().__getitem__(itemgetter(attr) if isinstance(attr, str) else attr)
+    @property
+    def __call__(self): return memoize(super().__call__, cache=self.cache)
 
 class star(compose):
-    """Call a function starring the arguments for sequences and starring the keywords for containers."""
     def __call__(self, *inputs):
         args, kwargs = list(), dict()
         [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
