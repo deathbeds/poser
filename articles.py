@@ -10,7 +10,7 @@ from toolz.curried import isiterable, identity, concat, concatv, flip, cons, mer
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial'
 
 
 class functions(UserList):
@@ -69,6 +69,12 @@ class functions(UserList):
 
 
 class partial(__import__('functools').partial):
+    """partial overloads functools.partial to provide equality and documentation.
+    
+    >>> f = partial(range, 10) 
+    >>> f == partial(range, 10)
+    >>> assert partial(range, 10, 20) == partial(range, 10)
+    """
     def __eq__(self, other):
         return isinstance(other, partial) and all(
             (a is b) or (a == b) for a, b in zip_longest(*(cons(_.func, _.args) for _ in [self, other])))
@@ -77,11 +83,55 @@ class partial(__import__('functools').partial):
     def __doc__(self): return getdoc(self.func)
 
 class partial_attribute(partial):
+    """partial_attribute is a partial for MethodType attributes.
+    
+    >>> f = partial_attribute(str.replace, 'x', 'y')
+    >>> assert f('xy') == 'yy'
+    """
     def __call__(self, object):
         return callable(self.func) and self.func(object, *self.args, **self.keywords) or self.func
 
 
+class compose(functions):
+    def __getitem__(self, object):
+        if isiterable(object) and not isinstance(object, (str, compose)):
+            object = juxt(object)
+        return super().__getitem__(object)
+
+    def __getattr__(self, attr, *args, **kwargs):
+        if callable(attr): return self[:][partial(attr, *args, **kwargs)]
+        try:
+            return super().__getattr__(attr, *args, **kwargs)
+        except AttributeError as e:
+            return getattr(attributer(self.attributer, None, self[:]), attr)
+
+    def __lshift__(self, object):          return self[do(object)]
+    def __xor__(self, object=slice(None)):             return excepts(object)[self]
+    def __or__(self, object=slice(None)):         return ifnot(self)[object] # There is no reasonable way to make this an attribute?
+    def __and__(self, object=slice(None)):        return ifthen(self)[object]
+    def __pow__(self, object=slice(None)):        return instance(object)[self]
+    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
+    __truediv__  = partialmethod(__getattr__, map)
+    __floordiv__ = partialmethod(__getattr__, filter)
+    __matmul__   = partialmethod(__getattr__, groupby)
+    __mod__      = partialmethod(__getattr__, reduce)
+    __pos__ = partialmethod(__getitem__, bool)
+    __neg__ = partialmethod(__getitem__, not_)
+    __invert__ = functions.__reversed__    
+
+    def __dir__(self): return super().__dir__() + dir(attributer(self.attributer))
+
+compose.attributer = list(map(__import__, [
+        'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect']))
+compose.attributer.insert( 0, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
+compose.attributer.append({
+        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
+        for k, v in vars(__import__('operator')).items()})
+
+
 class attributer(object):
+    """attributer discovers attributes as functions """
     def __init__(self, maps=list(), parent=None, composition=None):
         self._maps, self.composition, self.parent = list(not isiterable(maps) and [maps] or maps), composition, parent
 
@@ -120,51 +170,6 @@ class attributer(object):
                 isinstance(self.parent, type) and partial_attribute(value, *args, **kwargs)
                 or type(value) is partial and not (value.args or value.keywords) and value.func(*args, **kwargs) 
                 or (args or kwargs) and partial(value, *args, **kwargs)) or value]
-
-
-class compose(functions):
-    attributer = list(map(__import__, [
-        'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
-        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect']))    
-    
-    @property
-    def __attributes__(self): return attributer(self.attributer, None, self[:])
-    
-    def __getattr__(self, attr, *args, **kwargs):
-        if callable(attr): return self[:][partial(attr, *args, **kwargs)]
-        try:
-            return super().__getattr__(attr, *args, **kwargs)
-        except AttributeError as e:
-            return getattr(self.__attributes__, attr)
-        
-    __truediv__  = partialmethod(__getattr__, map)
-    __floordiv__ = partialmethod(__getattr__, filter)
-    __matmul__   = partialmethod(__getattr__, groupby)
-    __mod__      = partialmethod(__getattr__, reduce)
-
-    def __getitem__(self, object):
-        if isiterable(object) and not isinstance(object, (str, compose)):
-            object = juxt(object)
-        return super().__getitem__(object)
-    
-    __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    
-    def __lshift__(self, object):          return self[do(object)]
-    def __xor__(self, object=slice(None)):             return excepts(object)[self]
-    def __or__(self, object=slice(None)):         return ifnot(self)[object] # There is no reasonable way to make this an attribute?
-    def __and__(self, object=slice(None)):        return ifthen(self)[object]
-    def __pow__(self, object=slice(None)):        return instance(object)[self]
-    
-    __pos__ = partialmethod(__getitem__, bool)
-    __neg__ = partialmethod(__getitem__, not_)
-    __invert__ = functions.__reversed__
-    
-    def __dir__(self): return super().__dir__() + dir(attributer(self.attributer))
-                
-compose.attributer.insert( 0, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
-compose.attributer.append({
-        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
-        for k, v in vars(__import__('operator')).items()})
 
 
 class do(compose):
