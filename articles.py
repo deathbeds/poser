@@ -20,9 +20,7 @@ class functions(UserList):
     __slots__ = 'data',
         
     def __init__(self, data=None):
-        if data and not isiterable(data): 
-            data = [data]
-        super().__init__(data or list())
+        super().__init__(data and not isiterable(data) and [data] or data or list())
         self.__qualname__ = __name__ + '.' + type(self).__name__
     
     def __call__(self, *args, **kwargs):
@@ -34,49 +32,32 @@ class functions(UserList):
     
     def __getitem__(self, object):
         if object in IGNORE: return self        
-        if isinstance(object, (int, slice)): 
-            return self.data[object]
-        return self.append(object)
-    
-    def append(self, object):
-        self.data.append(object)
-        if not self.data[0]: self.data.pop(0)
-        return  self
-        
-    def __abs__(self):
-        return self.__call__
-    
-    def __reversed__(self): 
-        self.data = type(self.data)(reversed(self.data))
-        return self
-    
-    def __repr__(self, i=0):
-        return (type(self).__name__ or 'λ').replace('compose', 'λ') + '>' + ':'.join(map(repr, self.__getstate__()[i:]))   
-
-    @property
-    def __name__(self): return type(self).__name__
-    def __hash__(self): return hash(tuple(self))
-    def __bool__(self): return any(self.data)
+        return self.data[object] if isinstance(object, (int, slice)) else self.append(object)
     
     def __getattr__(self, attr, *args, **kwargs):
         try:
             return object.__getattribute__(self, attr)
         except Exception as e:
             if callable(attr):
-                if args or kwargs:
-                    return self[partial(attr, *args, **kwargs)]
-                return self[attr]
+                return self[args or kwargs and partial(attr, *args, **kwargs) or attr]
             raise e
+
+    def append(self, object):
+        return  self.data.append(object) or not self.data[0] and self.data.pop(0) or self        
+    
+    def __repr__(self):
+        return (type(self).__name__ or 'λ').replace('compose', 'λ') + ':' + super().__repr__()
+
+    @property
+    def __name__(self): return type(self).__name__
             
     @property
     def __annotations__(self): return getattr(self._first, dunder('annotations'), {})
     
     @property
-    def __signature__(self):
-        return signature(self._first)
+    def __signature__(self): return signature(self[0])
     
-    def __getstate__(self):
-        return tuple(getattr(self, slot) for slot in self.__slots__)
+    def __getstate__(self): return tuple(getattr(self, slot) for slot in self.__slots__)
     
     def __setstate__(self, state):
         for attr, value in zip(self.__slots__, state): setattr(self, attr, value)
@@ -86,6 +67,10 @@ class functions(UserList):
         return new.__setstate__(self.__getstate__()) or new
     
     def __exit__(self, exc_type, exc_value, traceback): pass
+    def __hash__(self): return hash(tuple(self))
+    def __bool__(self): return any(self.data)
+    def __abs__(self): return self.__call__
+    def __reversed__(self): return type(self)(list(reversed(self.data)))    
 
     copy = __enter__ = __deepcopy__ = __copy__
 
@@ -104,9 +89,7 @@ class partial(__import__('functools').partial):
 
 class partial_attribute(partial):
     def __call__(self, object):
-        if callable(self.func):
-            return self.func(object, *self.args, **self.keywords)
-        return self.func
+        return callable(self.func) and self.func(object, *self.args, **self.keywords) or self.func
 
 
 class _composition_attr(object):
@@ -116,12 +99,10 @@ class _composition_attr(object):
 
     @property
     def _current(self): 
-        object = self._maps[0] 
-        return slice(None) if object is getdoc else object
+        return slice(None) if self._maps[0] is getdoc else self._maps[0]
     
     @property
-    def maps(self):
-        return [getattr(object, dunder('dict'), object) for object in self._maps]
+    def maps(self): return [getattr(object, dunder('dict'), object) for object in self._maps]
     
     def __getitem__(self, item):
         for object in self._maps:
@@ -322,15 +303,6 @@ class factory(compose):
 a = an = the = then = λ = factory(compose)
 
 
-class memo(compose):
-    def __init__(self, cache=None, data=None):
-        self.cache = dict() if cache is None else getattr(data, 'cache', cache)
-        super().__init__(data)
-
-    def memoize(self): return memoize(super().__call__, cache=self.cache)
-    __call__ = property(memoize)
-
-
 class parallel(compose):
     def __init__(self, jobs=4, data=None):
         self.jobs = jobs
@@ -351,6 +323,15 @@ def stargetter(attr, *args, **kwargs):
         return object(*args, **kwargs) if callable(object) else object 
 
 
+class memo(compose):
+    def __init__(self, cache=None, data=None):
+        self.cache = dict() if cache is None else getattr(data, 'cache', cache)
+        super().__init__(data)
+
+    def memoize(self): return memoize(super().__call__, cache=self.cache)
+    __call__ = property(memoize)
+
+
 class this(compose):
     def __getattr__(self, attr):
         def wrapped(*args, **kwargs):
@@ -364,9 +345,7 @@ class star(compose):
     """Call a function starring the arguments for sequences and starring the keywords for containers."""
     def __call__(self, *inputs):
         args, kwargs = list(), dict()
-        for input in inputs:
-            if isinstance(input, dict): kwargs.update(**input)
-            else:                       args += list(input)
+        [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
         return super().__call__(*args, **kwargs)
 
 
