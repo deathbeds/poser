@@ -14,8 +14,13 @@ __all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', '
 
 
 class functions(UserList):
-    """Base class  for composing functions."""
+    """functions is a callable list.
+    
+    >>> assert functions([range, len])(2, 10) is 8
+    """
     __slots__ = 'data',
+    _annotations_ = None
+    _name_ = None
         
     def __init__(self, data=None):
         super().__init__(data and not isiterable(data) and [data] or data or list())
@@ -45,10 +50,11 @@ class functions(UserList):
         return (type(self).__name__ or 'λ').replace('compose', 'λ') + ':' + super().__repr__()
 
     @property
-    def __name__(self): return type(self).__name__
+    def __name__(self): return self._name_ or type(self).__name__
             
     @property
-    def __annotations__(self): return getattr(self[0], dunder('annotations'), {})
+    def __annotations__(self): 
+        return self._annotations_ or self and getattr(self[0], dunder('annotations'), None) or {}
     
     @property
     def __signature__(self): return signature(self[0])
@@ -94,12 +100,33 @@ class partial_attribute(partial):
 
 
 class compose(functions):
+    """compose provides syntactic sugar to functions.
+    
+    Prefer using the factory articles `a`, `an`, `the`, and `λ` because they save
+    on typography in both naming and the use of brackets.
+    
+    >>> def mul(x): return x*10
+    >>> compose()[range].map(range).builtins.list()
+    λ:[<class 'range'>, partial(<class 'map'>, <class 'range'>), <class 'list'>]
+    """
     def __getitem__(self, object):
+        """Use brackets to append functions to the composition.
+        >>> compose()[range][list]
+        λ:[<class 'range'>, <class 'list'>]
+        
+        Iterable items are juxtaposed.
+        >>> compose()[range][list, type]
+        λ:[<class 'range'>, juxt:[<class 'list'>, <class 'type'>]]
+        """
         if isiterable(object) and not isinstance(object, (str, compose)):
             object = juxt(object)
         return super().__getitem__(object)
 
     def __getattr__(self, attr, *args, **kwargs):
+        """extensible attribute method relying on compose.attributer
+        
+        >>> assert a.range().len() == a.builtins.range().builtins.len() == a[range].len()
+        """
         if callable(attr): return self[:][partial(attr, *args, **kwargs)]
         try:
             return super().__getattr__(attr, *args, **kwargs)
@@ -110,7 +137,13 @@ class compose(functions):
     def __xor__(self, object=slice(None)):             return excepts(object)[self]
     def __or__(self, object=slice(None)):         return ifnot(self)[object] # There is no reasonable way to make this an attribute?
     def __and__(self, object=slice(None)):        return ifthen(self)[object]
-    def __pow__(self, object=slice(None)):        return instance(object)[self]
+    def __pow__(self, object=slice(None)):
+        self = self[:]
+        if isinstance(object, str):
+            return setattr(self, '_name_', object) or self
+        if isinstance(object, dict):
+            return setattr(self, '_annotations_', object) or self
+        return instance(object)[self]
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
     __truediv__  = partialmethod(__getattr__, map)
     __floordiv__ = partialmethod(__getattr__, filter)
@@ -131,8 +164,23 @@ compose.attributer.append({
         for k, v in vars(__import__('operator')).items()})
 
 
+compose.__truediv__.__doc__ = """>>> compose() / range
+λ:[partial(<class 'map'>, <class 'range'>)]"""
+compose.__floordiv__.__doc__ = """>>> compose() // range
+λ:[partial(<class 'filter'>, <class 'range'>)]"""
+compose.__matmul__.__doc__ = """>>> compose() @ range
+λ:[partial(<class 'groupby'>, <class 'range'>)]"""
+compose.__mod__.__doc__ = """>>> compose() % range
+λ:[partial(<class 'reduce'>, <class 'range'>)]"""
+
+
 class attributer(object):
-    """attributer discovers attributes as functions """
+    """attributer discovers attributes as functions 
+    
+    >>> attrs = attributer([__import__('builtins'), __import__('operator')])
+    >>> assert attrs.range() == attrs.builtins.range() and attrs.range()[0] is range
+    >>> assert attrs.add()[0] is __import__('operator').add
+    """
     def __init__(self, maps=list(), parent=None, composition=None):
         self._mapping, self.composition, self.parent = list(not isiterable(maps) and [maps] or maps), composition, parent
 
@@ -143,8 +191,10 @@ class attributer(object):
     def _maps_(self): return [getattr(object, dunder('dict'), object) for object in self._mapping]
     
     def __getitem__(self, item):
+        for object in self._mapping:
+            if getattr(object, dunder('name'), """""") == item: 
+                return object, None
         for raw, object in zip(self._mapping, self._maps_):
-            if getattr(raw, dunder('name'), """""") == item: return object, None
             if item in object: 
                 return object[item], raw
         raise AttributeError(item)
@@ -166,7 +216,7 @@ class attributer(object):
     
     def __call__(self, *args, **kwargs):
         value = self._map_
-        return self.composition[
+        return (self.composition or compose())[
             callable(value) and (
                 isinstance(self.parent, type) and partial_attribute(value, *args, **kwargs)
                 or type(value) is partial and not (value.args or value.keywords) and value.func(*args, **kwargs) 
@@ -174,12 +224,23 @@ class attributer(object):
 
 
 class do(compose):
+    """
+    >>> assert not compose()[print](10) and do()[print](10) is 10
+    10
+    10
+    """
+    
     def __call__(self, *args, **kwargs):
         super(do, self).__call__(*args, **kwargs)
         return args[0] if args else None
 
 
 class juxt(compose):
+    """juxtapose functions.
+    
+    >>> juxt([range, type])(10)
+    [range(0, 10), <class 'int'>]
+    """
     __slots__ = 'data', 'type'
     
     def __init__(self, data=None, type=None):
@@ -251,6 +312,11 @@ del other, key
 
 
 class factory(compose):
+    """A factory for compositions.
+    
+    >>> a.range()
+    λ:[<class 'range'>]
+    """
     __slots__ = 'args', 'kwargs', 'data'
     def __init__(self, args=None, kwargs=None):
         self.args, self.kwargs, self.data = args, kwargs, list()
@@ -297,6 +363,18 @@ class star(compose):
         return super().__call__(*args, **kwargs)
 
 
+class dispatch(compose):
+    def __init__(self, *data):
+        self.dispatch = None
+        super().__init__(isinstance(data[0], dict) and list(data.items()) or data)
+    
+    def __call__(self, arg):
+        if not self.dispatch:
+            self.dispatch = __import__('functools').singledispatch(compose())
+            for cls, func in self.data: self.dispatch.register(cls, func)
+        return self.dispatch.dispatch(type(arg))(arg)
+
+
 def load_ipython_extension(ip=__import__('IPython').get_ipython()):
     if ip: ip.Completer.use_jedi = False
 load_ipython_extension()
@@ -304,4 +382,5 @@ load_ipython_extension()
 
 if __name__ == '__main__':
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
+    get_ipython().system('python -m doctest articles.py')
 
