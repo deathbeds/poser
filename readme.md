@@ -1,168 +1,123 @@
 
 # `articles` compose functions
 
-`articles` are cracked out Python lists that are `callable`. 
+`articles` provides a generic chainable model for function compositions.  `articles` relies on 
+a large portion of the python data model to create a typographically dense interface to function 
+compositions.
 
-> Inspired by toolz and underscore.chain.
+                pip install git+https://github.com/tonyfast/articles
+                
+---
+            
+        
+
+> `articles` is inspired by the `d3js`, `pandas`, `underscorejs`, and `toolz` apis.
+
+   
+               
 
 
 ```python
-    from articles import *    
-    assert a == an == the == λ
+    from articles import *; assert a is an is the is λ
 ```
 
-## Usage
+## compose functions using brackets
 
-### itemgetter
-
-Use the `getitem` method to append functions togethers.
+Each composition begins evaluation at the first element in the list.
 
 
 ```python
-    the[range][list](10)
-```
-
-
-
-
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-
-
-### attrgetter
-
-Use the `getattr` method to append `the._attributes` objects togethers.
-
-
-```python
-    the.range().list()(10)
+    f = the[range][list]; f
 ```
 
 
 
 
-    [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    λ:[<class 'range'>, <class 'list'>]
 
 
 
-### partial
+Brackets juxtapose iterable objects.
 
 
 ```python
-    the(3).range().list()(10), the.range(3).list()(10)
+    the[range, type], the[[range, type]], the[{range, type}], the[{'x': range, 'y': type}]
 ```
 
 
 
 
-    ([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], [3, 4, 5, 6, 7, 8, 9])
+    (λ:[juxt((<class 'tuple'>,))[<class 'range'>, <class 'type'>]],
+     λ:[juxt((<class 'list'>,))[<class 'range'>, <class 'type'>]],
+     λ:[juxt((<class 'set'>,))[<class 'type'>, <class 'range'>]],
+     λ:[juxt((<class 'dict'>,))[('y', <class 'type'>), ('x', <class 'range'>)]])
 
 
 
-### operators
-
-`articles` include the full python data model including incremental and right operators.
-
-
-```python
-    for i in ['__add__', '__sub__', '__mul__', '__truediv__', '__floordiv__', '__matmul__', '__mod__']:
-        print(i, getattr(a, i))
-```
-
-    __add__ <bound method factory.__getitem__ of factory>[λ>[]]>
-    __sub__ <bound method factory.__getitem__ of factory>[λ>[]]>
-    __mul__ <bound method factory.__getitem__ of factory>[λ>[]]>
-    __truediv__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__truediv__')
-    __floordiv__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__floordiv__')
-    __matmul__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__matmul__')
-    __mod__ functools.partial(<bound method op_attr of factory>[λ>[]]>, '__mod__')
-
-
-### classes
+Each each composition is immutable.
 
 
 ```python
-    (a**str&str.upper)(10.)
+    assert f[len] is f; f
 ```
 
 
 
 
-    False
+    λ:[<class 'range'>, <class 'list'>, <built-in function len>]
 
 
+
+But it is easy to copy a composition.
 
 
 ```python
-    f = a**int*range | a**str*str.upper
-    f(10), f('abc')#, f(10.)
-    f
+    g = f.copy() 
+    assert g is not f and g == f and g[type] > f
+```
+
+# compose functions with attributes
+
+Each composition has an extensible attribution system.  Attributes can be accessed in a shallow or verbose way.
+
+
+```python
+    a.range() == a.builtins.range() == a[range]
 ```
 
 
 
 
-    composite>[ifnot>instance>partial(<function flip at 0x102edebf8>, (<class 'int'>,)):[<class 'range'>]:[instance>partial(<function flip at 0x102edebf8>, (<class 'str'>,)):[<method 'upper' of 'str' objects>]]]
+    True
 
 
 
 
 ```python
-    from pandas import *
-
-    df = (
-        the.Path('/Users/tonyfast/gists/').rglob('*.ipynb')
-        .map(the[a.identity(), a.read_text().loads()^Exception])
-        .filter(the.second()).take(10).dict()
-        .valmap(a.get('cells', default=[]) * DataFrame)
-    )[concat]()
-
-    (the * globals * dict.items @ the.second().type() * a.valmap(len))()
+    a.dir().len()["""articles begins with {} attributes mostly from the standard lib.""".format].print()(a)
 ```
 
+    articles begins with 1096 attributes mostly from the standard lib.
 
 
-
-    {_frozen_importlib_external.SourceFileLoader: 1,
-     function: 9,
-     dict: 1,
-     _frozen_importlib.ModuleSpec: 1,
-     abc.ABCMeta: 18,
-     builtin_function_or_method: 4,
-     tuple: 1,
-     articles.factory: 4,
-     str: 5,
-     type: 10,
-     NoneType: 1,
-     toolz.functoolz.curry: 2}
+# compose functions with symbols
 
 
-
-## Development
-
-Convert the single Jupyter notebook to a python script.
+```python
+    assert a /  range == a.map(range)
+    assert a // range == a.filter(range)
+    assert a @  range == a.groupby(range)
+    assert a %  range == a.reduce(range)
+```
 
 ## `articles` structure
 
 ![](classes_No_Name.png)
 
 
-```bash
-    %%bash 
-    jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
-```
-
-    [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 12497 bytes to articles.py
-
-
-
 ```python
     !jupyter nbconvert --to markdown readme.ipynb
     !pyreverse -o png -bmy -fALL articles
+    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
+    !python -m doctest articles.py
 ```
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 3238 bytes to readme.md
-    parsing /Users/tonyfast/fidget/determiners.py...
-

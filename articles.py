@@ -114,6 +114,7 @@ class compose(functions):
     λ:[<class 'range'>, partial(<class 'map'>, <class 'range'>), <class 'list'>]
     
     Conditional dispatching.
+    >>> a[10, 'test', {10}].map(a**int&range|a**str&str.upper|type).list()()
     [range(0, 10), 'TEST', <class 'set'>]
     """
     def __getitem__(self, object):
