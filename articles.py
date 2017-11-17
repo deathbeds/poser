@@ -10,7 +10,7 @@ from toolz.curried import isiterable, identity, concat, concatv, flip, cons, mer
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'cache', 'then', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'cache', 'then', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch'
 
 
 class functions(UserList):
@@ -22,7 +22,6 @@ class functions(UserList):
     """
     __slots__ = 'data',
     _annotations_ = None
-    _name_ = None
         
     def __init__(self, data=None):
         super().__init__(data and not isiterable(data) and [data] or data or list())
@@ -55,7 +54,7 @@ class functions(UserList):
         )+ super().__repr__()
 
     @property
-    def __name__(self): return self._name_ or type(self).__name__
+    def __name__(self): return type(self).__name__
             
     @property
     def __annotations__(self): 
@@ -145,7 +144,7 @@ class compose(functions):
     def __pow__(self, object=slice(None)):
         self = self[:]
         if isinstance(object, str):
-            return setattr(self, '_name_', object) or self
+            return setattr(self, '__doc__', object) or self
         if isinstance(object, dict):
             return setattr(self, '_annotations_', object) or self
         return instance(object)[self]
@@ -157,7 +156,7 @@ class compose(functions):
     __pos__ = partialmethod(__getitem__, bool)
     __neg__ = partialmethod(__getitem__, not_)
     __invert__ = functions.__reversed__    
-
+    
     def __dir__(self): return super().__dir__() + dir(attributer(self.attributer))
 
 compose.attributer = list(map(__import__, [
@@ -306,21 +305,28 @@ def right_attr(self, attr, object):
 def op_attr(self, attr, value): 
     return object.__getattribute__(self[:], attr)(value)
         
-for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']:
-    setattr(compose, dunder('i'+other), partialmethod(op_attr, dunder(other))) 
-    setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
+[setattr(compose, dunder('i'+other), partialmethod(op_attr, dunder(other))) or
+ setattr(compose, dunder('r'+other), partialmethod(right_attr, dunder(other)))
+ for other in ['mul', 'add', 'rshift' ,'sub', 'and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']]
 
-for key, other in zip(('do', 'excepts', 'instance'), ('lshift', 'xor', 'pow')):
-    setattr(compose, key, getattr(compose, dunder(other)))
-
-del other, key
+[setattr(compose, key, getattr(compose, dunder(other)))
+ for key, other in zip(('do', 'excepts', 'instance'), ('lshift', 'xor', 'pow'))];
 
 
 class factory(compose):
-    """A factory for compositions.
+    """A factory for compositions
     
-    >>> a.range()
+    >>> some = factory(compose)
+    >>> some.range()
     λ:[<class 'range'>]
+    
+    Supply partial arguments
+    
+    >>> a(10)(20)
+    10
+    >>> a(10)[range](20)
+    range(10, 20)
+    >>> assert a(10)[range](20) == a.range(10)(20)
     """
     __slots__ = 'args', 'kwargs', 'data'
     def __init__(self, args=None, kwargs=None):
@@ -342,7 +348,7 @@ a = an = the = then = λ = factory(compose)
 
 
 class parallel(compose):
-    """An embarassingly parallel compositions.
+    """An embarassingly parallel composition
     
     All map functions are delayed
     >>> parallel(jobs=4)[range].map(print) # doctest: +SKIP
@@ -351,6 +357,7 @@ class parallel(compose):
         setattr(self, 'jobs', jobs) or super().__init__(data)
         
     def map(self, function):
+        """A delay each function."""
         return super().__getattr__('map')(__import__('joblib').delayed(function))
     
     def __call__(self, *args, **kwargs):
@@ -362,9 +369,8 @@ class cache(compose):
     """a cached composition
     
     >>> f = cache().range()
-    >>> f(42); f.cache
-    range(0, 42)
-    {((42,), None): range(0, 42)}
+    >>> f(42), f.cache
+    (range(0, 42), {((42,), None): range(0, 42)})
     """
     def __init__(self, cache=None, data=None):
         self.cache = dict() if cache is None else getattr(data, 'cache', cache)
@@ -374,6 +380,12 @@ class cache(compose):
     def __call__(self): return memoize(super().__call__, cache=self.cache)
 
 class star(compose):
+    """star sequences as arguments and containers as keywords
+    
+    >>> def f(*args, **kwargs): return args, kwargs
+    >>> star()[f]([10, 20], {'foo': 'bar'})
+    ((10, 20), {'foo': 'bar'})
+    """
     def __call__(self, *inputs):
         args, kwargs = list(), dict()
         [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
@@ -381,6 +393,11 @@ class star(compose):
 
 
 class dispatch(compose):
+    """
+    >>> f = dispatch((str, str.upper), (int, range), (object, type))
+    >>> (a['text', 42, {10}] / f * list)()
+    ['TEXT', range(0, 42), <class 'set'>]
+    """
     def __init__(self, *data):
         self.dispatch = None
         super().__init__(isinstance(data[0], dict) and list(data.items()) or data)
@@ -399,5 +416,5 @@ load_ipython_extension()
 
 if __name__ == '__main__':
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
-    get_ipython().system('python -m doctest articles.py')
+    print(__import__('doctest').testmod(verbose=False))
 
