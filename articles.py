@@ -17,6 +17,8 @@ class functions(UserList):
     """functions is a callable list.
     
     >>> assert functions([range, len])(2, 10) is 8
+    >>> f = functions()
+    >>> assert f.copy() is not f and f.copy()[range] > f
     """
     __slots__ = 'data',
     _annotations_ = None
@@ -70,7 +72,7 @@ class functions(UserList):
             
     def __copy__(self, memo=None):
         new = type(self)()
-        return new.__setstate__(self.__getstate__()) or new
+        return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
 
     copy = __enter__ = __deepcopy__ = __copy__
 
@@ -103,7 +105,7 @@ class compose(functions):
     """compose provides syntactic sugar to functions.
     
     Prefer using the factory articles `a`, `an`, `the`, and `λ` because they save
-    on typography in both naming and the use of brackets.
+    on typography in both naming and the use of parenthesis.
     
     >>> def mul(x): return x*10
     >>> compose()[range].map(range).builtins.list()
