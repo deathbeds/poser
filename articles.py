@@ -112,6 +112,9 @@ class compose(functions):
     >>> def mul(x): return x*10
     >>> compose()[range].map(range).builtins.list()
     λ:[<class 'range'>, partial(<class 'map'>, <class 'range'>), <class 'list'>]
+    
+    Conditional dispatching.
+    [range(0, 10), 'TEST', <class 'set'>]
     """
     def __getitem__(self, object):
         """Use brackets to append functions to the composition.
@@ -138,16 +141,47 @@ class compose(functions):
             return getattr(attributer(self.attributer, None, self[:]), attr)
 
     def __lshift__(self, object):          return self[do(object)]
-    def __xor__(self, object=slice(None)):             return excepts(object)[self]
-    def __or__(self, object=slice(None)):         return ifnot(self)[object] # There is no reasonable way to make this an attribute?
-    def __and__(self, object=slice(None)):        return ifthen(self)[object]
     def __pow__(self, object=slice(None)):
+        """
+        >>> f = a**int*range
+        >>> a[10, '10'].map(f).list()()
+        [range(0, 10), False]
+        
+        A dictionary sets the function attributes.
+        
+        >>> assert (a**{'start': int, 'returns': range}*range).__annotations__
+        """
         self = self[:]
         if isinstance(object, str):
             return setattr(self, '__doc__', object) or self
         if isinstance(object, dict):
             return setattr(self, '_annotations_', object) or self
         return instance(object)[self]
+    
+    def __and__(self, object=slice(None)):        
+        """append an ifthen statement to the composition
+        
+        >>> (a&range)(0), (a&range)(10)
+        (0, range(0, 10))
+        """
+
+        return ifthen(self[:])[object]
+    def __or__(self, object=slice(None)):  
+        """append an ifnot statement to the composition
+        
+        >>> (a|range)(0), (a|range)(10)
+        (range(0, 0), 10)
+        """
+        return ifnot(self[:])[object] # There is no reasonable way to make this an attribute?
+    
+    def __xor__(self: 'λ', object: (slice, Exception)=slice(None)) -> 'λ':             
+        """append an exception to the composition
+        
+        >>> (a.str.upper()^TypeError)(10)
+        TypeError("descriptor 'upper' requires a 'str' object but received a 'int'",)
+        """
+        return excepts(object)[self[:]]
+
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
     __truediv__  = partialmethod(__getattr__, map)
     __floordiv__ = partialmethod(__getattr__, filter)
@@ -204,10 +238,9 @@ class attributer(object):
         raise AttributeError(item)
 
     def __dir__(self):
-        keys = list()
-        for raw, object in zip(self._mapping, self._maps_):
-            keys += [getattr(raw, dunder('name'), """""")] + list(object.keys())
-        return list(sorted(filter(bool, keys)))
+        return list(filter(bool, concat(
+            [getattr(raw, dunder('name'), """""")] + list(object.keys())
+            for raw, object in zip(self._mapping, self._maps_))))
             
     def __getattr__(self, value): return self.__class__(*self[value], self.composition)
     def __repr__(self): return repr(self._map_)
@@ -222,8 +255,11 @@ class attributer(object):
         value = self._map_
         return (self.composition is None and compose() or self.composition)[
             callable(value) and (
+                # ModuleType parents respond with partial_attributes
                 isinstance(self.parent, type) and partial_attribute(value, *args, **kwargs)
+                # a partial with no arguments is evaluated immediately.
                 or type(value) is partial and not (value.args or value.keywords) and value.func(*args, **kwargs) 
+                # otherwise return a partial
                 or (args or kwargs) and partial(value, *args, **kwargs)) or value]
 
 
@@ -269,14 +305,29 @@ class condition(compose):
         setattr(self, 'condition', condition) or super().__init__(data)
         
 class ifthen(condition):
+    """the composition is executed only if the condition is true.
+    
+    >>> (a[0, 10] / ifthen(bool)[range] * list)()
+    [False, range(0, 10)]
+    """
     def __call__(self, *args, **kwargs):
         return self.condition(*args, **kwargs) and super(ifthen, self).__call__(*args, **kwargs)
 
 class ifnot(condition):
+    """the composition is executed only if the condition is false.
+    
+    >>> (a[0, 10] / ifnot(bool)[range] * list)()
+    [range(0, 0), True]
+    """
     def __call__(self, *args, **kwargs):
         return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 class instance(ifthen):
+    """a conditional composition for instances/types
+    
+    >>> a[instance(str)[str.upper], instance(int)[range]](10)
+    (False, range(0, 10))
+    """
     def __init__(self, condition=None, data=None):        
         if isinstance(condition, type): condition = condition,            
         if isinstance(condition, tuple): condition = partial(flip(isinstance), condition)
@@ -284,11 +335,16 @@ class instance(ifthen):
 
 
 class FalseException(object):
+    """A false wrapper for an exceptions"""
     def __init__(self, exception): self.exception = exception
     def __bool__(self):  return False
     def __repr__(self): return repr(self.exception)
 
 class excepts(compose):
+    """
+    >>> excepts(TypeError)[str.upper](10)
+    TypeError("descriptor 'upper' requires a 'str' object but received a 'int'",)
+    """
     __slots__ = 'exceptions', 'data'
     def __init__(self, exceptions=None, data=None):
         setattr(self, 'exceptions', exceptions) or super().__init__(data)
@@ -416,6 +472,6 @@ load_ipython_extension()
 
 
 if __name__ == '__main__':
-    get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
     print(__import__('doctest').testmod(verbose=False))
+    get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
 
