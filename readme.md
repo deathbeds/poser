@@ -50,7 +50,7 @@ Brackets juxtapose iterable objects.
     (λ:[juxt((<class 'tuple'>,))[<class 'range'>, <class 'type'>]],
      λ:[juxt((<class 'list'>,))[<class 'range'>, <class 'type'>]],
      λ:[juxt((<class 'set'>,))[<class 'type'>, <class 'range'>]],
-     λ:[juxt((<class 'dict'>,))[('y', <class 'type'>), ('x', <class 'range'>)]])
+     λ:[juxt((<class 'dict'>,))[('x', <class 'range'>), ('y', <class 'type'>)]])
 
 
 
@@ -98,7 +98,7 @@ Each composition has an extensible attribution system.  Attributes can be access
     (a//a**__import__('types').ModuleType / (lambda x: getattr(x, '__name__', "")) // a[bool] * ", ".join * print)(a.attributer)
 ```
 
-    articles begins with 1096 attributes from the modules
+    articles begins with 1095 attributes from the modules
     toolz, requests, builtins, json, pickle, io, collections, itertools, functools, pathlib, importlib, inspect
 
 
@@ -111,6 +111,40 @@ Each composition has an extensible attribution system.  Attributes can be access
     assert a @  range == a.groupby(range)
     assert a %  range == a.reduce(range)
 ```
+
+#### combine item getters, attributes, symbols, and other compositions to express complex ideas.
+
+
+```python
+    f = a['test', 5, {42}] \
+     / (a**str&[str.upper, str.capitalize]|a**int&a.range().map(
+         a.range(2).len()
+     ).list()|a**object&type) \
+     * list
+    f()
+```
+
+
+
+
+    [['TEST', 'Test'], [0, 0, 0, 1, 2], set]
+
+
+
+#### use compositions recursively
+
+
+```python
+    f = a[:]
+    f[a**a.gt(5)*range | a**a.le(5)*a.add(1)[f]](4)
+```
+
+
+
+
+    range(0, 6)
+
+
 
 ## `articles` structure
 
@@ -127,7 +161,7 @@ Each composition has an extensible attribution system.  Attributes can be access
 ```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 2360 bytes to readme.md
+    [NbConvertApp] Writing 2875 bytes to readme.md
     parsing /Users/tonyfast/fidget/articles.py...
     [NbConvertApp] Converting notebook articles.ipynb to python
     [NbConvertApp] Writing 17954 bytes to articles.py
