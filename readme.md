@@ -94,10 +94,12 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
 ```python
-    a.dir().len()["""articles begins with {} attributes mostly from the standard lib.""".format].print()(a)
+    a.dir().len()["""articles begins with {} attributes from the modules""".format].print()(a)
+    (a//a**__import__('types').ModuleType / (lambda x: getattr(x, '__name__', "")) // a[bool] * ", ".join * print)(a.attributer)
 ```
 
-    articles begins with 1096 attributes mostly from the standard lib.
+    articles begins with 1096 attributes from the modules
+    toolz, requests, builtins, json, pickle, io, collections, itertools, functools, pathlib, importlib, inspect
 
 
 # compose functions with symbols
@@ -114,6 +116,8 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 ![](classes_No_Name.png)
 
+# Development
+
 
 ```python
     !jupyter nbconvert --to markdown readme.ipynb
@@ -121,3 +125,10 @@ Each composition has an extensible attribution system.  Attributes can be access
     !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
     !python -m doctest articles.py
 ```
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 2360 bytes to readme.md
+    parsing /Users/tonyfast/fidget/articles.py...
+    [NbConvertApp] Converting notebook articles.ipynb to python
+    [NbConvertApp] Writing 17954 bytes to articles.py
+
