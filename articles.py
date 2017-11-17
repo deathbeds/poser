@@ -393,7 +393,8 @@ class star(compose):
 
 
 class dispatch(compose):
-    """
+    """a singledispatching composition
+    
     >>> f = dispatch((str, str.upper), (int, range), (object, type))
     >>> (a['text', 42, {10}] / f * list)()
     ['TEXT', range(0, 42), <class 'set'>]
