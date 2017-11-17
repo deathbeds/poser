@@ -10,7 +10,7 @@ from toolz.curried import isiterable, identity, concat, concatv, flip, cons, mer
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'memo', 'then', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'compose', 'parallel', 'cache', 'then', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial'
 
 
 class functions(UserList):
@@ -49,7 +49,10 @@ class functions(UserList):
         return  self.data.append(object) or not self.data[0] and self.data.pop(0) or self        
     
     def __repr__(self):
-        return (type(self).__name__ or 'λ').replace('compose', 'λ') + ':' + super().__repr__()
+        other = self.__getstate__()[:-1]
+        return (type(self).__name__ or 'λ').replace('compose', 'λ') +(
+            '({})'.format(other and repr(other) or '').replace('()', ':')
+        )+ super().__repr__()
 
     @property
     def __name__(self): return self._name_ or type(self).__name__
@@ -71,7 +74,7 @@ class functions(UserList):
         for attr, value in zip(self.__slots__, state): setattr(self, attr, value)
             
     def __copy__(self, memo=None):
-        new = type(self)()
+        new = type(self.__name__, (type(self),), {'_annotations_': self._annotations_})()
         return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
 
     copy = __enter__ = __deepcopy__ = __copy__
@@ -118,7 +121,7 @@ class compose(functions):
         
         Iterable items are juxtaposed.
         >>> compose()[range][list, type]
-        λ:[<class 'range'>, juxt:[<class 'list'>, <class 'type'>]]
+        λ:[<class 'range'>, juxt((<class 'tuple'>,))[<class 'list'>, <class 'type'>]]
         """
         if isiterable(object) and not isinstance(object, (str, compose)):
             object = juxt(object)
@@ -218,7 +221,7 @@ class attributer(object):
     
     def __call__(self, *args, **kwargs):
         value = self._map_
-        return (self.composition or compose())[
+        return (self.composition is None and compose() or self.composition)[
             callable(value) and (
                 isinstance(self.parent, type) and partial_attribute(value, *args, **kwargs)
                 or type(value) is partial and not (value.args or value.keywords) and value.func(*args, **kwargs) 
@@ -243,7 +246,7 @@ class juxt(compose):
     >>> juxt([range, type])(10)
     [range(0, 10), <class 'int'>]
     """
-    __slots__ = 'data', 'type'
+    __slots__ = 'type', 'data'
     
     def __init__(self, data=None, type=None):
         if isiterable(data) and not isinstance(data, self.__class__.__mro__[1]):
@@ -339,6 +342,11 @@ a = an = the = then = λ = factory(compose)
 
 
 class parallel(compose):
+    """An embarassingly parallel compositions.
+    
+    All map functions are delayed
+    >>> parallel(jobs=4)[range].map(print) # doctest: +SKIP
+    """
     def __init__(self, jobs=4, data=None):
         setattr(self, 'jobs', jobs) or super().__init__(data)
         
@@ -350,7 +358,14 @@ class parallel(compose):
         
     __truediv__ = map
 
-class memo(compose):
+class cache(compose):
+    """a cached composition
+    
+    >>> f = cache().range()
+    >>> f(42); f.cache
+    range(0, 42)
+    {((42,), None): range(0, 42)}
+    """
     def __init__(self, cache=None, data=None):
         self.cache = dict() if cache is None else getattr(data, 'cache', cache)
         super().__init__(data)
