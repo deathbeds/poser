@@ -100,7 +100,9 @@ class partial_attribute(partial):
     >>> assert f('xy') == 'yy'
     """
     def __call__(self, object):
-        return callable(self.func) and self.func(object, *self.args, **self.keywords) or self.func
+        if callable(self.func):
+            return self.func(object, *self.args, **self.keywords) 
+        return self.func
 
 
 class compose(functions):
@@ -197,8 +199,8 @@ class compose(functions):
 compose.attributer = list(map(__import__, [
         'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
         'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect']))
-compose.attributer.insert( 0, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
-compose.attributer.append({
+compose.attributer.insert(2, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
+compose.attributer.insert(2, {
         k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
         for k, v in vars(__import__('operator')).items()})
 
