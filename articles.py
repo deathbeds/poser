@@ -195,6 +195,12 @@ class compose(functions):
     __invert__ = functions.__reversed__    
     
     def __dir__(self): return super().__dir__() + dir(attributer(self.attributer))
+    def __magic__(self, name, *, ip=None):
+        ip, function = ip or __import__('IPython').get_ipython(), self.copy()
+        @wraps(function)
+        def magic_wrapper(line, cell=None):
+            return function('\n'.join(filter(bool, [line, cell])))
+        ip.register_magic_function(magic_wrapper, 'cell', name)
 
 compose.attributer = list(map(__import__, [
         'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
