@@ -203,6 +203,16 @@ class compose(functions):
         ip.register_magic_function(magic_wrapper, 'cell', name)
 
 
+compose.__truediv__.__doc__ = """>>> compose() / range
+λ:[partial(<class 'map'>, <class 'range'>)]"""
+compose.__floordiv__.__doc__ = """>>> compose() // range
+λ:[partial(<class 'filter'>, <class 'range'>)]"""
+compose.__matmul__.__doc__ = """>>> compose() @ range
+λ:[partial(<class 'groupby'>, <class 'range'>)]"""
+compose.__mod__.__doc__ = """>>> compose() % range
+λ:[partial(<class 'reduce'>, <class 'range'>)]"""
+
+
 @partial(setattr, compose, 'attributer')
 @staticmethod
 class attributer(object):
@@ -212,17 +222,21 @@ class attributer(object):
     def __iter__(self):
         if self.object: yield self.object
         else:
-            for object in self.imports: yield __import__(object)
+            for object in self.imports: 
+                yield type(object) is str and __import__(object) or object
 
     def __getitem__(self, item):
-        for object in self:
-            if getattr(object, dunder('name'), "") == item: return object
-        for object in self:
-            if hasattr(object, item): return getattr(object, item)
+        objects = list(self)
+        if len(objects) > 1:
+            for object in objects:
+                if getattr(object, dunder('name'), "") == item: return object
+        for object in objects:
+            dict = getattr(object, dunder('dict'), object)
+            if item in dict: return dict[item]
         else: raise AttributeError(item)
 
     def __dir__(self):
-        return (list() if self.object else self.imports) + list(concat(
+        return (list() if self.object else [value for value in self.imports if isinstance(value, str)]) + list(concat(
             getattr(object, dunder('dict'), object).keys() for object in self))
 
     def __getattr__(self, item): return type(self)(self.composition, self[item], self.object)
@@ -252,22 +266,14 @@ compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pic
 
 
 # decorators for the operators.
-import operator
+import operator, fnmatch
 # some of these cases fail, but the main operators work.
 compose.attributer.decorators = keymap([flip, partial].__getitem__, groupby(
     attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__, 
     filter(callable, vars(__import__('operator')).values())
 ))
-
-
-compose.__truediv__.__doc__ = """>>> compose() / range
-λ:[partial(<class 'map'>, <class 'range'>)]"""
-compose.__floordiv__.__doc__ = """>>> compose() // range
-λ:[partial(<class 'filter'>, <class 'range'>)]"""
-compose.__matmul__.__doc__ = """>>> compose() @ range
-λ:[partial(<class 'groupby'>, <class 'range'>)]"""
-compose.__mod__.__doc__ = """>>> compose() % range
-λ:[partial(<class 'reduce'>, <class 'range'>)]"""
+compose.attributer.imports.insert(0, {'fnmatch': fnmatch.fnmatch})
+compose.attributer.decorators[flip].append(fnmatch.fnmatch)
 
 
 class do(compose):
@@ -391,19 +397,21 @@ class factory(compose):
     range(10, 20)
     >>> assert a(10)[range](20) == a.range(10)(20)
     """
-    __slots__ = 'args', 'kwargs', 'data'
-    def __init__(self, args=None, kwargs=None):
-        self.args, self.kwargs, self.data = args, kwargs, list()
+    __slots__ = 'type', 'data', 'args', 'kwargs'
+    def __init__(self, type=compose, data=None, args=None, kwargs=None):
+        super().__init__(data)
+        self.type, self.args, self.kwargs = type, args, kwargs
         
     def __getitem__(self, attr):
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             attr = attr == slice(None) and abs(self) or partial(attr, *self.args, **self.kwargs)
-        return compose()[attr]
+        return self.type()[attr]
             
     def __call__(self, *args, **kwargs):
         return (
             next(concatv(self.args, args)) if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict) 
-            else factory(args, kwargs))
+            else factory(self.type, self.data, args, kwargs))
+    
     
     __mul__ = __add__ = __rshift__ = __sub__ = push = __getitem__
 
@@ -442,6 +450,7 @@ class cache(compose):
     @property
     def __call__(self): return memoize(super().__call__, cache=self.cache)
 
+@factory
 class star(compose):
     """star sequences as arguments and containers as keywords
     
@@ -457,7 +466,7 @@ class star(compose):
 
 class dispatch(compose):
     """a singledispatching composition
-    
+
     >>> f = dispatch((str, str.upper), (int, range), (object, type))
     >>> (a['text', 42, {10}] / f * list)()
     ['TEXT', range(0, 42), <class 'set'>]
@@ -465,7 +474,7 @@ class dispatch(compose):
     def __init__(self, *data):
         self.dispatch = None
         super().__init__(isinstance(data[0], dict) and list(data.items()) or data)
-    
+
     def __call__(self, arg):
         if not self.dispatch:
             self.dispatch = __import__('functools').singledispatch(compose())
