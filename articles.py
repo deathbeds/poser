@@ -50,7 +50,7 @@ class functions(UserList):
     def __repr__(self):
         other = self.__getstate__()[:-1]
         return (type(self).__name__ or 'λ').replace('compose', 'λ') +(
-            '({})'.format(other and repr(other) or '').replace('()', ':')
+            '({})'.format(other and repr(other[0]) or '').replace('()', ':')
         )+ super().__repr__()
 
     @property
@@ -126,7 +126,7 @@ class compose(functions):
         
         Iterable items are juxtaposed.
         >>> compose()[range][list, type]
-        λ:[<class 'range'>, juxt((<class 'tuple'>,))[<class 'list'>, <class 'type'>]]
+        λ:[<class 'range'>, juxt(<class 'tuple'>)[<class 'list'>, <class 'type'>]]
         """
         if isiterable(object) and not isinstance(object, (str, compose)):
             object = juxt(object)
