@@ -6,7 +6,7 @@ from functools import partialmethod, wraps
 from inspect import signature, getdoc, getsource
 from itertools import zip_longest, starmap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
-from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize
+from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize, keymap
 from toolz import map, groupby, filter, reduce
 from copy import copy
 dunder = '__{}__'.format
@@ -141,7 +141,7 @@ class compose(functions):
         try:
             return super().__getattr__(attr, *args, **kwargs)
         except AttributeError as e:
-            return getattr(attributer(self.attributer, None, self[:]), attr)
+            return getattr(self.attributer(self[:]), attr)
 
     def __lshift__(self, object):          return self[do(object)]
     def __pow__(self, object=slice(None)):
@@ -194,7 +194,7 @@ class compose(functions):
     __neg__ = partialmethod(__getitem__, not_)
     __invert__ = functions.__reversed__    
     
-    def __dir__(self): return super().__dir__() + dir(attributer(self.attributer))
+    def __dir__(self): return super().__dir__() + dir(self.attributer())
     def __magic__(self, name, *, ip=None):
         ip, function = ip or __import__('IPython').get_ipython(), self.copy()
         @wraps(function)
@@ -202,13 +202,62 @@ class compose(functions):
             return function('\n'.join(filter(bool, [line, cell])))
         ip.register_magic_function(magic_wrapper, 'cell', name)
 
-compose.attributer = list(map(__import__, [
-        'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
-        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect']))
-compose.attributer.insert(2, dict(fnmatch=partial(flip, __import__('fnmatch').fnmatch)))
-compose.attributer.insert(2, {
-        k: (partial if k.endswith('getter') or k.endswith('caller') else flip)(v)
-        for k, v in vars(__import__('operator')).items()})
+
+@partial(setattr, compose, 'attributer')
+@staticmethod
+class attributer(object):
+    def __init__(self, composition=None, object=None, parent=None):
+        self.object, self.composition, self.parent = object, composition, parent
+
+    def __iter__(self):
+        if self.object: yield self.object
+        else:
+            for object in self.imports: yield __import__(object)
+
+    def __getitem__(self, item):
+        for object in self:
+            if getattr(object, dunder('name'), "") == item: return object
+        for object in self:
+            if hasattr(object, item): return getattr(object, item)
+        else: raise AttributeError(item)
+
+    def __dir__(self):
+        return (list() if self.object else self.imports) + list(concat(
+            getattr(object, dunder('dict'), object).keys() for object in self))
+
+    def __getattr__(self, item): return type(self)(self.composition, self[item], self.object)
+
+    def __repr__(self): return repr(self.object or list(self))
+
+    @property
+    def __doc__(self):
+        try: return getdoc(self.object) or inspect.getsource(self.object)
+        except: pass
+
+    def __call__(self, *args, **kwargs):
+        object = self.object
+        if callable(object):
+            for decorator, values in self.decorators.items():
+                if object in values: object = decorator(object)
+            if isinstance(self.parent, type):
+                object = partial_attribute(object, *args, **kwargs)
+            elif args or kwargs:
+                object = partial(object, *args, **kwargs)
+            elif isinstance(object, partial) and not(args or kwargs):
+                object = object.func(*args, **kwargs)
+        return (compose() if self.composition is None else self.composition)[object]
+
+compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
+
+
+# decorators for the operators.
+import operator
+# some of these cases fail, but the main operators work.
+compose.attributer.decorators = keymap([flip, partial].__getitem__, groupby(
+    attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__, 
+    filter(callable, vars(__import__('operator')).values())
+))
 
 
 compose.__truediv__.__doc__ = """>>> compose() / range
@@ -219,57 +268,6 @@ compose.__matmul__.__doc__ = """>>> compose() @ range
 λ:[partial(<class 'groupby'>, <class 'range'>)]"""
 compose.__mod__.__doc__ = """>>> compose() % range
 λ:[partial(<class 'reduce'>, <class 'range'>)]"""
-
-
-class attributer(object):
-    """attributer discovers attributes as functions 
-    
-    >>> attrs = attributer([__import__('builtins'), __import__('operator')])
-    >>> assert attrs.range() == attrs.builtins.range() and attrs.range()[0] is range
-    >>> assert attrs.add()[0] is __import__('operator').add
-    """
-    def __init__(self, maps=list(), parent=None, composition=None):
-        self._mapping, self.composition, self.parent = list(not isiterable(maps) and [maps] or maps), composition, parent
-
-    @property
-    def _map_(self): return slice(None) if self._mapping[0] is getdoc else self._mapping[0]
-    
-    @property
-    def _maps_(self): return [getattr(object, dunder('dict'), object) for object in self._mapping]
-    
-    def __getitem__(self, item):
-        for object in self._mapping:
-            if getattr(object, dunder('name'), """""") == item: 
-                return object, None
-        for raw, object in zip(self._mapping, self._maps_):
-            if item in object: 
-                return object[item], raw
-        raise AttributeError(item)
-
-    def __dir__(self):
-        return list(filter(bool, concat(
-            [getattr(raw, dunder('name'), """""")] + list(object.keys())
-            for raw, object in zip(self._mapping, self._maps_))))
-            
-    def __getattr__(self, value): return self.__class__(*self[value], self.composition)
-    def __repr__(self): return repr(self._map_)
-    
-    @property
-    def __doc__(self):
-        try:
-            return getdoc(self._map_) or inspect.getsource(self._map_)
-        except: pass
-    
-    def __call__(self, *args, **kwargs):
-        value = self._map_
-        return (self.composition is None and compose() or self.composition)[
-            callable(value) and (
-                # ModuleType parents respond with partial_attributes
-                isinstance(self.parent, type) and partial_attribute(value, *args, **kwargs)
-                # a partial with no arguments is evaluated immediately.
-                or type(value) is partial and not (value.args or value.keywords) and value.func(*args, **kwargs) 
-                # otherwise return a partial
-                or (args or kwargs) and partial(value, *args, **kwargs)) or value]
 
 
 class do(compose):
