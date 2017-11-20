@@ -33,7 +33,7 @@ class functions(UserList):
         return args[0] if len(args) else None    
     
     def __getitem__(self, object):
-        if object == slice(None): return self        
+        if object in (slice(None), getdoc): return self        
         return self.data[object] if isinstance(object, (int, slice)) else self.append(object)
     
     def __getattr__(self, attr, *args, **kwargs):
@@ -137,7 +137,8 @@ class compose(functions):
         
         >>> assert a.range().len() == a.builtins.range().builtins.len() == a[range].len()
         """
-        if callable(attr): return self[:][partial(attr, *args, **kwargs)]
+        if callable(attr): 
+            return self[:][partial(attr, *(callable(arg) and arg or juxt(arg) for arg in args), **kwargs)]
         try:
             return super().__getattr__(attr, *args, **kwargs)
         except AttributeError as e:
@@ -186,10 +187,10 @@ class compose(functions):
         return excepts(object)[self[:]]
 
     __mul__ = __add__ = __rshift__ = __sub__ = __getitem__
-    __truediv__  = partialmethod(__getattr__, map)
-    __floordiv__ = partialmethod(__getattr__, filter)
-    __matmul__   = partialmethod(__getattr__, groupby)
-    __mod__      = partialmethod(__getattr__, reduce)
+    map =__truediv__  = partialmethod(__getattr__, map)
+    filter = __floordiv__ = partialmethod(__getattr__, filter)
+    groupby = __matmul__   = partialmethod(__getattr__, groupby)
+    reduce = __mod__      = partialmethod(__getattr__, reduce)
     __pos__ = partialmethod(__getitem__, bool)
     __neg__ = partialmethod(__getitem__, not_)
     __invert__ = functions.__reversed__    
@@ -252,14 +253,21 @@ class attributer(object):
         object = self.object
         if callable(object):
             for decorator, values in self.decorators.items():
-                if object in values: object = decorator(object)
-            if isinstance(self.parent, type):
-                object = partial_attribute(object, *args, **kwargs)
-            elif args or kwargs:
-                object = partial(object, *args, **kwargs)
-            elif isinstance(object, partial) and not(args or kwargs):
-                object = object.func(*args, **kwargs)
+                if object in values: 
+                    object = decorator(object)
+                    if isinstance(object, partial):
+                        object = object.func(*args, **kwargs)  
+                    break
+            else:
+                if isinstance(self.parent, type):
+                    object = partial_attribute(object, *args, **kwargs)
+                elif args or kwargs:
+                    object = partial(object, *args, **kwargs)
         return (compose() if self.composition is None else self.composition)[object]
+    
+    @property
+    def __signature__(self): return signature(self.object or self)
+
 
 compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
         'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
