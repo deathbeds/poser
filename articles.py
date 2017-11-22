@@ -6,12 +6,12 @@ from functools import partialmethod, wraps
 from inspect import signature, getdoc, getsource
 from itertools import zip_longest, starmap
 from operator import attrgetter, not_, eq, methodcaller, itemgetter
-from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize, keymap
+from toolz.curried import isiterable, identity, concat, concatv, cons, merge, memoize, keymap
 from toolz import map, groupby, filter, reduce
 from copy import copy
 import sys
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'imports'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'shortcuts'
 
 
 class partial(__import__('functools').partial):
@@ -137,11 +137,9 @@ class attributer(object):
     def __iter__(self):
         if self.object: yield self.object
         else:
-            for object in self.imports: 
-                try:
-                    yield type(object) is str and sys.modules.get(object, __import__(object)) or object
-                except:
-                    pass
+            for object in self.shortcuts: 
+                try: yield type(object) is str and sys.modules.get(object, __import__(object)) or object
+                except: pass
 
     def __getitem__(self, item):
         objects = list(self)
@@ -150,12 +148,17 @@ class attributer(object):
                 if getattr(object, dunder('name'), "") == item: return object
         for object in objects:
             dict = getattr(object, dunder('dict'), object)
-            if item in dict: return dict[item]
-        else: raise AttributeError(item)
+            if item in dict: 
+                return dict[item]
+        if item in sys.modules:
+            return sys.modules[item]
+        
+        raise AttributeError(item)
 
     def __dir__(self):
-        return (list() if self.object else [value.split('.')[0] for value in self.imports if isinstance(value, str)]) + list(concat(
-            getattr(object, dunder('dict'), object).keys() for object in self))
+        return list(
+            concat(getattr(object, dunder('dict'), object).keys() for object in self)
+        ) + list(sys.modules.keys())
 
     def __getattr__(self, item): 
         item = self[item]
@@ -177,9 +180,8 @@ class attributer(object):
         if callable(object):
             for decorator, values in self.decorators.items():
                 if object in values: 
-                    object = decorator(object)
-                    if isinstance(object, partial):
-                        object = object.func(*args, **kwargs)  
+                    new = decorator(object)
+                    object = object(*args, **kwargs) if new is object else partial(new, *args, **kwargs)
                     break
             else:
                 if isinstance(self.parent, type):
@@ -189,20 +191,8 @@ class attributer(object):
         return (λ.object() if self.composition is None else self.composition)[object]
 
     
-imports = compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
-        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator', 'pandas'])
-
-
-# decorators for the operators.
-import operator, fnmatch
-# some of these cases fail, but the main operators work.
-compose.attributer.decorators = keymap([flip, partial].__getitem__, groupby(
-    attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__, 
-    filter(callable, vars(__import__('operator')).values())
-))
-compose.attributer.decorators[flip] = [object for object in compose.attributer.decorators[flip] if 'a, b' in object.__doc__]
-compose.attributer.imports.insert(0, {'fnmatch': fnmatch.fnmatch})
-compose.attributer.decorators[flip].append(fnmatch.fnmatch)
+shortcuts = compose.attributer.shortcuts = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
 
 
 class factory(compose):
@@ -258,7 +248,7 @@ class composition(compose):
     >>> a[10, 'test', {10}].map(a**int&range|a**str&str.upper|type).list()()
     [range(0, 10), 'TEST', <class 'set'>]
     """
-    def __lshift__(self, object):          return self[do(object)]
+    def __lshift__(self, object):          return self[do[object]]
     def __pow__(self, object=slice(None)):
         """
         >>> f = a**int*range
@@ -318,6 +308,22 @@ class composition(compose):
 a = an = the = λ = factory(composition)
 
 
+class flip(composition):
+    def __call__(self, *args, **kwargs):
+        return super().__call__(*reversed(args), **kwargs)
+
+
+# decorators for the operators.
+import operator, fnmatch
+# some of these cases fail, but the main operators work.
+compose.attributer.decorators = keymap([flip, identity].__getitem__, groupby(
+    attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__, 
+    filter(callable, vars(__import__('operator')).values())
+))
+compose.attributer.shortcuts.insert(0, {'fnmatch': fnmatch.fnmatch})
+compose.attributer.decorators[flip].append(fnmatch.fnmatch)
+
+
 composition.__truediv__.__doc__ = """>>> λ / range
 λ:[partial(<class 'map'>, <class 'range'>)]"""
 composition.__floordiv__.__doc__ = """>>> λ // range
@@ -357,7 +363,7 @@ class do(composition):
     """
     
     def __call__(self, *args, **kwargs):
-        super(do, self).__call__(*args, **kwargs)
+        super().__call__(*args, **kwargs)
         return args[0] if args else None
 
 
