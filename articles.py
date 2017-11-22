@@ -143,10 +143,11 @@ class attributer(object):
         else: raise AttributeError(item)
 
     def __dir__(self):
-        return (list() if self.object else [value for value in self.imports if isinstance(value, str)]) + list(concat(
+        return (list() if self.object else [value.split('.')[0] for value in self.imports if isinstance(value, str)]) + list(concat(
             getattr(object, dunder('dict'), object).keys() for object in self))
 
-    def __getattr__(self, item): return type(self)(self.composition, self[item], self.object)
+    def __getattr__(self, item): 
+        return type(self)(self.composition, self[item], self.object)
 
     def __repr__(self): return repr(self.object or list(self))
 
@@ -186,6 +187,7 @@ compose.attributer.decorators = keymap([flip, partial].__getitem__, groupby(
     attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__, 
     filter(callable, vars(__import__('operator')).values())
 ))
+compose.attributer.decorators[flip] = [object for object in compose.attributer.decorators[flip] if 'a, b' in object.__doc__]
 compose.attributer.imports.insert(0, {'fnmatch': fnmatch.fnmatch})
 compose.attributer.decorators[flip].append(fnmatch.fnmatch)
 
