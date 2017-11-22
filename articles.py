@@ -42,8 +42,12 @@ class partial_attribute(partial):
 class __callable__(UserList):
     """__callable__ is a callable list."""        
     def __call__(self, *args, **kwargs):
-        for value in self:
-            args, kwargs = ([value(*args, **kwargs)] if callable(value) else [value]), dict()
+        for i, value in enumerate(self):
+            try:
+                args, kwargs = ([value(*args, **kwargs)] if callable(value) else [value]), dict()
+            except Exception as e:
+                e.args = tuple(cons("""in λ[{}] = {}""".format(i, e.args[0]), e.args[1:]))
+                raise e
         return args[0] if len(args) else None    
 
 
