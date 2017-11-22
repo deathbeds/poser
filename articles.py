@@ -9,8 +9,9 @@ from operator import attrgetter, not_, eq, methodcaller, itemgetter
 from toolz.curried import isiterable, identity, concat, concatv, flip, cons, merge, memoize, keymap
 from toolz import map, groupby, filter, reduce
 from copy import copy
+import sys
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'imports'
 
 
 class partial(__import__('functools').partial):
@@ -42,11 +43,13 @@ class partial_attribute(partial):
 class __callable__(UserList):
     """__callable__ is a callable list."""        
     def __call__(self, *args, **kwargs):
-        for i, value in enumerate(self):
+        for value in self:
             try:
                 args, kwargs = ([value(*args, **kwargs)] if callable(value) else [value]), dict()
             except Exception as e:
-                e.args = tuple(cons("""in λ[{}] = {}""".format(i, e.args[0]), e.args[1:]))
+                value = repr(value)
+                if not any(line in value for line in e.args[0].splitlines()):
+                    e.args = value+'\n'+e.args[0], *e.args[1:]
                 raise e
         return args[0] if len(args) else None    
 
@@ -92,6 +95,7 @@ class compose(__callable__):
         return  self.data.append(object) or not self.data[0] and self.data.pop(0) or self        
     
     def __repr__(self):
+#         if len(self) is 1: return repr(self[0])
         other = len(self.__slots__) is 2 and repr(self.__getstate__()[1-self.__slots__.index('data')])
         return type(self).__name__.replace('composition', 'λ') +(
             '({})'.format(other or '').replace('()', ':')
@@ -129,12 +133,15 @@ class compose(__callable__):
 class attributer(object):
     def __init__(self, composition=None, object=None, parent=None):
         self.object, self.composition, self.parent = object, composition, parent
-
+        
     def __iter__(self):
         if self.object: yield self.object
         else:
             for object in self.imports: 
-                yield type(object) is str and __import__(object) or object
+                try:
+                    yield type(object) is str and sys.modules.get(object, __import__(object)) or object
+                except:
+                    pass
 
     def __getitem__(self, item):
         objects = list(self)
@@ -151,14 +158,19 @@ class attributer(object):
             getattr(object, dunder('dict'), object).keys() for object in self))
 
     def __getattr__(self, item): 
-        return type(self)(self.composition, self[item], self.object)
+        item = self[item]
+        new = type(self)(self.composition, item, self.object)
+        if isinstance(item, type):
+            new.__doc__ = getdoc(item)
+            try:
+                new.__signature__ = signature(item)
+            except: pass
+        elif callable(item):
+            def wrapped(*args, **kwargs): return new(*args, **kwargs)
+            return wraps(item)(wrapped)
+        return new
 
     def __repr__(self): return repr(self.object or list(self))
-
-    @property
-    def __doc__(self):
-        try: return getdoc(self.object) or inspect.getsource(self.object)
-        except: pass
 
     def __call__(self, *args, **kwargs):
         object = self.object
@@ -175,13 +187,10 @@ class attributer(object):
                 elif args or kwargs:
                     object = partial(object, *args, **kwargs)
         return (λ.object() if self.composition is None else self.composition)[object]
+
     
-    @property
-    def __signature__(self): return signature(self.object or self)
-
-
-compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
-        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
+imports = compose.attributer.imports = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+        'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator', 'pandas'])
 
 
 # decorators for the operators.
@@ -286,7 +295,7 @@ class composition(compose):
         """append an exception to the composition
         
         >>> (a.str.upper()^TypeError)(10)
-        TypeError("descriptor 'upper' requires a 'str' object but received a 'int'",)
+        TypeError("partial_attribute(<method 'upper' of 'str' objects>)\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
         """
         return excepts(object)[self[:]]
 
@@ -417,11 +426,13 @@ class FalseException(object):
     def __init__(self, exception): self.exception = exception
     def __bool__(self):  return False
     def __repr__(self): return repr(self.exception)
+    def raises(self): raise self.exception
+
 
 class excepts(composition):
     """
     >>> excepts(TypeError)[str.upper](10)
-    TypeError("descriptor 'upper' requires a 'str' object but received a 'int'",)
+    TypeError("<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
     """
     __slots__ = 'exceptions', 'data'
     def __init__(self, exceptions=None, data=None):
