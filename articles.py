@@ -11,7 +11,7 @@ from toolz import map, groupby, filter, reduce
 from copy import copy
 import sys
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'shortcuts'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'flip', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'shortcuts'
 
 
 class partial(__import__('functools').partial):
@@ -188,7 +188,7 @@ class attributer(object):
                     object = partial_attribute(object, *args, **kwargs)
                 elif args or kwargs:
                     object = partial(object, *args, **kwargs)
-        return (λ.object() if self.composition is None else self.composition)[object]
+        return (composition if self.composition is None else self.composition)[object]
 
     
 shortcuts = compose.attributer.shortcuts = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
@@ -341,7 +341,6 @@ def right_attr(right, attr, left):
 def op_attr(self, attr, value): 
     return object.__getattribute__(self[:], attr)(value)
         
-
 [setattr(factory, dunder(attr), getattr(composition, dunder(attr))) or
  setattr(factory, dunder('r'+attr), partialmethod(right_attr, dunder(attr)))
  for attr in ['and', 'or', 'xor', 'truediv', 'floordiv', 'matmul', 'mod', 'lshift', 'pow']]
