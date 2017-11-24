@@ -40,7 +40,7 @@ class partial_attribute(partial):
         return self.func
 
 
-class __callable__(UserList):
+class CallableList(UserList):
     """__callable__ is a callable list."""        
     def __call__(self, *args, **kwargs):
         for value in self:
@@ -54,7 +54,7 @@ class __callable__(UserList):
         return args[0] if len(args) else None    
 
 
-class compose(__callable__):
+class compose(CallableList):
     __slots__ = 'data',
     _annotations_ = None
 
@@ -191,7 +191,7 @@ class attributer(object):
         return (composition if self.composition is None else self.composition)[object]
 
     
-shortcuts = compose.attributer.shortcuts = list(['toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+shortcuts = compose.attributer.shortcuts = list(['statistics', 'bisect', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
         'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
 
 
@@ -521,4 +521,5 @@ load_ipython_extension()
 if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
+    get_ipython().system('pydoc -w articles.composition')
 
