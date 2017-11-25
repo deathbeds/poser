@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-from collections import UserList
+from collections import UserList, UserDict
 from functools import partialmethod, wraps
 from inspect import signature, getdoc, getsource
 from itertools import zip_longest, starmap
@@ -11,7 +11,7 @@ from toolz import map, groupby, filter, reduce
 from copy import copy
 import sys
 dunder = '__{}__'.format
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'flip', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'shortcuts'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'juxt', 'flip', 'parallel', 'cache', 'ifthen', 'ifnot', 'excepts', 'instance', 'partial', 'dispatch', 'shortcuts', 'persist'
 
 
 class partial(__import__('functools').partial):
@@ -41,7 +41,7 @@ class partial_attribute(partial):
 
 
 class CallableList(UserList):
-    """__callable__ is a callable list."""        
+    """__callable__ is a callable list."""
     def __call__(self, *args, **kwargs):
         for value in self:
             try:
@@ -137,7 +137,7 @@ class attributer(object):
     def __iter__(self):
         if self.object: yield self.object
         else:
-            for object in self.shortcuts: 
+            for object in concatv(self.shortcuts, sys.modules.keys()): 
                 try: yield type(object) is str and sys.modules.get(object, __import__(object)) or object
                 except: pass
 
@@ -148,17 +148,12 @@ class attributer(object):
                 if getattr(object, dunder('name'), "") == item: return object
         for object in objects:
             dict = getattr(object, dunder('dict'), object)
-            if item in dict: 
-                return dict[item]
-        if item in sys.modules:
-            return sys.modules[item]
-        
+            if item in dict:  return dict[item]
+        if item in sys.modules: return sys.modules[item]
         raise AttributeError(item)
 
     def __dir__(self):
-        return list(
-            concat(getattr(object, dunder('dict'), object).keys() for object in self)
-        ) + list(sys.modules.keys())
+        return list(concat(getattr(object, dunder('dict'), object).keys() for object in self))
 
     def __getattr__(self, item): 
         item = self[item]
@@ -191,7 +186,7 @@ class attributer(object):
         return (composition if self.composition is None else self.composition)[object]
 
     
-shortcuts = compose.attributer.shortcuts = list(['statistics', 'bisect', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
+shortcuts = compose.attributer.shortcuts = list(['statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 
         'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'])
 
 
@@ -313,6 +308,58 @@ class flip(composition):
         return super().__call__(*reversed(args), **kwargs)
 
 
+@factory
+class do(composition):
+    """
+    >>> assert not λ[print](10) and do()[print](10) is 10
+    10
+    10
+    """
+    
+    def __call__(self, *args, **kwargs):
+        super().__call__(*args, **kwargs)
+        return args[0] if args else None
+
+
+class juxt(composition):
+    """juxtapose functions.
+    
+    >>> juxt([range, type])(10)
+    [range(0, 10), <class 'int'>]
+    """
+    __slots__ = 'data', 'object'
+    
+    def __init__(self, data=None, object=None):
+        if isiterable(data) and not isinstance(data, composition):
+            object = object or type(data)
+        self.object = object or tuple
+        super().__init__(list(data.items()) if isinstance(data, dict) else list(data or list()))
+
+    def __call__(self, *args, **kwargs):
+        result = list()
+        for callable in self.data:
+            if not isinstance(callable, (str, compose)) and isiterable(callable):
+                callable = juxt(callable)
+            if not isinstance(callable, compose):
+                callable = compose(callable)
+            result.append(callable(*args, **kwargs))
+        return self.object(result)
+
+
+class excepts(composition):
+    """
+    >>> excepts(TypeError)[str.upper](10)
+    TypeError("<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
+    """
+    __slots__ = 'exceptions', 'data'
+    def __init__(self, exceptions=None, data=None):
+        setattr(self, 'exceptions', exceptions) or super().__init__(data)
+    
+    def __call__(self, *args, **kwargs):
+        try: return super(excepts, self).__call__(*args, **kwargs)
+        except self.exceptions as e: return e
+
+
 # decorators for the operators.
 import operator, fnmatch
 # some of these cases fail, but the main operators work.
@@ -353,44 +400,6 @@ def op_attr(self, attr, value):
 [setattr(object, key, getattr(object, dunder(other))) for key, other in zip(('do', 'excepts', 'instance'), ('lshift', 'xor', 'pow')) for object in [factory, composition]];
 
 
-@factory
-class do(composition):
-    """
-    >>> assert not λ[print](10) and do()[print](10) is 10
-    10
-    10
-    """
-    
-    def __call__(self, *args, **kwargs):
-        super().__call__(*args, **kwargs)
-        return args[0] if args else None
-
-
-class juxt(composition):
-    """juxtapose functions.
-    
-    >>> juxt([range, type])(10)
-    [range(0, 10), <class 'int'>]
-    """
-    __slots__ = 'data', 'object'
-    
-    def __init__(self, data=None, object=None):
-        if isiterable(data) and not isinstance(data, composition):
-            object = object or type(data)
-        self.object = object or tuple
-        super().__init__(list(data.items()) if isinstance(data, dict) else list(data or list()))
-
-    def __call__(self, *args, **kwargs):
-        result = list()
-        for callable in self.data:
-            if not isinstance(callable, (str, compose)) and isiterable(callable):
-                callable = juxt(callable)
-            if not isinstance(callable, compose):
-                callable = compose(callable)
-            result.append(callable(*args, **kwargs))
-        return self.object(result)
-
-
 class condition(composition):
     __slots__ = 'condition', 'data'
     def __init__(self, condition=bool, data=None):
@@ -426,27 +435,18 @@ class instance(ifthen):
         super().__init__(condition, data)
 
 
-class FalseException(object):
-    """A false wrapper for an exceptions"""
-    def __init__(self, exception): self.exception = exception
-    def __bool__(self):  return False
-    def __repr__(self): return repr(self.exception)
-    def raises(self): raise self.exception
-
-
-class excepts(composition):
-    """
-    >>> excepts(TypeError)[str.upper](10)
-    TypeError("<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
-    """
-    __slots__ = 'exceptions', 'data'
-    def __init__(self, exceptions=None, data=None):
-        setattr(self, 'exceptions', exceptions) or super().__init__(data)
+@factory
+class star(composition):
+    """star sequences as arguments and containers as keywords
     
-    def __call__(self, *args, **kwargs):
-        try: return super(excepts, self).__call__(*args, **kwargs)
-        except self.exceptions as e:
-            return FalseException(e)
+    >>> def f(*args, **kwargs): return args, kwargs
+    >>> star()[f]([10, 20], {'foo': 'bar'})
+    ((10, 20), {'foo': 'bar'})
+    """
+    def __call__(self, *inputs):
+        args, kwargs = list(), dict()
+        [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
+        return super().__call__(*args, **kwargs)
 
 
 class parallel(composition):
@@ -467,33 +467,6 @@ class parallel(composition):
         
     __truediv__ = map
 
-class cache(composition):
-    """a cached composition
-    
-    >>> f = cache().range()
-    >>> f(42), f.object
-    (range(0, 42), {((42,), None): range(0, 42)})
-    """
-    def __init__(self, object=None, data=None):
-        self.object = dict() if object is None else getattr(data, 'object', object)
-        super().__init__(data)
-
-    @property
-    def __call__(self): return memoize(super().__call__, cache=self.object)
-
-@factory
-class star(composition):
-    """star sequences as arguments and containers as keywords
-    
-    >>> def f(*args, **kwargs): return args, kwargs
-    >>> star()[f]([10, 20], {'foo': 'bar'})
-    ((10, 20), {'foo': 'bar'})
-    """
-    def __call__(self, *inputs):
-        args, kwargs = list(), dict()
-        [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
-        return super().__call__(*args, **kwargs)
-
 
 class dispatch(composition):
     """a singledispatching composition
@@ -513,6 +486,67 @@ class dispatch(composition):
         return self.dispatch.dispatch(type(arg))(arg)
 
 
+class cache(UserDict):
+    """cache on the first argument, use star to store tuples.
+    
+    >>> c = cache(range)
+    >>> assert c(10)(20)(30) and 10 in c and 20 in c and 30 in c
+    >>> c.callable = star[c.__call__]^Exception
+    >>> assert c((10,20),) and (10, 20) in c
+    >>> assert isinstance(c(100)[100], TypeError)
+    """
+    def __init__(self, callable, data=None):
+        self.callable = callable or composition()
+        super().__init__(data)
+        
+    def __missing__(self, item):
+        return self(item) if isinstance(item, tuple) else self(*item)
+        
+    def __call__(self, *args, **kwargs): 
+        if args[0] not in self:  self[args[0]] = self.callable(*args, **kwargs)
+        return self
+
+
+class persist(__import__('shelve').DbfilenameShelf):
+    """
+    >>> c = cache(range)
+    >>> assert c(10)(20)(30) and 10 in c and 20 in c and 30 in c
+    >>> p = persist('test', 'n')
+    >>> assert not list(p.keys()) and p(40) and 40 in p.keys() and 30 not in p.keys()
+    >>> p.update(c)
+    >>> assert 30 in p
+    >>> p.close()
+    >>> p2 = persist('test', 'r')
+    >>> assert 10 in p2 and 20 in p2 and 30 in p2 and 40 in p2
+    """
+
+    def __init__(self, callable, *args, **kwargs):
+        if isinstance(callable, str): args = callable, *args
+        super(persist, self).__init__(*args, **kwargs)
+        if isinstance(callable, str): callable = self.get(callable, composition())
+        self.callable = callable
+        
+    def close(self):
+        try:
+            self[callable] = self.callable
+            while hasattr(self[callable], 'callable'):  self[callable] = self[callable].callable
+        except:
+            pass
+        return super().close()
+    
+    def __method__(self, method, item, *args):
+        return getattr(super(), dunder(method))(str(item), *args)
+    
+    __getitem__ = partialmethod(__method__, 'getitem')
+    __setitem__ = partialmethod(__method__, 'setitem')
+    __contains__ = partialmethod(__method__, 'contains')
+    
+    def __call__(self, arg, **kwargs): 
+        if arg not in self:
+            self[arg] = self.callable(arg, **kwargs)
+        return self
+
+
 def load_ipython_extension(ip=__import__('IPython').get_ipython()):
     if ip: ip.Completer.use_jedi = False
 load_ipython_extension()
@@ -521,5 +555,5 @@ load_ipython_extension()
 if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb')
-    get_ipython().system('pydoc -w articles.composition')
+    get_ipython().system('pydoc -w articles')
 
