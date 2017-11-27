@@ -1,9 +1,7 @@
 
-# `articles` compose functions
+# `articles` compose complex functions
 
-`articles` provides a generic chainable model for function compositions.  `articles` relies on 
-a large portion of the python data model to create a typographically dense interface to function 
-compositions.
+`articles` are untyped functional programming objects in Python _with all the side effects_.  They provide a typographically efficient way of expressing complex ideas in code.
 
                 pip install git+https://github.com/tonyfast/articles
                 
@@ -11,79 +9,98 @@ compositions.
             
         
 
-> `articles` is inspired by the `d3js`, `pandas`, `underscorejs`, and `toolz` apis.
+> `articles` is inspired by the [`d3js`](), [`pandas`](), [`underscorejs`](), and [`toolz`]() apis.
 
    
                
 
+* untyped lambda calculus
+* Higher-order functions enable partial application or currying, 
+* Recursion
 
-```python
+# compose functions with `a`, `an`, `the`, or `λ`
+
+
     from articles import *; assert a is an is the is λ
-```
-
-## compose functions using brackets
-
-Each composition begins evaluation at the first element in the list.
 
 
-```python
-    f = the[range][list]; f
-```
+
+A basic example, __enumerate__ a __range__ and create a __dict__ionary.
+
+    f = the[range][reversed][enumerate][dict]
+    f(3), f
 
 
 
 
-    λ:[<class 'range'>, <class 'list'>]
+
+    ({0: 2, 1: 1, 2: 0},
+     λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>])
+
+
+
+
+Each <b><code>[bracket]</code></b> may accept a __callable__ or __iterable__. In either case,
+a __callable__ is appended to the composition.  Compositions are immutable and may have
+arbitrary complexity.
+
+    g = f.copy()  # copy f from above so it remains unchanged.
+    g[type, len]
+    g[{'foo': a.do(print).len(), 'bar': the.identity()}]
+    assert f < g 
+    g
+
+
+
+
+
+    λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>, juxt(<class 'tuple'>)[<class 'type'>, <built-in function len>], juxt(<class 'dict'>)[('foo', λ:[do:[<built-in function print>], <built-in function len>]), ('bar', λ:[<function identity at 0x1113929d8>])]]
 
 
 
 Brackets juxtapose iterable objects.
 
 
-```python
     the[range, type], the[[range, type]], the[{range, type}], the[{'x': range, 'y': type}]
-```
 
 
 
 
-    (λ:[juxt((<class 'tuple'>,))[<class 'range'>, <class 'type'>]],
-     λ:[juxt((<class 'list'>,))[<class 'range'>, <class 'type'>]],
-     λ:[juxt((<class 'set'>,))[<class 'type'>, <class 'range'>]],
-     λ:[juxt((<class 'dict'>,))[('x', <class 'range'>), ('y', <class 'type'>)]])
+
+    (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
+     λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
+     λ:[juxt(<class 'set'>)[<class 'type'>, <class 'range'>]],
+     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
 
 
 
 Each each composition is immutable.
 
 
-```python
     assert f[len] is f; f
-```
 
 
 
 
-    λ:[<class 'range'>, <class 'list'>, <built-in function len>]
+
+    λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>, <built-in function len>]
 
 
 
 But it is easy to copy a composition.
 
 
-```python
     g = f.copy() 
     assert g is not f and g == f and g[type] > f
-```
+
 
 # compose functions with attributes
 
 Each composition has an extensible attribution system.  Attributes can be accessed in a shallow or verbose way.
 
 
-```python
     a.range() == a.builtins.range() == a[range]
-```
+
 
 
 
@@ -92,37 +109,24 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
 
-
-```python
-    a.dir().len()["""articles begins with {} attributes from the modules""".format].print()(a)
-    (a//a**__import__('types').ModuleType / (lambda x: getattr(x, '__name__', "")) // a[bool] * ", ".join * print)(a.attributer)
-```
-
-    articles begins with 1095 attributes from the modules
-    toolz, requests, builtins, json, pickle, io, collections, itertools, functools, pathlib, importlib, inspect
-
-
 # compose functions with symbols
 
 
-```python
     assert a /  range == a.map(range)
     assert a // range == a.filter(range)
     assert a @  range == a.groupby(range)
     assert a %  range == a.reduce(range)
-```
+
 
 #### combine item getters, attributes, symbols, and other compositions to express complex ideas.
 
 
-```python
-    f = a['test', 5, {42}] \
-     / (a**str&[str.upper, str.capitalize]|a**int&a.range().map(
+    f = a['test', 5, {42}]      / (a**str&[str.upper, str.capitalize]|a**int&a.range().map(
          a.range(2).len()
      ).list()|a**object&type) \
      * list
     f()
-```
+
 
 
 
@@ -134,10 +138,9 @@ Each composition has an extensible attribution system.  Attributes can be access
 #### use compositions recursively
 
 
-```python
     f = a[:]
     f[a**a.gt(5)*range | a**a.le(5)*a.add(1)[f]](4)
-```
+
 
 
 
@@ -153,16 +156,31 @@ Each composition has an extensible attribution system.  Attributes can be access
 # Development
 
 
-```python
-    !jupyter nbconvert --to markdown readme.ipynb
+    !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
     !pyreverse -o png -bmy -fALL articles
-    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles.ipynb
-    !python -m doctest articles.py
-```
+    !python -m doctest articles/composites.py articles/objects.py articles/conditions.ipynb
+
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 2875 bytes to readme.md
-    parsing /Users/tonyfast/fidget/articles.py...
-    [NbConvertApp] Converting notebook articles.ipynb to python
-    [NbConvertApp] Writing 17954 bytes to articles.py
+    [NbConvertApp] Writing 6117 bytes to readme.md
+    parsing articles/__init__.py...
+    parsing /Users/tonyfast/fidget/articles/__init__.py...
+    parsing /Users/tonyfast/fidget/articles/attributes.py...
+    parsing /Users/tonyfast/fidget/articles/composites.py...
+    parsing /Users/tonyfast/fidget/articles/conditions.py...
+    parsing /Users/tonyfast/fidget/articles/objects.py...
+    parsing /Users/tonyfast/fidget/articles/operations.py...
+    parsing /Users/tonyfast/fidget/articles/partials.py...
+    **********************************************************************
+    File "articles/objects.py", line 26, in objects.enumerated
+    Failed example:
+        dict(zip(f.data, f(10)))
+    Expected:
+        {do:[<built-in function len>]: range(0, 10), <class 'type'>: <class 'range'>, <class 'range'>: range(0, 10)}
+    Got:
+        {do:[<built-in function len>]: (range(0, 10),), <class 'type'>: <class 'tuple'>, <class 'range'>: range(0, 10)}
+    **********************************************************************
+    1 items had failures:
+       1 of   3 in objects.enumerated
+    ***Test Failed*** 1 failures.
 

@@ -1,12 +1,21 @@
 
 # coding: utf-8
 
+# Conditional composites
+
 try:
-    from .composites import composite, flip
     from .partials import partial
+    from .composites import composite, flip
 except:
-    from composites import composite, flip
     from partials import partial
+    from composites import composite, flip
+from collections import UserList, deque
+from inspect import signature, getdoc
+import toolz
+from toolz.curried import isiterable, identity, last
+from copy import copy
+dunder = '__{}__'.format
+__all__ = 'ifthen', 'ifnot', 'instance'
 
 
 class condition(composite):
@@ -15,7 +24,7 @@ class condition(composite):
         setattr(self, 'condition', condition) or super().__init__(data)
         
 class ifthen(condition):
-    """the composite is executed only if the condition is true.
+    """The composition evaluates if condition is True.
     
     >>> f = ifthen(bool)[range]
     >>> f(0), f(10)
@@ -25,7 +34,7 @@ class ifthen(condition):
         return self.condition(*args, **kwargs) and super(ifthen, self).__call__(*args, **kwargs)
 
 class ifnot(condition):
-    """the composite is executed only if the condition is false.
+    """The composition evaluates if condition is False.
     
     >>> f = ifnot(bool)[range]
     >>> f(0), f(10)
@@ -35,7 +44,7 @@ class ifnot(condition):
         return self.condition(*args, **kwargs) or super(ifnot, self).__call__(*args, **kwargs)
 
 class instance(ifthen):
-    """a conditional composite for instances/types
+    """The composition evaluates if the arguments are an instance of condition.
     
     >> a[instance(str)[str.upper], instance(int)[range]](10)
     (False, range(0, 10))
@@ -49,4 +58,5 @@ class instance(ifthen):
 if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True conditions.ipynb')
+    get_ipython().system('flake8 conditions.py')
 

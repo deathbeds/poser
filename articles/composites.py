@@ -3,7 +3,7 @@
 
 # # Composites
 # 
-# Composites are functional programming-style object in Python.  Composites rely on `toolz` and Python builtins to compose higher-order functions. Effectively, composites are lists and dicts with call methods.
+# Composites are functional programming-style objects in Python.  Composites rely on `toolz` and Python builtins to compose higher-order functions. Effectively, composites are lists and dicts with call methods.
 
 try:
     from .partials import partial
@@ -66,7 +66,7 @@ class compose(CallableList):
     def __getitem__(self, object):
         return self.data[object] if isinstance(object, (int, slice)) else self.append(object)
             
-        raise AttributeError(attr)
+        raise AttributeError(object)
     def append(self, object):
         return  self.data.append(object) or not self.data[0] and self.data.pop(0) or self        
     
@@ -137,18 +137,20 @@ class factory(compose):
             else factory(self.object, self.data, args, kwargs))    
     
     def __dir__(self): return dir(self.object())
+    
+    @property
+    def __doc__(self): return getdoc(self.object)
 
 
 # __composite__ is the core object. This class returns the executed function when called, rather than a generator.  The getitem method transforms non-callable iterable objects into juxtaposed functions.
 
 class composite(compose):
-    """λ provides syntactic sugar to functions.
+    """Compose higher-order functions in python.
     
-    Prefer using the factory articles `a`, `an`, `the`, and `λ` because they save
-    on typography in both naming and the use of parenthesis.
+    
     """
     def __call__(self, *args, **kwargs): return deque(super().__call__(*args, **kwargs), maxlen=1).pop()
-
+    def __abs__(self): return self.__call__
     def __getitem__(self, object):
         """Use brackets to append functions to the compose.
         >>> compose()[range][list]
@@ -162,7 +164,8 @@ class composite(compose):
 # __juxt__ applies the same arguments to a list of functions.
 
 class juxt(composite):
-    """juxtapose functions.
+    """Juxtapose functions in python.  Juxtaposition applies the same input
+    arguments to a list of functions.
     
     >>> juxt([range, type])(10)
     [range(0, 10), <class 'int'>]
@@ -190,6 +193,10 @@ class juxt(composite):
 # __flip__ reverses the arguments.
 
 class flip(composite):
+    """Call a composition with the arguments reversed.
+    
+    >>> assert flip()[range](20, 10) == range(10, 20)
+    """
     def __call__(self, *args, **kwargs):
         return super().__call__(*reversed(args), **kwargs)
 
@@ -197,7 +204,8 @@ class flip(composite):
 # __excepts__ returns rather than raises an exception.
 
 class excepts(composite):
-    """
+    """A composition that returns exceptions as values.
+    
     >>> excepts(TypeError)[str.upper](10)
     TypeError("<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
     """
@@ -217,7 +225,8 @@ a = an = the = λ = factory(composite)
 
 @factory
 class do(composite):
-    """
+    """Evaluate a function without modifying the input arguments.
+    
     >>> assert not λ[print](10) and do()[print](10) is 10
     10
     10
@@ -225,12 +234,12 @@ class do(composite):
     
     def __call__(self, *args, **kwargs):
         super().__call__(*args, **kwargs)
-        return args[0] if args else None
+        return null(*args)
 
 
 @factory
 class star(composite):
-    """star sequences as arguments and containers as keywords
+    """Supply iterables and dictionaries as starred arguments to a function.
     
     >>> def f(*args, **kwargs): return args, kwargs
     >>> star[f]([10, 20], {'foo': 'bar'})
@@ -253,5 +262,5 @@ except:
 if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb')
-    get_ipython().system('flake8 composites.py')
+    get_ipython().system('flake8 --ignore=E501,E301,E303,W503,W291,W293 composites.py ')
 
