@@ -12,7 +12,7 @@ except BaseException:
     from conditions import ifthen, instance, ifnot
     from attributes import *
 
-__all__ = tuple()
+__all__ = 'shortcuts',
 
 
 from functools import partialmethod

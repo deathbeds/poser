@@ -13,7 +13,7 @@ try:
 except BaseException:
     from partials import partial
 
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'flip', 'excepts', 'composite'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'flip', 'excepts', 'composite', 'shortcuts'
 
 from collections import UserList, deque
 from inspect import signature, getdoc
@@ -374,9 +374,9 @@ a = an = the = λ = factory(composite)
 # Operations adds a bunch of attributes and symbols to compositions.
 
 try:
-    from . import operations
+    from .operations import *
 except BaseException:
-    import operations
+    from operations import *
 
 
 if __name__ == '__main__':

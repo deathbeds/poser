@@ -117,12 +117,12 @@ class store(UserDict):
         return self[item]
 
     def __call__(self, *args, **kwargs):
-        self[args[0]] = self.callable(*args, **kwargs)
+        self[args[0] if args else None] = self.callable(*args, **kwargs)
         return self
 
     def call(self, *args, **kwargs):
         self(*args, **kwargs)
-        return self.get(args[0])
+        return self.get(args[0] if args else None)
 
     def __abs__(self): return self.call
 
