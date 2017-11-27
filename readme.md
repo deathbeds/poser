@@ -157,7 +157,7 @@ Programming is a repetitive process requiring physical work from a person. Repet
 
 ## `articles` structure
 
-![](classes_No_Name.png)
+![](classes_articles.png)
 
 
 # Development
@@ -165,37 +165,8 @@ Programming is a repetitive process requiring physical work from a person. Repet
     !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
     !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles/*.ipynb
     !autopep8 --in-place --aggressive --aggressive articles/*.py
-    !pyreverse -o png -bmy -fALL articles
+    !pyreverse -o png -bmy -fALL -p articles articles
     !python -m doctest articles/composites.py articles/objects.py articles/conditions.ipynb
     !python -m pydoc -w articles articles.composites articles.objects articles.conditions
     !echo complete
-
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 5575 bytes to readme.md
-    [NbConvertApp] Converting notebook articles/attributes.ipynb to python
-    [NbConvertApp] Writing 5112 bytes to articles/attributes.py
-    [NbConvertApp] Converting notebook articles/composites.ipynb to python
-    [NbConvertApp] Writing 11359 bytes to articles/composites.py
-    [NbConvertApp] Converting notebook articles/conditions.ipynb to python
-    [NbConvertApp] Writing 1980 bytes to articles/conditions.py
-    [NbConvertApp] Converting notebook articles/objects.ipynb to python
-    [NbConvertApp] Writing 5463 bytes to articles/objects.py
-    [NbConvertApp] Converting notebook articles/operations.ipynb to python
-    [NbConvertApp] Writing 3772 bytes to articles/operations.py
-    [NbConvertApp] Converting notebook articles/partials.ipynb to python
-    [NbConvertApp] Writing 1202 bytes to articles/partials.py
-    parsing articles/__init__.py...
-    parsing /Users/tonyfast/fidget/articles/__init__.py...
-    parsing /Users/tonyfast/fidget/articles/attributes.py...
-    parsing /Users/tonyfast/fidget/articles/composites.py...
-    parsing /Users/tonyfast/fidget/articles/conditions.py...
-    parsing /Users/tonyfast/fidget/articles/objects.py...
-    parsing /Users/tonyfast/fidget/articles/operations.py...
-    parsing /Users/tonyfast/fidget/articles/partials.py...
-    wrote articles.html
-    wrote articles.composites.html
-    wrote articles.objects.html
-    wrote articles.conditions.html
-    complete
 
