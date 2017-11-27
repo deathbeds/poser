@@ -54,7 +54,7 @@ arbitrary complexity.
 
 
 
-    λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>, juxt(<class 'tuple'>)[<class 'type'>, <built-in function len>], juxt(<class 'dict'>)[('foo', λ:[do:[<built-in function print>], <built-in function len>]), ('bar', λ:[<function identity at 0x1113929d8>])]]
+    λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>, juxt(<class 'tuple'>)[<class 'type'>, <built-in function len>], juxt(<class 'dict'>)[('foo', λ:[do:[<built-in function print>], <built-in function len>]), ('bar', λ:[<function identity at 0x1115288c8>])]]
 
 
 
@@ -157,30 +157,9 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
     !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
+    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles/*.ipynb
     !pyreverse -o png -bmy -fALL articles
     !python -m doctest articles/composites.py articles/objects.py articles/conditions.ipynb
-
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 6117 bytes to readme.md
-    parsing articles/__init__.py...
-    parsing /Users/tonyfast/fidget/articles/__init__.py...
-    parsing /Users/tonyfast/fidget/articles/attributes.py...
-    parsing /Users/tonyfast/fidget/articles/composites.py...
-    parsing /Users/tonyfast/fidget/articles/conditions.py...
-    parsing /Users/tonyfast/fidget/articles/objects.py...
-    parsing /Users/tonyfast/fidget/articles/operations.py...
-    parsing /Users/tonyfast/fidget/articles/partials.py...
-    **********************************************************************
-    File "articles/objects.py", line 26, in objects.enumerated
-    Failed example:
-        dict(zip(f.data, f(10)))
-    Expected:
-        {do:[<built-in function len>]: range(0, 10), <class 'type'>: <class 'range'>, <class 'range'>: range(0, 10)}
-    Got:
-        {do:[<built-in function len>]: (range(0, 10),), <class 'type'>: <class 'tuple'>, <class 'range'>: range(0, 10)}
-    **********************************************************************
-    1 items had failures:
-       1 of   3 in objects.enumerated
-    ***Test Failed*** 1 failures.
+    !python -m pydoc -w articles articles.composites articles.objects articles.conditions
+    !echo complete
 

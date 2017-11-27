@@ -11,6 +11,8 @@ except:
     from composites import composite, do, excepts, factory
     from conditions import ifthen, instance, ifnot
     from attributes import *
+    
+__all__ = tuple()
 
 
 from functools import partialmethod
