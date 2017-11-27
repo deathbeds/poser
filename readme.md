@@ -158,6 +158,7 @@ Each composition has an extensible attribution system.  Attributes can be access
 
     !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
     !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles/*.ipynb
+    !autopep8 --in-place --aggressive --aggressive articles/*.py
     !pyreverse -o png -bmy -fALL articles
     !python -m doctest articles/composites.py articles/objects.py articles/conditions.ipynb
     !python -m pydoc -w articles articles.composites articles.objects articles.conditions
