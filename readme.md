@@ -1,19 +1,20 @@
 
-# `articles` compose complex functions
+# `composites` compose complex functions
 
-`articles` are untyped functional programming objects in Python _with all the side effects_.  `articles` make it easier to combine callables, classes, and other objects in the Python and SciPy ecosystems.
+`composites` are untyped functional programming objects in Python _with all the side effects_.  `composites` make it easier to compose/pipeline/chain callables, classes, and other objects into higher-order functions.
 
-                pip install git+https://github.com/tonyfast/articles
+                pip install git+https://github.com/tonyfast/composites
 
 # compose functions with `a`, `an`, `the`, or `λ`
 
 
-    from articles import *; assert a is an is the is λ
+    from composites import *; assert a is an is the is λ
 
 A basic example, __enumerate__ a __range__ and create a __dict__ionary.
 
     f = the[range][reversed][enumerate][dict]
     f(3), f
+---
 
 
 
@@ -46,8 +47,8 @@ Brackets juxtapose iterable objects.
 
     (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'set'>)[<class 'type'>, <class 'range'>]],
-     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
+     λ:[juxt(<class 'set'>)[<class 'range'>, <class 'type'>]],
+     λ:[juxt(<class 'dict'>)[('y', <class 'type'>), ('x', <class 'range'>)]])
 
 
 
@@ -119,12 +120,12 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
 
-# Why functional programming with `articles`?
+# Why functional programming with `composites`?
 
 [Functional programming](https://en.wikipedia.org/wiki/Functional_programming) _often_ generates less code, or text, to express operations on complex data structures.  A declarative, functional style of programming approach belies Python's imperative, object-oriented (OO) 
 nature. Python provides key [functional programming elements](https://docs.python.org/3/library/functional.html) that are used interchangeably with OO code.  
 
-[`toolz`](https://toolz.readthedocs.io), the nucleus for `articles`, extends Python's functional programming with a set of 
+[`toolz`](https://toolz.readthedocs.io), the nucleus for `composites`, extends Python's functional programming with a set of 
 un-typed, lazy, pure, and composable functions.  The functions in `toolz` look familiar 
 to [__pandas.DataFrame__](https://tomaugspurger.github.io/method-chaining.html) methods, or [__underscorejs__](http://underscorejs.org/) and [__d3js__](https://d3js.org/) in Javascript.
 
@@ -134,7 +135,7 @@ An intermediate user of [`toolz`](https://toolz.readthedocs.io) will use
 and [`toolz.compose`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.compose) to create reusable, 
 higher-order functions.  These patterns allow the programmer to express complex concepts 
 with less typing/text over a longer time time.  Repetitive patterns should occupy 
-less screen space; `articles;` helps compose functions with less text. 
+less screen space; `composites;` helps compose functions with less text. 
                       
 A successful implementation should compose __un-typed__, __lazy__, and __serializable__ Python functions that allow
 recursion.
@@ -143,9 +144,9 @@ recursion.
 
 # Syntax
 
-A core property of `articles` is that it will not modify Python's abstract syntax tree, rather expresses 
+A core property of `composites` is that it will not modify Python's abstract syntax tree, rather expresses 
 a large portion of Python's magic methods in the [data model](https://docs.python.org/3/reference/datamodel.html).  It considers Python's 
-[order of operations](https://docs.python.org/3/reference/expressions.html#operator-precedence) in the api design.  `articles` provides symbolic expressions for common higher-order 
+[order of operations](https://docs.python.org/3/reference/expressions.html#operator-precedence) in the api design.  `composites` provides symbolic expressions for common higher-order 
 function operations like `map`, `filter`, `groupby`, and `reduce`. 
 can access any of the `sys.modules;` with tab completion.
 
@@ -155,18 +156,42 @@ we must consider the efficiency of the programmer.
 Programming is a repetitive process requiring physical work from a person. Repetitive processes must exist, 
 
 
-## `articles` structure
+## `composites` structure
 
-![](classes_articles.png)
+![](classes_composites.png)
 
 
 # Development
 
     !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
-    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True articles/*.ipynb
-    !autopep8 --in-place --aggressive --aggressive articles/*.py
-    !pyreverse -o png -bmy -fALL -p articles articles
-    !python -m doctest articles/composites.py articles/objects.py articles/conditions.ipynb
-    !python -m pydoc -w articles articles.composites articles.objects articles.conditions
+    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
+    !autopep8 --in-place --aggressive --aggressive composites/*.py
+    !pyreverse -o png -bmy -fALL -p composites composites
+    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb
     !echo complete
+
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 7001 bytes to readme.md
+    [NbConvertApp] Converting notebook composites/attributes.ipynb to python
+    [NbConvertApp] Writing 5112 bytes to composites/attributes.py
+    [NbConvertApp] Converting notebook composites/composites.ipynb to python
+    [NbConvertApp] Writing 11307 bytes to composites/composites.py
+    [NbConvertApp] Converting notebook composites/conditions.ipynb to python
+    [NbConvertApp] Writing 1980 bytes to composites/conditions.py
+    [NbConvertApp] Converting notebook composites/objects.ipynb to python
+    [NbConvertApp] Writing 5393 bytes to composites/objects.py
+    [NbConvertApp] Converting notebook composites/operations.ipynb to python
+    [NbConvertApp] Writing 3777 bytes to composites/operations.py
+    [NbConvertApp] Converting notebook composites/partials.ipynb to python
+    [NbConvertApp] Writing 1202 bytes to composites/partials.py
+    parsing composites/__init__.py...
+    parsing /Users/tonyfast/fidget/composites/__init__.py...
+    parsing /Users/tonyfast/fidget/composites/attributes.py...
+    parsing /Users/tonyfast/fidget/composites/composites.py...
+    parsing /Users/tonyfast/fidget/composites/conditions.py...
+    parsing /Users/tonyfast/fidget/composites/objects.py...
+    parsing /Users/tonyfast/fidget/composites/operations.py...
+    parsing /Users/tonyfast/fidget/composites/partials.py...
+    complete
 
