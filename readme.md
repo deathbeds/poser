@@ -48,7 +48,7 @@ Brackets juxtapose iterable objects.
     (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'set'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'dict'>)[('y', <class 'type'>), ('x', <class 'range'>)]])
+     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
 
 
 
@@ -134,26 +134,24 @@ An intermediate user of [`toolz`](https://toolz.readthedocs.io) will use
 [`toolz.juxt`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.juxt), 
 and [`toolz.compose`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.compose) to create reusable, 
 higher-order functions.  These patterns allow the programmer to express complex concepts 
-with less typing/text over a longer time time.  Repetitive patterns should occupy 
+with less typing/text over a longer time.  Repetitive patterns should occupy 
 less screen space; `composites;` helps compose functions with less text. 
                       
-A successful implementation should compose __un-typed__, __lazy__, and __serializable__ Python functions that allow
+A successful implementation of __composites__ should compose __un-typed__, __lazy__, and __serializable__ Python functions that allow
 recursion.
 
 
 
 # Syntax
 
-A core property of `composites` is that it will not modify Python's abstract syntax tree, rather expresses 
+A core property of `composites` is that it will not modify Python's abstract syntax tree, rather it expresses 
 a large portion of Python's magic methods in the [data model](https://docs.python.org/3/reference/datamodel.html).  It considers Python's 
 [order of operations](https://docs.python.org/3/reference/expressions.html#operator-precedence) in the api design.  `composites` provides symbolic expressions for common higher-order 
-function operations like `map`, `filter`, `groupby`, and `reduce`. 
-can access any of the `sys.modules;` with tab completion.
+function operations like `map`, `filter`, `groupby`, and `reduce`. The attributes can access any of the `sys.modules;` with tab completion.
 
 The efficiency of computing will continue to improve.  In modern collaborative development environments 
-we must consider the efficiency of the programmer. 
-
-Programming is a repetitive process requiring physical work from a person. Repetitive processes must exist, 
+we must consider the efficiency of the programmer. Programming is a repetitive process requiring physical work from a person. 
+__composites__ speed up the creation and reading repetitive and complex tasks.
 
 
 ## `composites` structure
@@ -167,31 +165,6 @@ Programming is a repetitive process requiring physical work from a person. Repet
     !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
     !autopep8 --in-place --aggressive --aggressive composites/*.py
     !pyreverse -o png -bmy -fALL -p composites composites
-    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb
+    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb
     !echo complete
-
-
-    [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 7001 bytes to readme.md
-    [NbConvertApp] Converting notebook composites/attributes.ipynb to python
-    [NbConvertApp] Writing 5112 bytes to composites/attributes.py
-    [NbConvertApp] Converting notebook composites/composites.ipynb to python
-    [NbConvertApp] Writing 11307 bytes to composites/composites.py
-    [NbConvertApp] Converting notebook composites/conditions.ipynb to python
-    [NbConvertApp] Writing 1980 bytes to composites/conditions.py
-    [NbConvertApp] Converting notebook composites/objects.ipynb to python
-    [NbConvertApp] Writing 5393 bytes to composites/objects.py
-    [NbConvertApp] Converting notebook composites/operations.ipynb to python
-    [NbConvertApp] Writing 3777 bytes to composites/operations.py
-    [NbConvertApp] Converting notebook composites/partials.ipynb to python
-    [NbConvertApp] Writing 1202 bytes to composites/partials.py
-    parsing composites/__init__.py...
-    parsing /Users/tonyfast/fidget/composites/__init__.py...
-    parsing /Users/tonyfast/fidget/composites/attributes.py...
-    parsing /Users/tonyfast/fidget/composites/composites.py...
-    parsing /Users/tonyfast/fidget/composites/conditions.py...
-    parsing /Users/tonyfast/fidget/composites/objects.py...
-    parsing /Users/tonyfast/fidget/composites/operations.py...
-    parsing /Users/tonyfast/fidget/composites/partials.py...
-    complete
 

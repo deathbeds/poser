@@ -86,6 +86,8 @@ class compose(CallableList):
 
     >>> from pickle import loads, dumps
     >>> assert loads(dumps(compose()[range][type])) == compose()[range][type]
+
+    compose objects may be used recursively.
     """
     __slots__ = 'data',
 
@@ -122,9 +124,6 @@ class compose(CallableList):
 
     @property
     def __name__(self): return type(self).__name__
-
-    @property
-    def __signature__(self): return signature(self[0])
 
     def __hash__(self): return hash(tuple(self))
 
@@ -168,7 +167,7 @@ class compose(CallableList):
 # * A factory skips parenthesis when initializing a composition.
 
 class factory(compose):
-    """A factory of composition that works as a decorator.
+    """A factory of composites that works as a decorator.
 
     Create a factory
     >>> some = factory(compose)
@@ -187,7 +186,6 @@ class factory(compose):
     def __init__(self, object, data=None, args=None, kwargs=None):
         super().__init__(data)
         self.object, self.args, self.kwargs = object, args, kwargs
-        self.__qualname__ = object.__qualname__
 
     def __getitem__(self, attr):
         if isinstance(self.args, tuple) and isinstance(self.kwargs, dict):
@@ -236,6 +234,11 @@ class composite(compose):
 
     Literal and symbolic attributes are append in attributes and operations.
     """
+    def __new__(cls, *args, **kwargs):
+        new = object.__new__(type(cls.__name__, (cls,), dict()))
+        new.__qualname__ = '.'.join(
+            [globals().get('__name__'), cls.__qualname__])
+        return new
 
     def __call__(self, *args, **kwargs):
         return deque(super().__call__(*args, **kwargs), maxlen=1).pop()

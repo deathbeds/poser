@@ -30,13 +30,13 @@ def __lshift__(self, object):
 
 def __pow__(self, object=slice(None)):
     """
-    >>> f = a**int*range
-    >>> a[10, '10'].map(f).list()()
+    >>> f = composite()**int*range
+    >>> composite()[10, '10'].map(f).list()()
     [range(0, 10), False]
 
     A dictionary sets the function attributes.
 
-    >>> assert (a**{'start': int, 'returns': range}*range).__annotations__
+    >>> assert (composite()**{'start': int, 'returns': range}*range).__annotations__
     """
     self = self[:]
     if isinstance(object, str):
@@ -49,7 +49,7 @@ def __pow__(self, object=slice(None)):
 def __and__(self, object=slice(None)):
     """append an ifthen statement to the composite
 
-    >>> (a&range)(0), (a&range)(10)
+    >>> (composite()&range)(0), (composite()&range)(10)
     (0, range(0, 10))
     """
     return ifthen(self[:])[object]
@@ -58,7 +58,7 @@ def __and__(self, object=slice(None)):
 def __or__(self, object=slice(None)):
     """append an ifnot statement to the composite
 
-    >>> (a|range)(0), (a|range)(10)
+    >>> (composite()|range)(0), (composite()|range)(10)
     (range(0, 0), 10)
     """
     return ifnot(self[:])[
@@ -68,7 +68,7 @@ def __or__(self, object=slice(None)):
 def __xor__(self: 'λ', object: (slice, Exception)=slice(None)) -> 'λ':
     """append an exception to the composite
 
-    >>> (a.str.upper()^TypeError)(10)
+    >>> (composite().str.upper()^TypeError)(10)
     TypeError("partial_attribute(<method 'upper' of 'str' objects>)\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
     """
     return excepts(object)[self[:]]
@@ -139,7 +139,7 @@ def op_attr(self, attr, value):
 
 
 if __name__ == '__main__':
-    #     print(__import__('doctest').testmod(verbose=False))
+    print(__import__('doctest').testmod(verbose=False))
     get_ipython().system(
         'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True operations.ipynb')
-    get_ipython().system('flake8 operations.py')
+#     !flake8 operations.py

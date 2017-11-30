@@ -60,10 +60,6 @@ class attribute(object):
         new = type(self)(self.composite, item, self.object)
         if isinstance(item, type):
             new.__doc__ = getdoc(item)
-            try:
-                new.__signature__ = signature(item)
-            except BaseException:
-                pass
         elif callable(item):
             def wrapped(*args, **kwargs): return new(*args, **kwargs)
             return wraps(item)(wrapped)
@@ -168,4 +164,4 @@ if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system(
         'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True attributes.ipynb')
-    get_ipython().system('flake8 attributes.py')
+#     !flake8 attributes.py
