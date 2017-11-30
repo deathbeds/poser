@@ -81,12 +81,15 @@ composite.__or__ = __or__
 composite.__xor__ = __xor__
 
 
+def boolean(composite, callable=bool): return composite[callable]
+
+
 composite.__truediv__ = composite.map
 composite.__floordiv__ = composite.filter
 composite.__matmul__ = composite.groupby
 composite.__mod__ = composite.reduce
-composite.__pos__ = partialmethod(composite.__getitem__, bool)
-composite.__neg__ = partialmethod(composite.__getitem__, not_)
+composite.__pos__ = partialmethod(boolean, bool)
+composite.__neg__ = partialmethod(boolean, not_)
 composite.__invert__ = composite.__reversed__
 
 
@@ -144,3 +147,6 @@ if __name__ == '__main__':
         'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True operations.ipynb')
 #     !flake8 operations.py
     get_ipython().system('python -m pydoc -w operations')
+
+
+composite().str.upper

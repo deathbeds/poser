@@ -11,7 +11,7 @@ except BaseException:
     from partials import partial, partial_attribute
 
 
-from functools import partialmethod, wraps
+from functools import partialmethod, wraps, WRAPPER_ASSIGNMENTS
 from inspect import signature, getdoc
 from operator import attrgetter
 from toolz.curried import identity, concat, concatv, keymap
@@ -19,6 +19,31 @@ from toolz import map, groupby, filter, reduce
 import sys
 dunder = '__{}__'.format
 __all__ = 'shortcuts', '__all__'
+
+
+class wrapped(object):
+    def __init__(self, composite):
+        self.composite = composite
+        for key in WRAPPER_ASSIGNMENTS:
+            hasattr(
+                self.composite.object,
+                key) and setattr(
+                self,
+                key,
+                getattr(
+                    self.composite.object,
+                    key))
+        try:
+            self.__signature__ = signature(self.composite.object)
+        except BaseException:
+            pass
+
+    @property
+    def __call__(self): return wraps(self.composite.object)(self.composite)
+
+    def __getattr__(self, attr): return self.composite.__getattr__(attr)
+
+    def __repr__(self): return repr(self.composite.object)
 
 
 class attribute(object):
@@ -56,24 +81,10 @@ class attribute(object):
                     object).keys() for object in self))
 
     def __getattr__(self, item):
-        try:
-            return super().__getattr__(item)
-        except BaseException:
-            item = self[item]
-            return type(self)(self.composite, item, self.object).wraps()
+        new = type(self)(self.composite, self[item], self.object)
+        return wrapped(new) if callable(new.object) else new
 
     def __repr__(self): return repr(self.object or list(self))
-
-    def wraps(self):
-        if callable(self.object):
-            def wrapped(*args, **kwargs):
-                return self(*args, **kwargs)
-            try:
-                wrapped.__signature__ = signature(self.object)
-            except BaseException:
-                pass
-            return wraps(self.object)(wrapped)
-        return self
 
     def __call__(self, *args, **kwargs):
         object = self.object
