@@ -143,3 +143,4 @@ if __name__ == '__main__':
     get_ipython().system(
         'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True operations.ipynb')
 #     !flake8 operations.py
+    get_ipython().system('python -m pydoc -w operations')

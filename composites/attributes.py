@@ -18,7 +18,7 @@ from toolz.curried import identity, concat, concatv, keymap
 from toolz import map, groupby, filter, reduce
 import sys
 dunder = '__{}__'.format
-__all__ = 'shortcuts', 'load_ipython_extension', '__all__'
+__all__ = 'shortcuts', '__all__'
 
 
 class attribute(object):
@@ -56,16 +56,24 @@ class attribute(object):
                     object).keys() for object in self))
 
     def __getattr__(self, item):
-        item = self[item]
-        new = type(self)(self.composite, item, self.object)
-        if isinstance(item, type):
-            new.__doc__ = getdoc(item)
-        elif callable(item):
-            def wrapped(*args, **kwargs): return new(*args, **kwargs)
-            return wraps(item)(wrapped)
-        return new
+        try:
+            return super().__getattr__(item)
+        except BaseException:
+            item = self[item]
+            return type(self)(self.composite, item, self.object).wraps()
 
     def __repr__(self): return repr(self.object or list(self))
+
+    def wraps(self):
+        if callable(self.object):
+            def wrapped(*args, **kwargs):
+                return self(*args, **kwargs)
+            try:
+                wrapped.__signature__ = signature(self.object)
+            except BaseException:
+                pass
+            return wraps(self.object)(wrapped)
+        return self
 
     def __call__(self, *args, **kwargs):
         object = self.object
@@ -114,8 +122,7 @@ attribute.shortcuts.insert(0, {'fnmatch': fnmatch.fnmatch})
 attribute.decorators[flip].append(fnmatch.fnmatch)
 
 
-def __dir__(self): return super(type(self),
-                                self).__dir__() + dir(self.attribute())
+def __dir__(self): return list(self.__dict__.keys()) + dir(self.attribute())
 
 
 composite.__dir__ = __dir__
@@ -152,16 +159,7 @@ def __magic__(self, name, *, ip=None):
 composite.__magic__ = __magic__
 
 
-def load_ipython_extension(ip=__import__('IPython').get_ipython()):
-    if ip:
-        ip.Completer.use_jedi = False
-
-
-load_ipython_extension()
-
-
 if __name__ == '__main__':
     print(__import__('doctest').testmod(verbose=False))
     get_ipython().system(
         'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True attributes.ipynb')
-#     !flake8 attributes.py
