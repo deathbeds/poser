@@ -22,6 +22,11 @@ __all__ = 'shortcuts', '__all__'
 
 
 class wrapped(object):
+    """attribute uses wrapped to chain nested atrributes.
+    >>> f = composite()
+    >>> w = wrapped(f)
+    >>> assert w.range.__doc__ == range.__doc__"""
+
     def __init__(self, composite):
         self.composite = composite
         for key in WRAPPER_ASSIGNMENTS:
@@ -47,6 +52,11 @@ class wrapped(object):
 
 
 class attribute(object):
+    """a class to assist in function composition with attributes.
+
+    >>> assert composite().range() == composite()[range]
+    """
+
     def __init__(self, composite=None, object=None, parent=None):
         self.object, self.composite, self.parent = object, composite, parent
 
