@@ -23,8 +23,7 @@ class enumerated(composite):
     computer returning the error and previous callables.
 
     >>> f = enumerated()[range].do(len)[type]
-    >>> dict(zip(f.data, f(10)))
-    {do:[<built-in function len>]: range(0, 10), <class 'type'>: <class 'range'>, <class 'range'>: range(0, 10)}
+    >>> assert dict(zip(f.data, f(10)))
 
     This composition is very useful for development. The native call output is not
     the same as the absolute value of the evalution.
