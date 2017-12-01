@@ -48,7 +48,7 @@ Brackets juxtapose iterable objects.
     (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'set'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
+     λ:[juxt(<class 'dict'>)[('y', <class 'type'>), ('x', <class 'range'>)]])
 
 
 
@@ -165,6 +165,31 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
     !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
     !autopep8 --in-place --aggressive --aggressive composites/*.py
     !pyreverse -o png -bmy -fALL -p composites composites
-    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb
+    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb
     !echo complete
+
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 9553 bytes to readme.md
+    [NbConvertApp] Converting notebook composites/attributes.ipynb to python
+    [NbConvertApp] Writing 5473 bytes to composites/attributes.py
+    [NbConvertApp] Converting notebook composites/composites.ipynb to python
+    [NbConvertApp] Writing 11799 bytes to composites/composites.py
+    [NbConvertApp] Converting notebook composites/conditions.ipynb to python
+    [NbConvertApp] Writing 1980 bytes to composites/conditions.py
+    [NbConvertApp] Converting notebook composites/objects.ipynb to python
+    [NbConvertApp] Writing 5396 bytes to composites/objects.py
+    [NbConvertApp] Converting notebook composites/operations.ipynb to python
+    [NbConvertApp] Writing 3931 bytes to composites/operations.py
+    [NbConvertApp] Converting notebook composites/partials.ipynb to python
+    [NbConvertApp] Writing 1202 bytes to composites/partials.py
+    parsing composites/__init__.py...
+    parsing /Users/tonyfast/fidget/composites/__init__.py...
+    parsing /Users/tonyfast/fidget/composites/attributes.py...
+    parsing /Users/tonyfast/fidget/composites/composites.py...
+    parsing /Users/tonyfast/fidget/composites/conditions.py...
+    parsing /Users/tonyfast/fidget/composites/objects.py...
+    parsing /Users/tonyfast/fidget/composites/operations.py...
+    parsing /Users/tonyfast/fidget/composites/partials.py...
+    complete
 

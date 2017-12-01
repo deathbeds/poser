@@ -18,7 +18,7 @@ from toolz.curried import identity, concat, concatv, keymap
 from toolz import map, groupby, filter, reduce
 import sys
 dunder = '__{}__'.format
-__all__ = 'shortcuts', '__all__'
+__all__ = 'shortcuts',
 
 
 class wrapped(object):

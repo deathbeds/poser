@@ -318,22 +318,33 @@ class flip(composite):
 
 # __excepts__ returns rather than raises an exception.
 
+class FalseException(Exception):
+    """A failure to execute is considered false."""
+
+    def __bool__(self): return False
+
+
 class excepts(composite):
     """A composition that returns exceptions as values.
 
     >>> excepts(TypeError)[str.upper](10)
-    TypeError("<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
+    FalseException("TypeError:<method 'upper' of 'str' objects>\\ndescriptor 'upper' requires a 'str' object but received a 'int'",)
     """
     __slots__ = 'exceptions', 'data'
 
-    def __init__(self, exceptions=None, data=None):
+    def __init__(self, exceptions=Exception, data=None):
         setattr(self, 'exceptions', exceptions) or super().__init__(data)
 
     def __call__(self, *args, **kwargs):
         try:
             return super(excepts, self).__call__(*args, **kwargs)
-        except self.exceptions as e:
-            return e
+        except self.exceptions as main:
+            try:
+                raise FalseException from main
+            except FalseException as e:
+                e.args = type(main).__name__ + ':' + \
+                    main.args[0], *main.args[1:]
+                return e
 
 
 @factory
@@ -375,9 +386,9 @@ a = an = the = λ = factory(composite)
 # Operations adds a bunch of attributes and symbols to compositions.
 
 try:
-    from . import operations
+    from .operations import *
 except BaseException:
-    import operations
+    from operations import *
 
 
 if __name__ == '__main__':

@@ -107,8 +107,8 @@ class store(UserDict):
     >>> assert c(10)[10] == int
     """
 
-    def __init__(self, callable, data=None):
-        self.callable = callable or composition()
+    def __init__(self, callable=None, data=None):
+        self.callable = callable or composite()
         super().__init__(data)
 
     def __missing__(self, item):
