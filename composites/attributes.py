@@ -44,7 +44,8 @@ class wrapped(object):
 class attribute(object):
     """a class to assist in function composition with attributes.  This class
     goes to extra lengths to improve complextion of attributes and arguments in
-    the IPython context.
+    the IPython context. It provides composites will full access to sys.modules
+    in a chainable API context.
     
     >>> assert composite().range() == composite()[range]
     """
