@@ -10,7 +10,7 @@ try:
 except:
     from partials import partial, flipped
 
-__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'flip', 'excepts', 'composite'
+__all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'flip', 'excepts', 'composite', 'preview'
 
 from collections import UserList, deque
 from inspect import signature, getdoc
@@ -206,6 +206,8 @@ class factory(compose):
         return self.object().__getattr__(attr, *args, **kwargs)
     
     def __call__(self, *args, **kwargs):
+        if args and isinstance(args[0], composite):
+            return self.object(args[0])
         if isinstance(self.args, tuple) and  isinstance(self.kwargs, dict):
             return self.object()(*concatv(self.args, args))
         return factory(self.object, self.data, args, kwargs)
@@ -303,6 +305,12 @@ class do(composite):
     def __call__(self, *args, **kwargs):
         super().__call__(*args, **kwargs)
         return null(*args)
+
+
+@factory
+class preview(composite):
+    def __repr__(self):
+        return repr(self())
 
 
 @factory
