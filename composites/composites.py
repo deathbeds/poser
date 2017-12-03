@@ -296,10 +296,6 @@ class excepts(composite):
 @factory
 class do(composite):
     """Evaluate a function without modifying the input arguments.
-    
-    >>> assert not λ[print](10) and do()[print](10) is 10
-    10
-    10
     """
     
     def __call__(self, *args, **kwargs):
@@ -309,6 +305,7 @@ class do(composite):
 
 @factory
 class preview(composite):
+    """preview computes the function and shows the value as a repr."""
     def __repr__(self):
         return repr(self())
 
@@ -316,15 +313,30 @@ class preview(composite):
 @factory
 class star(composite):
     """Supply iterables and dictionaries as starred arguments to a function.
-    
-    >>> def f(*args, **kwargs): return args, kwargs
-    >>> star[f]([10, 20], {'foo': 'bar'})
-    ((10, 20), {'foo': 'bar'})
     """
     def __call__(self, *inputs):
         args, kwargs = list(), dict()
         [kwargs.update(**input) if isinstance(input, dict) else args.extend(input) for input in inputs]
         return super().__call__(*args, **kwargs)
+    
+    
+__doc__ = """
+
+>>> assert flip[range](20, 10) == range(10, 20)
+>>> assert not λ[print](10) and do()[print](10) is 10
+10
+10
+
+>>> f = preview(10)[range]
+>>> f
+range(0, 10)
+>>> assert f != range(10) and f() == range(10) and f(20) == range(10, 20)
+
+>>> def f(*args, **kwargs): return args, kwargs
+>>> star[f]([10, 20], {'foo': 'bar'})
+((10, 20), {'foo': 'bar'})
+
+"""
 
 
 # __a__, __an__, __the__, and __λ__ are the main __articles__ used for function composition.  They seemed like uncommon namespace choices.
