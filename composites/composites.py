@@ -49,7 +49,7 @@ class CallableList(UserList):
     >>> assert abs(f)(10) == int
     """
     def __iter__(self) -> Iterator: 
-        yield from iter(self.data or [null])
+        yield from self.data or [null]
 
     def __abs__(self) -> Any: 
         return toolz.compose(last, partial(self))
@@ -242,7 +242,7 @@ class juxt(composite):
     def __init__(self, data=None, object=None):
         if isiterable(data) and not isinstance(data, composite):
             object = object or type(data)
-        self.object = object or tuple
+        self.object = object
         super().__init__(list(data.items()) if isinstance(data, dict) else list(data or list()))
 
     def __iter__(self):
@@ -253,8 +253,9 @@ class juxt(composite):
                 callable = abs(compose(callable))
             yield callable
             
-    def __call__(self, *args, **kwargs): 
-        return self.object(callable(*args, **kwargs) for callable in self)
+    def __call__(self, *args, **kwargs):
+        object = (callable(*args, **kwargs) for callable in self)
+        return self.object(object) if self.object else object
 
 
 @factory
