@@ -91,8 +91,8 @@ class compose(CallableList):
             try:
                 callable = next(callables) 
                 yield next(result)
+            except StopIteration: break
             except Exception as e:
-                if isinstance(e, StopIteration): break
                 callable = repr(callable)
                 if not any(line in callable for line in e.args[0].splitlines()):
                     e.args = callable+'\n'+e.args[0], *e.args[1:]
