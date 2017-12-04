@@ -2,11 +2,13 @@
 # coding: utf-8
 
 try:
-    from .composites import the, partial, composite, flip
+    from .composites import the, partial, composite, flip, star, factory
     from .conditions import ifthen
+    from .partials import partial_attribute
 except BaseException:
-    from composites import the, partial, composite, flip
+    from composites import the, partial, composite, flip, star, factory
     from conditions import ifthen
+    from partials import partial_attribute
 import operator
 from functools import partialmethod
 dunder = "__{}__".format
@@ -15,7 +17,7 @@ __all__ = 'canonical', 'x'
 
 
 class canonical(object):
-    """Canonical function composition operations.
+    """Canonical function compositions using operator.
 
     >>> x = y = z = canonical
     >>> f = 10 < x() < 100
@@ -24,58 +26,94 @@ class canonical(object):
     """
 
     def __init__(self, object=None):
-        self.composite = object or composite()
+        self.__wrapped__ = object or composite()
 
     @property
-    def __call__(self): return self.composite.__call__
-
-    def __getitem__(self, object):
-        self.composite = self.composite[object]
-        return self
+    def __call__(self): return self.__wrapped__.__call__
 
     def __getattr__(self, object):
-        self.composite = self.composite.__getattr__(object)
+        if object == '_ipython_canary_method_should_not_exist_':
+            return self
+        self.__wrapped__ = self.__wrapped__[partial_attribute(getattr, object)]
         return self
 
-    def __repr__(self): return repr(self.composite)
+    def __repr__(self): return repr(self.__wrapped__)
 
 
-x = canonical
+class factory(object):
+    """A factory for canonical compositions.
+
+    >>> x = factory()
+    >>> assert 5 < x
+    >>> assert x + 5
+    >>> assert 5 < x() < 100
+    """
+
+    def __getitem__(self, item): return self()[item]
+
+    def __getattr__(self, item): return getattr(self(), item)
+
+    def __call__(self): return canonical()
 
 
-def __attr__(self, attr, object):
+def __attr__(self, attr, *object):
+    if isinstance(self, factory):
+        self = canonical()
     attr = getattr(operator, attr)
-    self.composite = (
-        composite()[self.composite, object][star[attr]]
-        if callable(object) else self.composite[flip(object)[attr]])
+    object = object[0] if object else None
+    self.__wrapped__ = (composite()[self.__wrapped__, object][star[attr]] if object and callable(
+        object) else self.__wrapped__[partial_attribute(attr, object) if object else attr])
     return self
 
 
 def __rattr__(self, attr, object):
+    if isinstance(self, factory):
+        self = canonical()
     attr = getattr(operator, attr)
-    self.composite = (composite()[object, self.composite][star[attr]] if callable(
-        object) else composite()[partial(attr, object)][self.composite or slice(None)])
+    self.__wrapped__ = (composite()[object, self.__wrapped__][star[attr]] if callable(
+        object) else composite()[partial(attr, object)][self.__wrapped__ or slice(None)])
     return self
 
 
 def __battr__(self, attr, object):
+    if isinstance(self, factory):
+        self = canonical()
     attr = getattr(operator, attr)
     if callable(object):
-        self.composite = a[self.composite, object][star[attr]]
+        self.__wrapped__ = the[self.__wrapped__, object][star[attr]]
     else:
-        object = flip(object)[attr]
-        self.composite = ifthen(self.composite)[
-            object] if self.composite else object
+        object = partial_attribute(attr, object)
+        self.__wrapped__ = ifthen(self.__wrapped__)[
+            object] if self.__wrapped__ else the[object]
     return self
 
 
-for attr in ['add', 'sub', 'mul', 'floordiv', 'truediv', 'mod', 'matmul']:
-    setattr(canonical, dunder(attr), partialmethod(__attr__, attr))
-    setattr(canonical, "__i{}__".format(attr), partialmethod(__attr__, attr))
-    setattr(canonical, "__r{}__".format(attr), partialmethod(__rattr__, attr))
+for cls in [canonical, factory]:
+    for attr in [
+        'add',
+        'sub',
+        'mul',
+        'floordiv',
+        'truediv',
+        'mod',
+        'matmul',
+        'and',
+        'or',
+        'pow',
+        'lshift',
+            'rshift']:
+        setattr(cls, dunder(attr), partialmethod(__attr__, attr))
+        setattr(cls, "__i{}__".format(attr), partialmethod(__attr__, attr))
+        setattr(cls, "__r{}__".format(attr), partialmethod(__rattr__, attr))
 
-for attr in ['lt', 'le', 'gt', 'ge', 'eq']:
-    setattr(canonical, dunder(attr), partialmethod(__battr__, attr))
+    for attr in ['abs', 'neg', 'pos', 'invert', 'getitem', 'delitem']:
+        setattr(cls, dunder(attr), partialmethod(__attr__, attr))
+
+    for attr in ['lt', 'le', 'gt', 'ge', 'eq']:
+        setattr(cls, dunder(attr), partialmethod(__battr__, attr))
+
+
+x = factory()
 
 
 if __name__ == '__main__':

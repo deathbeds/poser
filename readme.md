@@ -165,16 +165,16 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
         !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
         !autopep8 --in-place --aggressive --aggressive composites/*.py
         !pyreverse -o png -bmy -fALL -p composites composites
-        !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb
+        !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb composites/canonical.ipynb
         !echo complete
 
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 7182 bytes to readme.md
+    [NbConvertApp] Writing 8378 bytes to readme.md
     [NbConvertApp] Converting notebook composites/attributes.ipynb to python
     [NbConvertApp] Writing 5755 bytes to composites/attributes.py
     [NbConvertApp] Converting notebook composites/canonical.ipynb to python
-    [NbConvertApp] Writing 2466 bytes to composites/canonical.py
+    [NbConvertApp] Writing 3332 bytes to composites/canonical.py
     [NbConvertApp] Converting notebook composites/composites.ipynb to python
     [NbConvertApp] Writing 12340 bytes to composites/composites.py
     [NbConvertApp] Converting notebook composites/conditions.ipynb to python
@@ -194,22 +194,5 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
     parsing /Users/tonyfast/fidget/composites/objects.py...
     parsing /Users/tonyfast/fidget/composites/operations.py...
     parsing /Users/tonyfast/fidget/composites/partials.py...
-    **********************************************************************
-    File "composites/objects.py", line 54, in objects.parallel
-    Failed example:
-        assert parallel(jobs=4)[range].map(range)(8) == list(map(range, range(8)))
-    Exception raised:
-        Traceback (most recent call last):
-          File "/Users/tonyfast/anaconda/envs/p6/lib/python3.6/doctest.py", line 1330, in __run
-            compileflags, 1), test.globs)
-          File "<doctest objects.parallel[0]>", line 1, in <module>
-            assert parallel(jobs=4)[range].map(range)(8) == list(map(range, range(8)))
-          File "composites/objects.py", line 62, in map
-            return super().__getattr__('map')(__import__('joblib').delayed(function))
-        ModuleNotFoundError: No module named 'joblib'
-    **********************************************************************
-    1 items had failures:
-       1 of   1 in objects.parallel
-    ***Test Failed*** 1 failures.
     complete
 
