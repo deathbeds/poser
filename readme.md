@@ -48,7 +48,7 @@ Brackets juxtapose iterable objects.
     (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
      λ:[juxt(<class 'set'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'dict'>)[('y', <class 'type'>), ('x', <class 'range'>)]])
+     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
 
 
 
@@ -115,7 +115,7 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
 
-    range(0, 6)
+    range(0, 4)
 
 
 
@@ -160,36 +160,56 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
 
 
 # Development
-
-    !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
-    !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
-    !autopep8 --in-place --aggressive --aggressive composites/*.py
-    !pyreverse -o png -bmy -fALL -p composites composites
-    !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb
-    !echo complete
+    if __name__== '__main__':
+        !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
+        !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
+        !autopep8 --in-place --aggressive --aggressive composites/*.py
+        !pyreverse -o png -bmy -fALL -p composites composites
+        !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb
+        !echo complete
 
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 9553 bytes to readme.md
+    [NbConvertApp] Writing 7182 bytes to readme.md
     [NbConvertApp] Converting notebook composites/attributes.ipynb to python
-    [NbConvertApp] Writing 5473 bytes to composites/attributes.py
+    [NbConvertApp] Writing 5755 bytes to composites/attributes.py
+    [NbConvertApp] Converting notebook composites/canonical.ipynb to python
+    [NbConvertApp] Writing 2466 bytes to composites/canonical.py
     [NbConvertApp] Converting notebook composites/composites.ipynb to python
-    [NbConvertApp] Writing 11799 bytes to composites/composites.py
+    [NbConvertApp] Writing 12340 bytes to composites/composites.py
     [NbConvertApp] Converting notebook composites/conditions.ipynb to python
-    [NbConvertApp] Writing 1980 bytes to composites/conditions.py
+    [NbConvertApp] Writing 1974 bytes to composites/conditions.py
     [NbConvertApp] Converting notebook composites/objects.ipynb to python
-    [NbConvertApp] Writing 5396 bytes to composites/objects.py
+    [NbConvertApp] Writing 5405 bytes to composites/objects.py
     [NbConvertApp] Converting notebook composites/operations.ipynb to python
-    [NbConvertApp] Writing 3931 bytes to composites/operations.py
+    [NbConvertApp] Writing 3711 bytes to composites/operations.py
     [NbConvertApp] Converting notebook composites/partials.ipynb to python
-    [NbConvertApp] Writing 1202 bytes to composites/partials.py
+    [NbConvertApp] Writing 1514 bytes to composites/partials.py
     parsing composites/__init__.py...
     parsing /Users/tonyfast/fidget/composites/__init__.py...
     parsing /Users/tonyfast/fidget/composites/attributes.py...
+    parsing /Users/tonyfast/fidget/composites/canonical.py...
     parsing /Users/tonyfast/fidget/composites/composites.py...
     parsing /Users/tonyfast/fidget/composites/conditions.py...
     parsing /Users/tonyfast/fidget/composites/objects.py...
     parsing /Users/tonyfast/fidget/composites/operations.py...
     parsing /Users/tonyfast/fidget/composites/partials.py...
+    **********************************************************************
+    File "composites/objects.py", line 54, in objects.parallel
+    Failed example:
+        assert parallel(jobs=4)[range].map(range)(8) == list(map(range, range(8)))
+    Exception raised:
+        Traceback (most recent call last):
+          File "/Users/tonyfast/anaconda/envs/p6/lib/python3.6/doctest.py", line 1330, in __run
+            compileflags, 1), test.globs)
+          File "<doctest objects.parallel[0]>", line 1, in <module>
+            assert parallel(jobs=4)[range].map(range)(8) == list(map(range, range(8)))
+          File "composites/objects.py", line 62, in map
+            return super().__getattr__('map')(__import__('joblib').delayed(function))
+        ModuleNotFoundError: No module named 'joblib'
+    **********************************************************************
+    1 items had failures:
+       1 of   1 in objects.parallel
+    ***Test Failed*** 1 failures.
     complete
 
