@@ -4,17 +4,17 @@
 # An extensible attribute system for the composites.
 
 try:
-    from .composites import composite, flip, factory
+    from .composites import composite, factory
     from .partials import partial, partial_attribute
 except BaseException:
-    from composites import composite, flip, factory
+    from composites import composite, factory
     from partials import partial, partial_attribute
 
 
 from functools import partialmethod, wraps, WRAPPER_ASSIGNMENTS
 from inspect import signature, getdoc
-from operator import attrgetter
-from toolz.curried import identity, concat, concatv, keymap
+from operator import attrgetter, contains
+from toolz.curried import identity, concat, concatv, keymap, flip
 from toolz import map, groupby, filter, reduce
 import sys
 dunder = '__{}__'.format
@@ -142,7 +142,7 @@ import fnmatch
 # some of these cases fail, but the main operators work.
 attribute.decorators = keymap([flip, identity].__getitem__, groupby(
     attrgetter('itemgetter', 'attrgetter', 'methodcaller')(operator).__contains__,
-    filter(callable, vars(__import__('operator')).values())
+    [x for x in filter(callable, vars(__import__('operator')).values()) if x is not contains]
 ))
 attribute.shortcuts.insert(0, {'fnmatch': fnmatch.fnmatch})
 attribute.decorators[flip].append(fnmatch.fnmatch)

@@ -76,7 +76,7 @@ def __attr__(self, attr, *object):
     attr = getattr(operator, attr)
     object = object[0] if object else None
     self.__wrapped__ = (composite()[self.__wrapped__, object][star[attr]] if callable(
-        object) else self.__wrapped__[partial_attribute(attr, object) if object else attr])
+        object) else self.__wrapped__[partial_attribute(attr, object) if object is not None else attr])
     return self
 
 
