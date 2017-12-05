@@ -2,11 +2,11 @@
 # coding: utf-8
 
 try:
-    from .composites import the, partial, composite, flip, star, factory
+    from .composites import the, partial, composite, flip, star, factory, compose
     from .conditions import ifthen
     from .partials import partial_attribute
 except BaseException:
-    from composites import the, partial, composite, flip, star, factory
+    from composites import the, partial, composite, flip, star, factory, compose
     from conditions import ifthen
     from partials import partial_attribute
 import operator
@@ -34,10 +34,22 @@ class canonical(object):
     def __getattr__(self, object):
         if object == '_ipython_canary_method_should_not_exist_':
             return self
-        self.__wrapped__ = self.__wrapped__[partial_attribute(getattr, object)]
+        if isinstance(object, str):
+            if hasattr(compose, object):
+                raise AttributeError(object)
+            self.__wrapped__ = self.__wrapped__[
+                partial_attribute(getattr, object)]
+        else:
+            self.__wrapped__ = self.__wrapped__[object]
         return self
 
+    def __iter__(self): return self.__getattr__(iter)
+
+    def __reversed__(self): return self.__getattr__(reversed)
+
     def __repr__(self): return repr(self.__wrapped__)
+
+    def __contains__(self, object): return object in self.__wrapped__
 
 
 class factory(object):
@@ -51,7 +63,9 @@ class factory(object):
 
     def __getitem__(self, item): return self()[item]
 
-    def __getattr__(self, item): return getattr(self(), item)
+    def __getattr__(self, item): return self().__getattr__(item)
+
+    def __reversed__(self): return self.__getattr__(reversed)
 
     def __call__(self): return canonical()
 
@@ -61,7 +75,7 @@ def __attr__(self, attr, *object):
         self = canonical()
     attr = getattr(operator, attr)
     object = object[0] if object else None
-    self.__wrapped__ = (composite()[self.__wrapped__, object][star[attr]] if object and callable(
+    self.__wrapped__ = (composite()[self.__wrapped__, object][star[attr]] if callable(
         object) else self.__wrapped__[partial_attribute(attr, object) if object else attr])
     return self
 

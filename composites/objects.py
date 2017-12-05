@@ -136,7 +136,7 @@ class cache(store):
     """
 
     def __call__(self, *args, **kwargs):
-        if args[0] not in self:
+        if (args[0] if args else None) not in self:
             super().__call__(*args, **kwargs)
         return self
 

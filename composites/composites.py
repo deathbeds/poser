@@ -17,7 +17,7 @@ __all__ = 'a', 'an', 'the', 'star', 'do', 'λ', 'flip', 'excepts', 'composite', 
 
 from collections import UserList, deque
 from inspect import signature, getdoc
-from functools import partialmethod
+from functools import partialmethod, wraps
 import toolz
 from toolz.curried import isiterable, identity, concatv, last
 from typing import Iterator, Any
@@ -65,6 +65,9 @@ class CallableList(UserList):
                             ] if callable(object) else [object], dict()
             yield null(*args, **kwargs)
 
+    @property
+    def __wrapped__(self): return self.data[0] if self else abs(self)
+
 
 # * Use a better error message when calling composites.
 # * Attach attributes to copy, pickle, print, and other data model attributes.
@@ -76,7 +79,7 @@ class compose(CallableList):
 
     >>> f = compose()[range]
     >>> f[type]
-    compose:[<class 'range'>, <class 'type'>]
+    [<class 'range'>, <class 'type'>]
 
     All compose objects work as decorators.
     >>> @compose
@@ -117,8 +120,6 @@ class compose(CallableList):
         return self.data[object] if isinstance(
             object, (int, slice)) else self.append(object)
 
-        raise AttributeError(object)
-
     def append(self, object):
         return self.data.append(
             object) or not self.data[0] and self.data.pop(0) or self
@@ -130,10 +131,6 @@ class compose(CallableList):
 
     def __bool__(self): return any(self.data)
 
-    def __reversed__(self):
-        self.data = list(reversed(self.data))
-        return self
-
     def __getstate__(self): return tuple(getattr(self, slot)
                                          for slot in self.__slots__)
 
@@ -142,32 +139,17 @@ class compose(CallableList):
             setattr(self, attr, value)
 
     def __copy__(self, memo=None):
-        new = type(
-            self.__name__, (type(self),), {
-                '_annotations_': self._annotations_})()
+        new = type(self.__name__, (type(self),), {})()
         return new.__setstate__(tuple(map(copy, self.__getstate__()))) or new
-    _annotations_ = None
-
-    @property
-    def __annotations__(self):
-        return self._annotations_ or self and getattr(
-            self[0], dunder('annotations'), None) or {}
-
-    def __repr__(self):
-        other = len(
-            self.__slots__) is 2 and repr(
-            self.__getstate__()[
-                1 - self.__slots__.index('data')])
-        return type(self).__name__.replace('composite', 'λ') + (
-            '({})'.format(other or '').replace('()', ':')
-        ) + super().__repr__()
 
     copy = __deepcopy__ = __copy__
 
+    @property
+    def __signature__(self): return signature(self.__wrapped__)
 
-# __composite__ is the core object. This class returns the executed
-# function when called, rather than a generator.  The getitem method
-# transforms non-callable iterable objects into juxtaposed functions.
+
+hash(compose()[range])
+
 
 class composite(compose):
     """An object for symbolically generating higher-order function compositions. Calling
@@ -196,13 +178,31 @@ class composite(compose):
     def __getitem__(self, object):
         """Use brackets to append functions to the compose.
         >>> compose()[range][list]
-        compose:[<class 'range'>, <class 'list'>]
+        [<class 'range'>, <class 'list'>]
         """
+        if isinstance(object, canonical):
+            object = object.__wrapped__
+
         # from ipython prediction
         if object in (slice(None), getdoc):
             return self
-        return super().__getitem__([identity, juxt][isiterable(object) and not isinstance(
-            object, (str, compose)) and not callable(object)](object))
+        if not callable(object) and isiterable(
+                object) and not isinstance(object, (str, compose)):
+            object = juxt(object)
+        return super().__getitem__(object)
+
+    def __reversed__(self):
+        self.data = list(reversed(self.data))
+        return self
+
+    def __repr__(self):
+        other = len(
+            self.__slots__) is 2 and repr(
+            self.__getstate__()[
+                1 - self.__slots__.index('data')])
+        return type(self).__name__.replace('composite', 'λ') + (
+            '({})'.format(other or '').replace('()', ':')
+        ) + super().__repr__()
 
 
 # * A factory skips parenthesis when initializing a composition.
@@ -400,8 +400,10 @@ a = an = the = λ = factory(composite)
 
 try:
     from .operations import *
+    from .canonical import canonical
 except BaseException:
     from operations import *
+    from canonical import canonical
 
 
 if __name__ == '__main__':
