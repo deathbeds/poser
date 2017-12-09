@@ -15,7 +15,7 @@ from distutils.core import setup, Command
 # you can also import from setuptools
 
 setuptools.setup(
-    name="articles",
+    name="composites",
     version="0.2.0",
     author="Tony Fast",
     author_email="tony.fast@gmail.com",
