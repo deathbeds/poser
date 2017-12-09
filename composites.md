@@ -586,43 +586,28 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
 
 
 ```python
-    if __name__ == '__main__':
+    if __name__ == '__main__' and 'runtime' in sys.argv[-1]:
         print(__import__('doctest').testmod())
 ```
 
-    TestResults(failed=0, attempted=37)
-
+# Developer
 
 
 ```python
     if __name__ == '__main__':
-        from IPython import get_ipython
-        !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb
-        !autopep8 --in-place --aggressive --aggressive composites.py
-        !flake8 composites.py
-        !pyreverse -o png -pcomposites -fALL composites
-        !pyreverse -o png -pcomposites.min composites
-        !pydoc -w composites
+        if 'runtime' in sys.argv[-1]:
+            print('Running ', __name__)
+            from IPython import get_ipython
+            !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb
+            !autopep8 --in-place --aggressive --aggressive composites.py
+            !flake8 composites.py
+            !pyreverse -o png -pcomposites -fALL composites
+            !pyreverse -o png -pcomposites.min composites
+            !pydoc -w composites
+            !python -m composites 
+        else:
+            print('run from cli')
 ```
 
-    [NbConvertApp] Converting notebook composites.ipynb to python
-    [NbConvertApp] Writing 19438 bytes to composites.py
-    composites.py:6:80: E501 line too long (92 > 79 characters)
-    composites.py:10:80: E501 line too long (102 > 79 characters)
-    composites.py:20:80: E501 line too long (98 > 79 characters)
-    composites.py:185:80: E501 line too long (173 > 79 characters)
-    composites.py:250:80: E501 line too long (91 > 79 characters)
-    composites.py:256:80: E501 line too long (99 > 79 characters)
-    composites.py:257:80: E501 line too long (94 > 79 characters)
-    composites.py:279:80: E501 line too long (95 > 79 characters)
-    composites.py:459:80: E501 line too long (92 > 79 characters)
-    composites.py:462:80: E501 line too long (109 > 79 characters)
-    composites.py:463:80: E501 line too long (84 > 79 characters)
-    composites.py:464:80: E501 line too long (80 > 79 characters)
-    composites.py:544:80: E501 line too long (81 > 79 characters)
-    composites.py:694:80: E501 line too long (102 > 79 characters)
-    composites.py:695:80: E501 line too long (87 > 79 characters)
-    parsing /Users/tonyfast/composites/composites.py...
-    parsing /Users/tonyfast/composites/composites.py...
-    wrote composites.html
+    run from cli
 

@@ -684,16 +684,23 @@ class cache(store):
         return self[args]
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and 'runtime' in sys.argv[-1]:
     print(__import__('doctest').testmod())
 
 
+# # Developer
+
 if __name__ == '__main__':
-    from IPython import get_ipython
-    get_ipython().system(
-        'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb')
-    get_ipython().system('autopep8 --in-place --aggressive --aggressive composites.py')
-    get_ipython().system('flake8 composites.py')
-    get_ipython().system('pyreverse -o png -pcomposites -fALL composites')
-    get_ipython().system('pyreverse -o png -pcomposites.min composites')
-    get_ipython().system('pydoc -w composites')
+    if 'runtime' in sys.argv[-1]:
+        print('Running ', __name__)
+        from IPython import get_ipython
+        get_ipython().system(
+            'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb')
+        get_ipython().system('autopep8 --in-place --aggressive --aggressive composites.py')
+        get_ipython().system('flake8 composites.py')
+        get_ipython().system('pyreverse -o png -pcomposites -fALL composites')
+        get_ipython().system('pyreverse -o png -pcomposites.min composites')
+        get_ipython().system('pydoc -w composites')
+        get_ipython().system('python -m composites ')
+    else:
+        print('run from cli')

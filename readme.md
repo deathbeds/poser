@@ -160,61 +160,15 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
 # Development
     if __name__== '__main__':
         !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
-        !jupyter nbconvert --to markdown --execute --ExecutePreprocessor.kernel_name=p6 composites.ipynb
+        !jupyter nbconvert --to markdown --execute composites.ipynb
         !python -m doctest composites.py
         !echo complete
 
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 9340 bytes to readme.md
+    [NbConvertApp] Writing 9339 bytes to readme.md
     [NbConvertApp] Converting notebook composites.ipynb to markdown
-    [NbConvertApp] Executing notebook with kernel: p6
-    Traceback (most recent call last):
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/kernelspec.py", line 201, in get_kernel_spec
-        resource_dir = d[kernel_name.lower()]
-    KeyError: 'p6'
-    
-    During handling of the above exception, another exception occurred:
-    
-    Traceback (most recent call last):
-      File "/Users/tonyfast/anaconda/bin/jupyter-nbconvert", line 11, in <module>
-        sys.exit(main())
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_core/application.py", line 267, in launch_instance
-        return super(JupyterApp, cls).launch_instance(argv=argv, **kwargs)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/traitlets/config/application.py", line 658, in launch_instance
-        app.start()
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 325, in start
-        self.convert_notebooks()
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 493, in convert_notebooks
-        self.convert_single_notebook(notebook_filename)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 464, in convert_single_notebook
-        output, resources = self.export_single_notebook(notebook_filename, resources, input_buffer=input_buffer)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 393, in export_single_notebook
-        output, resources = self.exporter.from_filename(notebook_filename, resources=resources)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 174, in from_filename
-        return self.from_file(f, resources=resources, **kw)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 192, in from_file
-        return self.from_notebook_node(nbformat.read(file_stream, as_version=4), resources=resources, **kw)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/templateexporter.py", line 280, in from_notebook_node
-        nb_copy, resources = super(TemplateExporter, self).from_notebook_node(nb, resources, **kw)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 134, in from_notebook_node
-        nb_copy, resources = self._preprocess(nb_copy, resources)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 311, in _preprocess
-        nbc, resc = preprocessor(nbc, resc)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/base.py", line 47, in __call__
-        return self.preprocess(nb, resources)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/execute.py", line 257, in preprocess
-        cwd=path)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/execute.py", line 237, in start_new_kernel
-        km.start_kernel(**kwargs)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 244, in start_kernel
-        kernel_cmd = self.format_kernel_cmd(extra_arguments=extra_arguments)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 175, in format_kernel_cmd
-        cmd = self.kernel_spec.argv + extra_arguments
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 87, in kernel_spec
-        self._kernel_spec = self.kernel_spec_manager.get_kernel_spec(self.kernel_name)
-      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/kernelspec.py", line 203, in get_kernel_spec
-        raise NoSuchKernel(kernel_name)
-    jupyter_client.kernelspec.NoSuchKernel: No such kernel named p6
+    [NbConvertApp] Executing notebook with kernel: other-env
+    [NbConvertApp] Writing 22786 bytes to composites.md
     complete
 
