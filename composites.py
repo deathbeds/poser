@@ -8,7 +8,7 @@
 #
 # Composite functions use Python syntax to append callable objects to compositions and juxtapositions.
 #
-# ### Canonical
+# ### Operator
 
 from functools import partialmethod, total_ordering, WRAPPER_ASSIGNMENTS, wraps
 
@@ -351,15 +351,15 @@ for attr in ['add', 'sub', 'mul', 'truediv', 'getitem', 'rshift', 'lshift']:
             partialmethod(right_operation, attr))
 
 
-def right_canonical_operation(self, callable, left):
-    return complex_operation(Canonical(), callable, left, partial=partial)
+def right_operator_operation(self, callable, left):
+    return complex_operation(Op(), callable, left, partial=partial)
 
 
 def logical_operation(self, callable, *args):
-    return Canonical(self, imag=partial(callable, *args))
+    return Op(self, imag=partial(callable, *args))
 
 
-class CanonicalOperations(ComplexOperations):
+class OperatorOperations(ComplexOperations):
     def __getattr__(self, attr):
         try:
             return super().__getattr__(attr)
@@ -369,18 +369,18 @@ class CanonicalOperations(ComplexOperations):
 
 for attr in ['add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'getitem']:
     op = getattr(operator, attr)
-    setattr(CanonicalOperations,
+    setattr(OperatorOperations,
             dunder(attr), partialmethod(complex_operation, op))
-    setattr(CanonicalOperations, '__r' + dunder(attr).lstrip('__'),
-            partialmethod(right_canonical_operation, op))
+    setattr(OperatorOperations, '__r' + dunder(attr).lstrip('__'),
+            partialmethod(right_operator_operation, op))
 
 for attr in ['gt', 'ge', 'le', 'lt', 'eq', 'ne']:
-    setattr(CanonicalOperations,
+    setattr(OperatorOperations,
             dunder(attr),
             partialmethod(logical_operation, getattr(operator, attr)))
 
 for attr in ['abs', 'pos', 'neg', 'pow']:
-    setattr(CanonicalOperations,
+    setattr(OperatorOperations,
             dunder(attr),
             partialmethod(complex_operation, getattr(operator, attr)))
 del attr
@@ -531,11 +531,15 @@ class IfThen(Function):
             self.exceptions += ConditionException,
 
 
-class Canonical(CanonicalOperations, Composition):
+class Operator(OperatorOperations, Composition):
+    """Symbollic compositions that append operations functins.
+    
+    >>> assert (x+10)(10) is 20
+    """
     __annotations__ = {}
 
 
-class CanonicalFactory(Canonical, Factory):
+class OperatorFactory(Operator, Factory):
     ...
 
 
@@ -587,13 +591,13 @@ class Parallel(Function):
     __truediv__ = map
 
 
-a = an = FunctionFactory(Function)
+a = an = the = FunctionFactory(Function)
 flip = FunctionFactory(Flip)
 parallel = FunctionFactory(Parallel)
 star = FunctionFactory(Star)
 do = FunctionFactory(Do)
 preview = FunctionFactory(Preview)
-x = CanonicalFactory(Canonical)
+x = op = OperatorFactory(Operator)
 juxt = FunctionFactory(Juxtaposition)
 ifthen = FunctionFactory(IfThen)
 

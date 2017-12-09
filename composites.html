@@ -50,19 +50,19 @@
 <dt><font face="helvetica, arial"><a href="composites.html#ComplexOperations">ComplexOperations</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="composites.html#CanonicalOperations">CanonicalOperations</a>
+<dt><font face="helvetica, arial"><a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#OperatorOperations">OperatorOperations</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="composites.html#Canonical">Canonical</a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#Composition">Composition</a>)
+<dt><font face="helvetica, arial"><a href="composites.html#Operator">Operator</a>(<a href="composites.html#OperatorOperations">OperatorOperations</a>, <a href="composites.html#Composition">Composition</a>)
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="composites.html#CanonicalFactory">CanonicalFactory</a>(<a href="composites.html#Canonical">Canonical</a>, <a href="composites.html#Factory">Factory</a>)
+<dt><font face="helvetica, arial"><a href="composites.html#OperatorFactory">OperatorFactory</a>(<a href="composites.html#Operator">Operator</a>, <a href="composites.html#Factory">Factory</a>)
 </font></dt></dl>
 </dd>
 </dl>
 </dd>
-<dt><font face="helvetica, arial"><a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>
-</font></dt></dl>
+</dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="composites.html#Factory">Factory</a>
 </font></dt><dt><font face="helvetica, arial"><a href="composites.html#State">State</a>
@@ -116,467 +116,6 @@
 </dd>
 </dl>
  <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Canonical">class <strong>Canonical</strong></a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#Composition">Composition</a>)</font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a.bool().<a href="#Canonical-then">then</a>(a.range()).<a href="#Canonical-excepts">excepts</a>(TypeError)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;f(0)&nbsp;is&nbsp;False<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>
-&gt;&gt;&gt;&nbsp;g&nbsp;=&nbsp;a.<a href="#Canonical-instance">instance</a>(int).range()<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;g(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;g('10')&nbsp;is&nbsp;False<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%"><dl><dt>Method resolution order:</dt>
-<dd><a href="composites.html#Canonical">Canonical</a></dd>
-<dd><a href="composites.html#CanonicalOperations">CanonicalOperations</a></dd>
-<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
-<dd><a href="composites.html#Composition">Composition</a></dd>
-<dd><a href="composites.html#Composite">Composite</a></dd>
-<dd><a href="composites.html#Complex">Complex</a></dd>
-<dd><a href="composites.html#State">State</a></dd>
-<dd><a href="builtins.html#object">builtins.object</a></dd>
-</dl>
-<hr>
-Data and other attributes defined here:<br>
-<dl><dt><strong>__annotations__</strong> = {}</dl>
-
-<hr>
-Methods inherited from <a href="composites.html#CanonicalOperations">CanonicalOperations</a>:<br>
-<dl><dt><a name="Canonical-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
-
-<dl><dt><a name="Canonical-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="Canonical-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><a name="Canonical-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<dl><dt><a name="Canonical-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="Canonical-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="Canonical-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="Canonical-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="Canonical-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
-
-<dl><dt><a name="Canonical-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<hr>
-Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<hr>
-Methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
-<dl><dt><a name="Canonical-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
-
-<dl><dt><a name="Canonical-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
-<dl><dt><a name="Canonical-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
-<dl><dt><a name="Canonical-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
-
-<dl><dt><a name="Canonical-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt><a href="#Canonical-__prepare__">__prepare__</a>()&nbsp;-&gt;&nbsp;<a href="builtins.html#dict">dict</a><br>
-used&nbsp;to&nbsp;create&nbsp;the&nbsp;namespace&nbsp;for&nbsp;the&nbsp;class&nbsp;statement</tt></dd></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Canonical-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="Canonical-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="Canonical-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
-
-<dl><dt><a name="Canonical-__len__"><strong>__len__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="Canonical-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
-
-<dl><dt><a name="Canonical-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
-
-<dl><dt><a name="Canonical-append"><strong>append</strong></a>(self, item)</dt></dl>
-
-<hr>
-Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><strong>args</strong></dt>
-</dl>
-<dl><dt><strong>exceptions</strong></dt>
-</dl>
-<dl><dt><strong>imag</strong></dt>
-</dl>
-<dl><dt><strong>kwargs</strong></dt>
-</dl>
-<dl><dt><strong>real</strong></dt>
-</dl>
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CanonicalFactory">class <strong>CanonicalFactory</strong></a>(<a href="composites.html#Canonical">Canonical</a>, <a href="composites.html#Factory">Factory</a>)</font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a.bool().<a href="#CanonicalFactory-then">then</a>(a.range()).<a href="#CanonicalFactory-excepts">excepts</a>(TypeError)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;f(0)&nbsp;is&nbsp;False<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>
-&gt;&gt;&gt;&nbsp;g&nbsp;=&nbsp;a.<a href="#CanonicalFactory-instance">instance</a>(int).range()<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;g(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;g('10')&nbsp;is&nbsp;False<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%"><dl><dt>Method resolution order:</dt>
-<dd><a href="composites.html#CanonicalFactory">CanonicalFactory</a></dd>
-<dd><a href="composites.html#Canonical">Canonical</a></dd>
-<dd><a href="composites.html#CanonicalOperations">CanonicalOperations</a></dd>
-<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
-<dd><a href="composites.html#Composition">Composition</a></dd>
-<dd><a href="composites.html#Composite">Composite</a></dd>
-<dd><a href="composites.html#Complex">Complex</a></dd>
-<dd><a href="composites.html#State">State</a></dd>
-<dd><a href="composites.html#Factory">Factory</a></dd>
-<dd><a href="builtins.html#object">builtins.object</a></dd>
-</dl>
-<hr>
-Data and other attributes inherited from <a href="composites.html#Canonical">Canonical</a>:<br>
-<dl><dt><strong>__annotations__</strong> = {}</dl>
-
-<hr>
-Methods inherited from <a href="composites.html#CanonicalOperations">CanonicalOperations</a>:<br>
-<dl><dt><a name="CanonicalFactory-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><a name="CanonicalFactory-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<hr>
-Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<hr>
-Methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
-<dl><dt><a name="CanonicalFactory-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
-<dl><dt><a name="CanonicalFactory-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
-<dl><dt><a name="CanonicalFactory-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt><a href="#CanonicalFactory-__prepare__">__prepare__</a>()&nbsp;-&gt;&nbsp;<a href="builtins.html#dict">dict</a><br>
-used&nbsp;to&nbsp;create&nbsp;the&nbsp;namespace&nbsp;for&nbsp;the&nbsp;class&nbsp;statement</tt></dd></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="CanonicalFactory-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
-
-<dl><dt><a name="CanonicalFactory-__len__"><strong>__len__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-append"><strong>append</strong></a>(self, item)</dt></dl>
-
-<hr>
-Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><strong>args</strong></dt>
-</dl>
-<dl><dt><strong>exceptions</strong></dt>
-</dl>
-<dl><dt><strong>imag</strong></dt>
-</dl>
-<dl><dt><strong>kwargs</strong></dt>
-</dl>
-<dl><dt><strong>real</strong></dt>
-</dl>
-</td></tr></table> <p>
-<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
-<tr bgcolor="#ffc8d8">
-<td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="CanonicalOperations">class <strong>CanonicalOperations</strong></a>(<a href="composites.html#ComplexOperations">ComplexOperations</a>)</font></td></tr>
-    
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a.bool().<a href="#CanonicalOperations-then">then</a>(a.range()).<a href="#CanonicalOperations-excepts">excepts</a>(TypeError)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;f(0)&nbsp;is&nbsp;False<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>
-&gt;&gt;&gt;&nbsp;g&nbsp;=&nbsp;a.<a href="#CanonicalOperations-instance">instance</a>(int).range()<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;g(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;g('10')&nbsp;is&nbsp;False<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
-<td width="100%"><dl><dt>Method resolution order:</dt>
-<dd><a href="composites.html#CanonicalOperations">CanonicalOperations</a></dd>
-<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
-<dd><a href="builtins.html#object">builtins.object</a></dd>
-</dl>
-<hr>
-Methods defined here:<br>
-<dl><dt><a name="CanonicalOperations-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalOperations-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><a name="CanonicalOperations-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
-
-<dl><dt><a name="CanonicalOperations-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
-&nbsp;<br>
-&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
-
-<hr>
-Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
-<dl><dt><strong>__dict__</strong></dt>
-<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-<dl><dt><strong>__weakref__</strong></dt>
-<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
-</dl>
-</td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -978,7 +517,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1188,7 +727,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1377,7 +916,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1577,7 +1116,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1880,7 +1419,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2156,7 +1695,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2301,6 +1840,459 @@ Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Operator">class <strong>Operator</strong></a>(<a href="composites.html#OperatorOperations">OperatorOperations</a>, <a href="composites.html#Composition">Composition</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Symbollic&nbsp;compositions&nbsp;that&nbsp;append&nbsp;operations&nbsp;functins.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(x+10)(10)&nbsp;is&nbsp;20<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Operator">Operator</a></dd>
+<dd><a href="composites.html#OperatorOperations">OperatorOperations</a></dd>
+<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
+<dd><a href="composites.html#Composition">Composition</a></dd>
+<dd><a href="composites.html#Composite">Composite</a></dd>
+<dd><a href="composites.html#Complex">Complex</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {}</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#OperatorOperations">OperatorOperations</a>:<br>
+<dl><dt><a name="Operator-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
+
+<dl><dt><a name="Operator-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="Operator-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><a name="Operator-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Operator-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operator-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operator-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operator-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operator-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="Operator-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
+<dl><dt><a name="Operator-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Operator-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
+<dl><dt><a name="Operator-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><a name="Operator-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Operator-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt><a href="#Operator-__prepare__">__prepare__</a>()&nbsp;-&gt;&nbsp;<a href="builtins.html#dict">dict</a><br>
+used&nbsp;to&nbsp;create&nbsp;the&nbsp;namespace&nbsp;for&nbsp;the&nbsp;class&nbsp;statement</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Operator-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Operator-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
+
+<dl><dt><a name="Operator-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
+
+<dl><dt><a name="Operator-append"><strong>append</strong></a>(self, item)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>imag</strong></dt>
+</dl>
+<dl><dt><strong>kwargs</strong></dt>
+</dl>
+<dl><dt><strong>real</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="OperatorFactory">class <strong>OperatorFactory</strong></a>(<a href="composites.html#Operator">Operator</a>, <a href="composites.html#Factory">Factory</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Symbollic&nbsp;compositions&nbsp;that&nbsp;append&nbsp;operations&nbsp;functins.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(x+10)(10)&nbsp;is&nbsp;20<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#OperatorFactory">OperatorFactory</a></dd>
+<dd><a href="composites.html#Operator">Operator</a></dd>
+<dd><a href="composites.html#OperatorOperations">OperatorOperations</a></dd>
+<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
+<dd><a href="composites.html#Composition">Composition</a></dd>
+<dd><a href="composites.html#Composite">Composite</a></dd>
+<dd><a href="composites.html#Complex">Complex</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Factory">Factory</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#Operator">Operator</a>:<br>
+<dl><dt><strong>__annotations__</strong> = {}</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#OperatorOperations">OperatorOperations</a>:<br>
+<dl><dt><a name="OperatorFactory-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><a name="OperatorFactory-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
+<dl><dt><a name="OperatorFactory-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
+<dl><dt><a name="OperatorFactory-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><a name="OperatorFactory-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt><a href="#OperatorFactory-__prepare__">__prepare__</a>()&nbsp;-&gt;&nbsp;<a href="builtins.html#dict">dict</a><br>
+used&nbsp;to&nbsp;create&nbsp;the&nbsp;namespace&nbsp;for&nbsp;the&nbsp;class&nbsp;statement</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="OperatorFactory-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="OperatorFactory-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
+
+<dl><dt><a name="OperatorFactory-append"><strong>append</strong></a>(self, item)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>imag</strong></dt>
+</dl>
+<dl><dt><strong>kwargs</strong></dt>
+</dl>
+<dl><dt><strong>real</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="OperatorOperations">class <strong>OperatorOperations</strong></a>(<a href="composites.html#ComplexOperations">ComplexOperations</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a.bool().<a href="#OperatorOperations-then">then</a>(a.range()).<a href="#OperatorOperations-excepts">excepts</a>(TypeError)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;f(0)&nbsp;is&nbsp;False<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>
+&gt;&gt;&gt;&nbsp;g&nbsp;=&nbsp;a.<a href="#OperatorOperations-instance">instance</a>(int).range()<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;g(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;g('10')&nbsp;is&nbsp;False<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#OperatorOperations">OperatorOperations</a></dd>
+<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="OperatorOperations-__abs__"><strong>__abs__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__add__"><strong>__add__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__getitem__"><strong>__getitem__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__mod__"><strong>__mod__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__mul__"><strong>__mul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__neg__"><strong>__neg__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__pos__"><strong>__pos__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__pow__"><strong>__pow__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<dl><dt><a name="OperatorOperations-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><a name="OperatorOperations-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="OperatorOperations-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="Parallel">class <strong>Parallel</strong></a>(<a href="composites.html#Function">Function</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
@@ -2351,7 +2343,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2538,7 +2530,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2735,7 +2727,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2950,7 +2942,7 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function contains&gt;, &lt;built-in function lt&gt;, &lt;built-in function imod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function inv&gt;, &lt;built-in function xor&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function le&gt;, &lt;built-in function not_&gt;, &lt;built-in function rshift&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function ne&gt;, &lt;built-in function ior&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function mod&gt;, &lt;built-in function imul&gt;, &lt;built-in function delitem&gt;, &lt;built-in function concat&gt;, '', &lt;built-in function itruediv&gt;, &lt;built-in function isub&gt;, &lt;built-in function pos&gt;, &lt;built-in function ixor&gt;, &lt;built-in function le&gt;, &lt;built-in function pow&gt;, '/Users/tonyfast/anaconda/lib/python3.5/operator.py', &lt;built-in function ne&gt;, &lt;built-in function countOf&gt;, &lt;built-in function is_&gt;, &lt;built-in function ge&gt;, &lt;built-in function contains&gt;, &lt;built-in function abs&gt;, ['abs', 'add', 'and_', 'attrgetter', 'concat', 'contains', 'countOf', 'delitem', 'eq', 'floordiv', 'ge', 'getitem', 'gt', 'iadd', 'iand', 'iconcat', 'ifloordiv', 'ilshift', 'imatmul', 'imod', ...], ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -3316,7 +3308,6 @@ Return&nbsp;a&nbsp;formatted&nbsp;version&nbsp;of&nbsp;S,&nbsp;using&nbsp;substi
 The&nbsp;substitutions&nbsp;are&nbsp;identified&nbsp;by&nbsp;braces&nbsp;('{'&nbsp;and&nbsp;'}').</tt></dd></dl>
  <dl><dt><a name="-logical_operation"><strong>logical_operation</strong></a>(self, callable, *args)</dt></dl>
  <dl><dt><a name="-null"><strong>null</strong></a>(*args, **kwargs)</dt></dl>
- <dl><dt><a name="-op"><strong>op</strong></a> = getitem(...)</dt><dd><tt>getitem(a,&nbsp;b)&nbsp;--&nbsp;Same&nbsp;as&nbsp;a[b].</tt></dd></dl>
  <dl><dt><a name="-reduce"><strong>reduce</strong></a>(...)</dt><dd><tt><a href="#-reduce">reduce</a>(function,&nbsp;sequence[,&nbsp;initial])&nbsp;-&gt;&nbsp;value<br>
 &nbsp;<br>
 Apply&nbsp;a&nbsp;function&nbsp;of&nbsp;two&nbsp;arguments&nbsp;cumulatively&nbsp;to&nbsp;the&nbsp;items&nbsp;of&nbsp;a&nbsp;sequence,<br>
@@ -3325,8 +3316,8 @@ For&nbsp;example,&nbsp;<a href="#-reduce">reduce</a>(lambda&nbsp;x,&nbsp;y:&nbsp
 ((((1+2)+3)+4)+5).&nbsp;&nbsp;If&nbsp;initial&nbsp;is&nbsp;present,&nbsp;it&nbsp;is&nbsp;placed&nbsp;before&nbsp;the&nbsp;items<br>
 of&nbsp;the&nbsp;sequence&nbsp;in&nbsp;the&nbsp;calculation,&nbsp;and&nbsp;serves&nbsp;as&nbsp;a&nbsp;default&nbsp;when&nbsp;the<br>
 sequence&nbsp;is&nbsp;empty.</tt></dd></dl>
- <dl><dt><a name="-right_canonical_operation"><strong>right_canonical_operation</strong></a>(self, callable, left)</dt></dl>
  <dl><dt><a name="-right_operation"><strong>right_operation</strong></a>(right, attr, left)</dt></dl>
+ <dl><dt><a name="-right_operator_operation"><strong>right_operator_operation</strong></a>(self, callable, left)</dt></dl>
 </td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -3341,8 +3332,10 @@ sequence&nbsp;is&nbsp;empty.</tt></dd></dl>
 <strong>flip</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>ifthen</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>juxt</strong> = &lt;composites.FunctionFactory object&gt;<br>
+<strong>op</strong> = &lt;composites.OperatorFactory object&gt;<br>
 <strong>parallel</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>preview</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>star</strong> = &lt;composites.FunctionFactory object&gt;<br>
-<strong>x</strong> = &lt;composites.CanonicalFactory object&gt;</td></tr></table>
+<strong>the</strong> = &lt;composites.FunctionFactory object&gt;<br>
+<strong>x</strong> = &lt;composites.OperatorFactory object&gt;</td></tr></table>
 </body></html>
