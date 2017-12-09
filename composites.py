@@ -10,8 +10,6 @@
 #
 # ### Canonical
 
-# In[1]:
-
 from functools import partialmethod, total_ordering, WRAPPER_ASSIGNMENTS, wraps
 
 import operator
@@ -28,8 +26,6 @@ dunder = '__{}__'.format
 
 # Composing function strictly through the Python datamodel.
 
-# In[2]:
-
 
 def call(object, *args, **kwargs):
     return (object if callable(object) else null)(*args, **kwargs)
@@ -37,8 +33,6 @@ def call(object, *args, **kwargs):
 
 def null(*args, **kwargs):
     return args[0] if args else None
-
-# In[3]:
 
 
 class partial(__import__('functools').partial):
@@ -49,15 +43,9 @@ class partial(__import__('functools').partial):
                     _0 == _1 for _0, _1 in zip_longest(self.args, other.args))
 
 
-# In[4]:
-
-
 class partial_object(partial):
     def __call__(self, object):
         return self.func(object, *self.args, **self.keywords)
-
-
-# In[55]:
 
 
 @total_ordering
@@ -174,9 +162,6 @@ class Complex(State):
         return imag
 
 
-# In[56]:
-
-
 class SysAttributes:
     shortcuts = 'statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'
     decorators = dict()
@@ -254,16 +239,13 @@ class __getattr__(object):
         return base + dir(self.callable)
 
 
-import fnmatch
-SysAttributes.decorators[partial_object] = [fnmatch.fnmatch]
+SysAttributes.decorators[partial_object] = [__import__('fnmatch').fnmatch]
 SysAttributes.decorators[call] = operator.attrgetter(
     'attrgetter', 'itemgetter', 'methodcaller')(operator)
 SysAttributes.decorators[partial_object] += [
     item for item in vars(operator).values()
     if item not in SysAttributes.decorators[call]
 ]
-
-# In[57]:
 
 
 class ComplexOperations:
@@ -300,9 +282,6 @@ class ComplexOperations:
         return self
 
 
-# In[58]:
-
-
 def complex_operation(self, callable, *args, partial=partial_object, **kwargs):
     return self.append(
         partial(callable, *args, **kwargs) if args or kwargs else callable)
@@ -330,8 +309,6 @@ class HigherOrderOperations(ComplexOperations):
 for attr in ['add', 'sub', 'mul', 'truediv', 'getitem', 'rshift', 'lshift']:
     setattr(HigherOrderOperations, '__r' + dunder(attr).lstrip('__'),
             partialmethod(right_operation, attr))
-
-# In[59]:
 
 
 def right_canonical_operation(self, callable, left):
@@ -368,13 +345,9 @@ for attr in ['abs', 'pos', 'neg', 'pow']:
             partialmethod(complex_operation, getattr(operator, attr)))
 del attr
 
-# In[60]:
-
 
 class ConditionException(BaseException):
     ...
-
-# In[61]:
 
 
 class Juxtapose(Complex):
@@ -389,9 +362,6 @@ class Juxtapose(Complex):
         else:
             for value in self:
                 yield value(*args, **kwargs) if callable(value) else value
-
-
-# In[62]:
 
 
 class Juxtaposition(SysAttributes, HigherOrderOperations, Juxtapose):
@@ -436,9 +406,6 @@ class Juxtaposition(SysAttributes, HigherOrderOperations, Juxtapose):
         return type(self.real)(iter)
 
 
-# In[63]:
-
-
 class Composite(Complex):
     """A complex composite function.
     
@@ -462,9 +429,6 @@ class Composite(Complex):
                 if isinstance(first(args), BaseException): break
 
 
-# In[64]:
-
-
 class Composition(Composite):
     """Callable complex composite objects.
     
@@ -484,20 +448,12 @@ class Composition(Composite):
         return deque(results, maxlen=1).pop()
 
 
-# In[65]:
-
-
 class Function(SysAttributes, HigherOrderOperations, Composition):
     __dir__ = __getattr__.__dir__
 
 
-# In[66]:
-
-
 class Factory:
     ...
-
-# In[67]:
 
 
 class FunctionFactory(Function, Factory):
@@ -506,9 +462,6 @@ class FunctionFactory(Function, Factory):
 
     def __bool__(self):
         return False
-
-
-# In[68]:
 
 
 class IfThen(Function):
@@ -531,26 +484,18 @@ class IfThen(Function):
             self.excepts += ConditionException,
 
 
-# In[69]:
-
-
-class Canonical(CanonicalOperations, HigherOrderOperations, Composition):
+class Canonical(CanonicalOperations, Composition):
     __annotations__ = {}
 
 
 class CanonicalFactory(Canonical, Factory):
     ...
 
-# In[70]:
-
 
 class Flip(Function):
     def __prepare__(self, *args, **kwargs):
         args, kwargs = super().__prepare__(*args, **kwargs)
         return tuple(reversed(args)), kwargs
-
-
-# In[71]:
 
 
 class Star(Function):
@@ -562,24 +507,15 @@ class Star(Function):
         return super().__call__(*args, **kwargs)
 
 
-# In[72]:
-
-
 class Do(Function):
     def __call__(self, *args, **kwargs):
         super().__call__(*args, **kwargs)
         return null(*args, **kwargs)
 
 
-# In[73]:
-
-
 class Preview(Function):
     def __repr__(self):
         return repr(self())
-
-
-# In[74]:
 
 
 class Parallel(Function):
@@ -604,8 +540,6 @@ class Parallel(Function):
     __truediv__ = map
 
 
-# In[75]:
-
 a = an = FunctionFactory(Function)
 flip = FunctionFactory(Flip)
 parallel = FunctionFactory(Parallel)
@@ -615,8 +549,6 @@ preview = FunctionFactory(Preview)
 x = CanonicalFactory(Canonical)
 juxt = FunctionFactory(Juxtaposition)
 ifthen = FunctionFactory(IfThen)
-
-# In[82]:
 
 
 class store(dict):
@@ -637,9 +569,6 @@ class store(dict):
         return super().__getitem__(item)
 
 
-# In[83]:
-
-
 class cache(store):
     def __call__(self, *args, **kwargs):
         if args not in self:
@@ -647,26 +576,16 @@ class cache(store):
         return self[args]
 
 
-# In[84]:
-
 if __name__ == '__main__':
     print(__import__('doctest').testmod())
 
-# In[85]:
-
 if __name__ == '__main__':
     from IPython import get_ipython
-    get_ipython().system('jupyter nbconvert --to python composites.ipynb')
+    get_ipython().system(
+        'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb'
+    )
     get_ipython().system('yapf -i composites.py')
     get_ipython().system('flake8 composites.py')
     get_ipython().system('pyreverse -o png -pcomposites -fALL composites')
     get_ipython().system('pyreverse -o png -pcomposites.min composites')
     get_ipython().system('pydoc -w composites')
-
-# In[86]:
-
-f = cache(range)
-
-# In[87]:
-
-f(10)

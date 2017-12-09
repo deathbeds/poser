@@ -17,10 +17,9 @@
 <font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="fnmatch.html">fnmatch</a><br>
-</td><td width="25%" valign=top><a href="operator.html">operator</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="operator.html">operator</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -54,7 +53,7 @@
 <dt><font face="helvetica, arial"><a href="composites.html#CanonicalOperations">CanonicalOperations</a>
 </font></dt><dd>
 <dl>
-<dt><font face="helvetica, arial"><a href="composites.html#Canonical">Canonical</a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>, <a href="composites.html#Composition">Composition</a>)
+<dt><font face="helvetica, arial"><a href="composites.html#Canonical">Canonical</a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#Composition">Composition</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="composites.html#CanonicalFactory">CanonicalFactory</a>(<a href="composites.html#Canonical">Canonical</a>, <a href="composites.html#Factory">Factory</a>)
@@ -120,21 +119,20 @@
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
-<font color="#000000" face="helvetica, arial"><a name="Canonical">class <strong>Canonical</strong></a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>, <a href="composites.html#Composition">Composition</a>)</font></td></tr>
+<font color="#000000" face="helvetica, arial"><a name="Canonical">class <strong>Canonical</strong></a>(<a href="composites.html#CanonicalOperations">CanonicalOperations</a>, <a href="composites.html#Composition">Composition</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
 &nbsp;<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a@range&nbsp;==&nbsp;a.<a href="#Canonical-groupby">groupby</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a/range&nbsp;==&nbsp;a.<a href="#Canonical-map">map</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a//range&nbsp;==&nbsp;a.<a href="#Canonical-filter">filter</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a%range&nbsp;==&nbsp;a.<a href="#Canonical-reduce">reduce</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;copy(a%range)&nbsp;==&nbsp;a.<a href="#Canonical-reduce">reduce</a>(range)<br>&nbsp;</tt></td></tr>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a@range&nbsp;==&nbsp;a.groupby(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a/range&nbsp;==&nbsp;a.map(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a//range&nbsp;==&nbsp;a.filter(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a%range&nbsp;==&nbsp;a.<a href="#-reduce">reduce</a>(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;copy(a%range)&nbsp;==&nbsp;a.<a href="#-reduce">reduce</a>(range)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#Canonical">Canonical</a></dd>
 <dd><a href="composites.html#CanonicalOperations">CanonicalOperations</a></dd>
-<dd><a href="composites.html#HigherOrderOperations">HigherOrderOperations</a></dd>
 <dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
 <dd><a href="composites.html#Composition">Composition</a></dd>
 <dd><a href="composites.html#Composite">Composite</a></dd>
@@ -197,26 +195,6 @@ Methods inherited from <a href="composites.html#CanonicalOperations">CanonicalOp
 <dl><dt><a name="Canonical-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
 
 <dl><dt><a name="Canonical-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>:<br>
-<dl><dt><a name="Canonical-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
-
-<dl><dt><a name="Canonical-__matmul__"><strong>__matmul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
-
-<dl><dt><a name="Canonical-__rshift__"><strong>__rshift__</strong></a> = append(self, item)</dt></dl>
-
-<dl><dt><a name="Canonical-filter"><strong>filter</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-groupby"><strong>groupby</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-map"><strong>map</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="Canonical-reduce"><strong>reduce</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
@@ -288,17 +266,16 @@ Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>Operations&nbsp;that&nbsp;generate&nbsp;complex&nbsp;composites.<br>
 &nbsp;<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a@range&nbsp;==&nbsp;a.<a href="#CanonicalFactory-groupby">groupby</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a/range&nbsp;==&nbsp;a.<a href="#CanonicalFactory-map">map</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a//range&nbsp;==&nbsp;a.<a href="#CanonicalFactory-filter">filter</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;a%range&nbsp;==&nbsp;a.<a href="#CanonicalFactory-reduce">reduce</a>(range)<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;copy(a%range)&nbsp;==&nbsp;a.<a href="#CanonicalFactory-reduce">reduce</a>(range)<br>&nbsp;</tt></td></tr>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a@range&nbsp;==&nbsp;a.groupby(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a/range&nbsp;==&nbsp;a.map(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a//range&nbsp;==&nbsp;a.filter(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a%range&nbsp;==&nbsp;a.<a href="#-reduce">reduce</a>(range)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;copy(a%range)&nbsp;==&nbsp;a.<a href="#-reduce">reduce</a>(range)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#CanonicalFactory">CanonicalFactory</a></dd>
 <dd><a href="composites.html#Canonical">Canonical</a></dd>
 <dd><a href="composites.html#CanonicalOperations">CanonicalOperations</a></dd>
-<dd><a href="composites.html#HigherOrderOperations">HigherOrderOperations</a></dd>
 <dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
 <dd><a href="composites.html#Composition">Composition</a></dd>
 <dd><a href="composites.html#Composite">Composite</a></dd>
@@ -362,26 +339,6 @@ Methods inherited from <a href="composites.html#CanonicalOperations">CanonicalOp
 <dl><dt><a name="CanonicalFactory-__sub__"><strong>__sub__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
 
 <dl><dt><a name="CanonicalFactory-__truediv__"><strong>__truediv__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial_object'&gt;, **kwargs)</dt></dl>
-
-<hr>
-Methods inherited from <a href="composites.html#HigherOrderOperations">HigherOrderOperations</a>:<br>
-<dl><dt><a name="CanonicalFactory-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__matmul__"><strong>__matmul__</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-__rshift__"><strong>__rshift__</strong></a> = append(self, item)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-filter"><strong>filter</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-groupby"><strong>groupby</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-map"><strong>map</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
-
-<dl><dt><a name="CanonicalFactory-reduce"><strong>reduce</strong></a> = _method(self, *args, partial=&lt;class 'composites.partial'&gt;, **kwargs)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
@@ -914,7 +871,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1090,7 +1047,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1245,7 +1202,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1411,7 +1368,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1645,7 +1602,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1887,7 +1844,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2048,7 +2005,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2201,7 +2158,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2364,7 +2321,7 @@ Data descriptors inherited from <a href="composites.html#SysAttributes">SysAttri
 </dl>
 <hr>
 Data and other attributes inherited from <a href="composites.html#SysAttributes">SysAttributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2545,7 +2502,7 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Data and other attributes defined here:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function contains&gt;, 'operator', &lt;built-in function and_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imul&gt;, &lt;built-in function imod&gt;, &lt;built-in function indexOf&gt;, &lt;built-in function ixor&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function ipow&gt;, &lt;built-in function truediv&gt;, &lt;built-in function abs&gt;, &lt;built-in function inv&gt;, &lt;built-in function isub&gt;, &lt;built-in function delitem&gt;, &lt;built-in function xor&gt;, &lt;built-in function le&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function getitem&gt;, &lt;built-in function gt&gt;, &lt;built-in function and_&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function truth&gt;, &lt;built-in function not_&gt;, &lt;built-in function is_not&gt;, &lt;built-in function neg&gt;, &lt;built-in function iadd&gt;, &lt;built-in function add&gt;, &lt;built-in function pos&gt;, &lt;built-in function xor&gt;, &lt;built-in function rshift&gt;, &lt;built-in function ior&gt;, &lt;built-in function ge&gt;, &lt;built-in function lshift&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -2933,7 +2890,6 @@ sequence&nbsp;is&nbsp;empty.</tt></dd></dl>
 <strong>a</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>an</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>do</strong> = &lt;composites.FunctionFactory object&gt;<br>
-<strong>f</strong> = {(10,): range(0, 10)}<br>
 <strong>flip</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>ifthen</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>juxt</strong> = &lt;composites.FunctionFactory object&gt;<br>
