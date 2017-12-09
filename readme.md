@@ -8,7 +8,7 @@
 # compose functions with `a`, `an`, `the`, or `λ`
 
 
-    from composites import *; assert a is an is the is λ
+    from composites import *; assert a is an is the
 
 A basic example, __enumerate__ a __range__ and create a __dict__ionary.
 
@@ -20,8 +20,7 @@ A basic example, __enumerate__ a __range__ and create a __dict__ionary.
 
 
 
-    ({0: 2, 1: 1, 2: 0},
-     λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>])
+    ({0: 2, 1: 1, 2: 0}, <composites.Function at 0x100aeaee8>)
 
 
 
@@ -33,7 +32,13 @@ arbitrary complexity.
     g = f.copy()  # copy f from above so it remains unchanged.
     g[type, len]
     g[{'foo': a.do(print).len(), 'bar': the.identity()}]
-    assert f < g 
+
+
+
+
+
+    <composites.Function at 0x100aeaee8>
+
 
 
 
@@ -45,10 +50,10 @@ Brackets juxtapose iterable objects.
 
 
 
-    (λ:[juxt(<class 'tuple'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'list'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'set'>)[<class 'range'>, <class 'type'>]],
-     λ:[juxt(<class 'dict'>)[('x', <class 'range'>), ('y', <class 'type'>)]])
+    (<composites.Function at 0x103d6d468>,
+     <composites.Function at 0x103d6d348>,
+     <composites.Function at 0x103d6d528>,
+     <composites.Function at 0x103d6d6a8>)
 
 
 
@@ -61,15 +66,8 @@ Each each composition is immutable.
 
 
 
-    λ:[<class 'range'>, <class 'reversed'>, <class 'enumerate'>, <class 'dict'>, <built-in function len>]
+    <composites.Function at 0x100aeaee8>
 
-
-
-
-But it is easy to copy a composition.
-
-    g = f.copy() 
-    assert g is not f and g == f and g[type] > f
 
 
 
@@ -115,7 +113,7 @@ Each composition has an extensible attribution system.  Attributes can be access
 
 
 
-    range(0, 4)
+    False
 
 
 
@@ -162,37 +160,61 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
 # Development
     if __name__== '__main__':
         !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
-        !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites/*.ipynb
-        !autopep8 --in-place --aggressive --aggressive composites/*.py
-        !pyreverse -o png -bmy -fALL -p composites composites
-        !python -m doctest composites/composites.py composites/objects.py composites/conditions.ipynb composites/operations.ipynb composites/attributes.ipynb composites/canonical.ipynb
+        !jupyter nbconvert --to markdown --execute --ExecutePreprocessor.kernel_name=p6 composites.ipynb
+        !python -m doctest composites.py
         !echo complete
 
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 8378 bytes to readme.md
-    [NbConvertApp] Converting notebook composites/attributes.ipynb to python
-    [NbConvertApp] Writing 5755 bytes to composites/attributes.py
-    [NbConvertApp] Converting notebook composites/canonical.ipynb to python
-    [NbConvertApp] Writing 3332 bytes to composites/canonical.py
-    [NbConvertApp] Converting notebook composites/composites.ipynb to python
-    [NbConvertApp] Writing 12340 bytes to composites/composites.py
-    [NbConvertApp] Converting notebook composites/conditions.ipynb to python
-    [NbConvertApp] Writing 1974 bytes to composites/conditions.py
-    [NbConvertApp] Converting notebook composites/objects.ipynb to python
-    [NbConvertApp] Writing 5405 bytes to composites/objects.py
-    [NbConvertApp] Converting notebook composites/operations.ipynb to python
-    [NbConvertApp] Writing 3711 bytes to composites/operations.py
-    [NbConvertApp] Converting notebook composites/partials.ipynb to python
-    [NbConvertApp] Writing 1514 bytes to composites/partials.py
-    parsing composites/__init__.py...
-    parsing /Users/tonyfast/fidget/composites/__init__.py...
-    parsing /Users/tonyfast/fidget/composites/attributes.py...
-    parsing /Users/tonyfast/fidget/composites/canonical.py...
-    parsing /Users/tonyfast/fidget/composites/composites.py...
-    parsing /Users/tonyfast/fidget/composites/conditions.py...
-    parsing /Users/tonyfast/fidget/composites/objects.py...
-    parsing /Users/tonyfast/fidget/composites/operations.py...
-    parsing /Users/tonyfast/fidget/composites/partials.py...
+    [NbConvertApp] Writing 9340 bytes to readme.md
+    [NbConvertApp] Converting notebook composites.ipynb to markdown
+    [NbConvertApp] Executing notebook with kernel: p6
+    Traceback (most recent call last):
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/kernelspec.py", line 201, in get_kernel_spec
+        resource_dir = d[kernel_name.lower()]
+    KeyError: 'p6'
+    
+    During handling of the above exception, another exception occurred:
+    
+    Traceback (most recent call last):
+      File "/Users/tonyfast/anaconda/bin/jupyter-nbconvert", line 11, in <module>
+        sys.exit(main())
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_core/application.py", line 267, in launch_instance
+        return super(JupyterApp, cls).launch_instance(argv=argv, **kwargs)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/traitlets/config/application.py", line 658, in launch_instance
+        app.start()
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 325, in start
+        self.convert_notebooks()
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 493, in convert_notebooks
+        self.convert_single_notebook(notebook_filename)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 464, in convert_single_notebook
+        output, resources = self.export_single_notebook(notebook_filename, resources, input_buffer=input_buffer)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/nbconvertapp.py", line 393, in export_single_notebook
+        output, resources = self.exporter.from_filename(notebook_filename, resources=resources)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 174, in from_filename
+        return self.from_file(f, resources=resources, **kw)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 192, in from_file
+        return self.from_notebook_node(nbformat.read(file_stream, as_version=4), resources=resources, **kw)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/templateexporter.py", line 280, in from_notebook_node
+        nb_copy, resources = super(TemplateExporter, self).from_notebook_node(nb, resources, **kw)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 134, in from_notebook_node
+        nb_copy, resources = self._preprocess(nb_copy, resources)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/exporters/exporter.py", line 311, in _preprocess
+        nbc, resc = preprocessor(nbc, resc)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/base.py", line 47, in __call__
+        return self.preprocess(nb, resources)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/execute.py", line 257, in preprocess
+        cwd=path)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/nbconvert/preprocessors/execute.py", line 237, in start_new_kernel
+        km.start_kernel(**kwargs)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 244, in start_kernel
+        kernel_cmd = self.format_kernel_cmd(extra_arguments=extra_arguments)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 175, in format_kernel_cmd
+        cmd = self.kernel_spec.argv + extra_arguments
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/manager.py", line 87, in kernel_spec
+        self._kernel_spec = self.kernel_spec_manager.get_kernel_spec(self.kernel_name)
+      File "/Users/tonyfast/anaconda/lib/python3.5/site-packages/jupyter_client/kernelspec.py", line 203, in get_kernel_spec
+        raise NoSuchKernel(kernel_name)
+    jupyter_client.kernelspec.NoSuchKernel: No such kernel named p6
     complete
 
