@@ -38,7 +38,7 @@ from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'ifthen'
+__all__ = 'a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'ifthen', 'cache', 'store'
 
 
 # Composing function strictly through the Python datamodel.
