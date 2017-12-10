@@ -11,6 +11,9 @@ composites work with other composites
 [33, 34, 35, 36, 37, 38, 39, 40, 41, 42]
 >>> (a / (ifthen(x>5)[range]) * list)([0, 10])
 [False, range(0, 10)]
+>>> f = (a * (10<x) & (x<100) & range)
+>>> (a/f*tuple)([0, 50, 1000])
+(False, range(0, 50), False)
 """
 
 
