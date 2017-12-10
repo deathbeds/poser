@@ -20,7 +20,7 @@ A basic example, __enumerate__ a __range__ and create a __dict__ionary.
 
 
 
-    ({0: 2, 1: 1, 2: 0}, <composites.Function at 0x100aeaee8>)
+    ({0: 2, 1: 1, 2: 0}, <composites.Function at 0x101f00ee8>)
 
 
 
@@ -37,7 +37,7 @@ arbitrary complexity.
 
 
 
-    <composites.Function at 0x100aeaee8>
+    <composites.Function at 0x101f00ee8>
 
 
 
@@ -50,10 +50,10 @@ Brackets juxtapose iterable objects.
 
 
 
-    (<composites.Function at 0x103d6d468>,
-     <composites.Function at 0x103d6d348>,
-     <composites.Function at 0x103d6d528>,
-     <composites.Function at 0x103d6d6a8>)
+    (<composites.Function at 0x105183468>,
+     <composites.Function at 0x105183348>,
+     <composites.Function at 0x105183528>,
+     <composites.Function at 0x1051836a8>)
 
 
 
@@ -66,7 +66,7 @@ Each each composition is immutable.
 
 
 
-    <composites.Function at 0x100aeaee8>
+    <composites.Function at 0x101f00ee8>
 
 
 
@@ -166,9 +166,9 @@ __composites__ speed up the creation and reading repetitive and complex tasks.
 
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 9339 bytes to readme.md
+    [NbConvertApp] Writing 5462 bytes to readme.md
     [NbConvertApp] Converting notebook composites.ipynb to markdown
     [NbConvertApp] Executing notebook with kernel: other-env
-    [NbConvertApp] Writing 22786 bytes to composites.md
+    [NbConvertApp] Writing 21723 bytes to composites.md
     complete
 
