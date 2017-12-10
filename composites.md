@@ -35,12 +35,15 @@ Composite functions use Python syntax to append callable objects to compositions
     from toolz import isiterable, excepts, identity, complement, concat, reduce, groupby, merge, first
     import sys
     from inspect import unwrap
+    
+    import inspect
 
     from copy import copy
 
     dunder = '__{}__'.format
     
-    __all__ = 'a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'ifthen'
+    __all__ = 'a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x',\
+    'op', 'juxt', 'ifthen', 'cache', 'store', 'Composition', 'Operator', #'Juxtaposition'
 ```
 
 Composing function strictly through the Python datamodel.
@@ -80,6 +83,7 @@ Composing function strictly through the Python datamodel.
                 real = [real]
             self.imag = imag
             self.__wrapped__ = self.real = real
+            
             if exceptions and not isiterable(exceptions): exceptions = exceptions,
             self.exceptions = exceptions or tuple()
             self.args = tuple() if args is None else args
@@ -130,7 +134,11 @@ Composing function strictly through the Python datamodel.
             return self.__getattr__('append')(item)
         
         __getitem__ = append
+        __signature__ = inspect.signature(null)
+```
 
+
+```python
     class Complex(State):
         def __prepare__(self, *args, **kwargs):
             return self.args + args, merge(self.kwargs, kwargs)
@@ -168,9 +176,146 @@ Composing function strictly through the Python datamodel.
             return imag
 ```
 
+# Composites
+
 
 ```python
-    class SysAttributes:
+    class Composite(Complex):
+        """A complex composite function.
+        
+        >>> assert isinstance(Composite()(), __import__('collections').Generator)
+        """
+        def __init__(cls, real=None, exceptions=None, args=None, **kwargs):
+            imag = kwargs.pop('imag', True)
+            return super().__init__(imag, real, exceptions, args=args, kwargs=kwargs)
+
+        def __iter__(self):
+            yield from map(self.__except__, self.real or [null])
+
+        def __call__(self, *args, **kwargs):
+            args, kwargs = self.__prepare__(*args, **kwargs)
+            condition = super().__call__(*args, **kwargs)
+            if condition is False or isinstance(condition, ConditionException):
+                yield condition
+            else:
+                for value in self:
+                    args, kwargs = [value(*args, **kwargs) if callable(value) else value ], {}
+                    yield null(*args, **kwargs)
+                    if isinstance(first(args), BaseException): break
+```
+
+
+```python
+    class Composition(Composite):
+        """Callable complex composite objects.
+        
+        >>> f = Composition(range, exceptions=TypeError)
+        >>> assert Juxtaposition(f) is f
+        >>> assert f(10) == range(10)  and isinstance(f('10'), TypeError)
+        """        
+        def __call__(self, *args, **kwargs): 
+            results = super().__call__(*args, **kwargs)
+            if isinstance(self.real, dict): return type(self.real)(results)
+            return deque(results, maxlen=1).pop()
+```
+
+
+```python
+    class ComplexOperations:
+        """Operations that generate complex composites.
+        
+        >>> f = a.bool().then(a.range()).excepts(TypeError)
+        >>> assert f(10) == range(10) and f(0) is False
+        >>> assert isinstance(f('10'), TypeError)
+        >>> g = a.instance(int).range()
+        >>> assert g(10) == range(10) and g('10') is False
+        """
+        def __pow__(self, object):
+            """Require a complex condition be true before evaluating a composition, otherwise return False.
+            
+            >>> f = a**int
+            >>> assert f(10) is 10 and f('10') is False
+            """
+            new = IfThen(object, exceptions=self.exceptions, args=self.args, **self.kwargs)
+            if self: new.append(self)
+            return new
+        def __and__(self, object): 
+            """Evaluate object if the current composition is True.
+            
+            >>> f = a[bool] & range
+            >>> assert f(0) is False and f(10) == range(10)
+            """
+            return IfThen(self or bool, exceptions=self.exceptions, args=self.args, **self.kwargs).append(object)
+        def __or__(self, object): 
+            """Evaluate object if the current composition is False.
+            
+            >>> f = a[bool] | range
+            >>> assert f(10) is False and f(0) == range(0)
+            """
+
+            return IfThen(complement(self or bool), exceptions=self.exceptions, args=self.args, **self.kwargs).append(object)
+        def __xor__(self, object): 
+            """Evaluate a composition returning exceptions in object.
+            
+            >>> f = a * range ^ TypeError
+            >>> assert f(10) == range(10) and isinstance(f('string'), TypeError) 
+            """
+            self = self[:]
+            self.exceptions = object
+            return self
+        
+        then = __and__
+        ifnot = __or__
+        instance = __pow__
+        excepts = __xor__
+        
+        __neg__ = partialmethod(State.append, operator.not_)
+```
+
+
+```python
+    class OperatorOperations(ComplexOperations):        
+        def _left(self, callable, arg=None, partial=partial_object):
+            return self.append(partial(callable, arg))
+
+        def _right(self, callable, left):
+            return OperatorOperations._left(Operator(), callable, left, partial=partial)
+
+        def _bool(self, callable, *args):
+            return Operator(self, imag=partial_object(callable, *args))
+
+        def __getattr__(self, attr):
+            try: 
+                return super().__getattr__(attr)
+            except AttributeError:
+                return self.append(partial_object(getattr, attr))
+        
+    for attr in ['add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'getitem']:
+        op=  getattr(operator, attr)
+        setattr(OperatorOperations, dunder(attr), partialmethod(OperatorOperations._left, op))
+        setattr(OperatorOperations, '__r' + dunder(attr).lstrip('__'), partialmethod(OperatorOperations._right, op))
+    
+    for attr in ['gt', 'ge', 'le', 'lt', 'eq', 'ne']:
+        setattr(OperatorOperations, dunder(attr), partialmethod(OperatorOperations._bool, getattr(operator, attr)))
+    
+    for attr in ['abs', 'pos', 'neg', 'pow']:
+        setattr(OperatorOperations, dunder(attr), partialmethod(OperatorOperations._left, getattr(operator, attr)))
+    del attr
+```
+
+
+```python
+    class Operator(OperatorOperations, Composition): 
+        """Symbollic compositions that append operations functins.
+        
+        >>> assert (x+10)(10) is 20
+        """
+        __annotations__ = {}
+```
+
+
+```python
+    class SysAttributes(ComplexOperations):
         shortcuts = 'statistics', 'toolz', 'requests', 'builtins','json', 'pickle', 'io', 'collections', \
         'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'
         decorators = dict()
@@ -247,68 +392,7 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
 
 
 ```python
-    class ComplexOperations:
-        """Operations that generate complex composites.
-        
-        >>> f = a.bool().then(a.range()).excepts(TypeError)
-        >>> assert f(10) == range(10) and f(0) is False
-        >>> assert isinstance(f('10'), TypeError)
-        >>> g = a.instance(int).range()
-        >>> assert g(10) == range(10) and g('10') is False
-        """
-        def __pow__(self, object):
-            """Require a complex condition be true before evaluating a composition, otherwise return False.
-            
-            >>> f = a**int
-            >>> assert f(10) is 10 and f('10') is False
-            """
-            new = IfThen(object, exceptions=self.exceptions, args=self.args, **self.kwargs)
-            if self: new.append(self)
-            return new
-        def __and__(self, object): 
-            """Evaluate object if the current composition is True.
-            
-            >>> f = a[bool] & range
-            >>> assert f(0) is False and f(10) == range(10)
-            """
-            return IfThen(self or bool, exceptions=self.exceptions, args=self.args, **self.kwargs).append(object)
-        def __or__(self, object): 
-            """Evaluate object if the current composition is False.
-            
-            >>> f = a[bool] | range
-            >>> assert f(10) is False and f(0) == range(0)
-            """
-
-            return IfThen(complement(self or bool), exceptions=self.exceptions, args=self.args, **self.kwargs).append(object)
-        def __xor__(self, object): 
-            """Evaluate a composition returning exceptions in object.
-            
-            >>> f = a * range ^ TypeError
-            >>> assert f(10) == range(10) and isinstance(f('string'), TypeError) 
-            """
-            self = self[:]
-            self.exceptions = object
-            return self
-        
-        then = __and__
-        ifnot = __or__
-        instance = __pow__
-        excepts = __xor__
-        
-        __neg__ = partialmethod(State.append, operator.not_)
-```
-
-
-```python
-    def complex_operation(self, callable, arg=None, partial=partial_object):
-        if arg is None: return self.append(callable)
-        return self.append(partial(callable, Juxtaposition(arg)))
-    
-    
-    def right_operation(right, attr, left):
-        return getattr(complex_operation(Function(), left), dunder(attr))(right)
-
-    class HigherOrderOperations(ComplexOperations):
+    class CompositeOperations(SysAttributes):
         """Operations that operator on containers.
         
         >>> assert a@range == a.groupby(range)
@@ -316,49 +400,24 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
         >>> assert a//range == a.filter(range)
         >>> assert a%range == a.reduce(range)
         >>> assert copy(a%range) == a.reduce(range)
-        """
+        """        
+        def _left(self, callable, arg=None, partial=partial_object):
+            return self.append(callable if arg is None else partial(callable, Juxtaposition(arg)))    
+    
+        def _right(right, attr, left):
+            return getattr(CompositeOperations._left(Function(), left), dunder(attr))(right)
 
-        __truediv__ = map = partialmethod(complex_operation, map, partial=partial )
-        __floordiv__ = filter = partialmethod(complex_operation, filter, partial=partial)
-        __mod__ = reduce = partialmethod(complex_operation, reduce, partial=partial)
-        __matmul__ = groupby =  partialmethod(complex_operation, groupby, partial=partial)
+        __truediv__ = map = partialmethod(_left, map, partial=partial )
+        __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
+        __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
+        __matmul__ = groupby =  partialmethod(_left, groupby, partial=partial)
         __add__ = __mul__ = __sub__ = __rshift__= State.append
+        
         def __lshift__(self, object): return self.append(Do(object))
         do = __lshift__
 
     for attr in ['add', 'sub', 'mul', 'truediv', 'getitem', 'rshift', 'lshift']:
-        setattr(HigherOrderOperations, '__r' + dunder(attr).lstrip('__'), partialmethod(right_operation, attr))        
-```
-
-
-```python
-    def operator_operation(self, callable, arg=None, partial=partial_object):
-        return self.append(partial(callable, arg))
-
-    def right_operator_operation(self, callable, left):
-        return operator_operation(Operator(), callable, left, partial=partial)
-    
-    def logical_operation(self, callable, *args):
-        return Operator(self, imag=partial_object(callable, *args))
-
-    class OperatorOperations(ComplexOperations):        
-        def __getattr__(self, attr):
-            try: 
-                return super().__getattr__(attr)
-            except AttributeError:
-                return self.append(partial_object(getattr, attr))
-        
-    for attr in ['add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'getitem']:
-        op=  getattr(operator, attr)
-        setattr(OperatorOperations, dunder(attr), partialmethod(operator_operation, op))
-        setattr(OperatorOperations, '__r' + dunder(attr).lstrip('__'), partialmethod(right_operator_operation, op))
-    
-    for attr in ['gt', 'ge', 'le', 'lt', 'eq', 'ne']:
-        setattr(OperatorOperations, dunder(attr), partialmethod(logical_operation, getattr(operator, attr)))
-    
-    for attr in ['abs', 'pos', 'neg', 'pow']:
-        setattr(OperatorOperations, dunder(attr), partialmethod(operator_operation, getattr(operator, attr)))
-    del attr
+        setattr(CompositeOperations, '__r' + dunder(attr).lstrip('__'), partialmethod(CompositeOperations._right, attr))        
 ```
 
 
@@ -366,11 +425,23 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
     class ConditionException(BaseException): ...
 ```
 
+
+```python
+    class Factory(Composition):
+        def __bool__(self): return False
+        __dir__ = __getattr__.__dir__
+```
+
+
+```python
+    class OperatorFactory(Operator, Factory): ...
+```
+
 # Juxtapositions
 
 
 ```python
-    class Juxtapose(Complex):
+    class Juxtapose(Composite):
         def __iter__(self):
             if isinstance(self.real, dict):
                 yield from [Juxtaposition(tuple(map(self.__except__, item))) for item in self.real.items()]
@@ -389,7 +460,7 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
 
 
 ```python
-    class Juxtaposition(SysAttributes, HigherOrderOperations, Juxtapose):
+    class Juxtaposition(CompositeOperations, Juxtapose):
         """
         >>> f = Juxtaposition(exceptions=TypeError)[range][type]
         >>> assert f(10) == [range(10), type(10)]
@@ -419,66 +490,20 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
             
             # Return generators for generator inputs
             if not isinstance(real, Sized):
-                return Juxtapose(True, real, exceptions, args=args, kwargs=kwargs)
+                return Juxtapose(real, exceptions, imag=True, args=args, kwargs=kwargs)
             
             # Return native types after the 
             self = super().__new__(cls)
             return self.__init__(real, exceptions, args=args, kwargs=kwargs) or self
         
-        def __init__(cls, real=None, exceptions=None, args=None, **kwargs):
-            super().__init__(kwargs.pop('imag', True), real, exceptions, args=args, kwargs=kwargs)
-            
         def __call__(self, *args, **kwargs): 
             iter = super().__call__(*args, **kwargs) 
             return type(self.real)(iter)
 ```
 
-# Composites
-
 
 ```python
-    class Composite(Complex):
-        """A complex composite function.
-        
-        >>> assert isinstance(Composite()(), __import__('collections').Generator)
-        """
-        def __iter__(self):
-            yield from map(self.__except__, self.real or [null])
-
-        def __call__(self, *args, **kwargs):
-            args, kwargs = self.__prepare__(*args, **kwargs)
-            condition = super().__call__(*args, **kwargs)
-            if condition is False or isinstance(condition, ConditionException):
-                yield condition
-            else:
-                for value in self:
-                    args, kwargs = [value(*args, **kwargs) if callable(value) else value ], {}
-                    yield null(*args, **kwargs)
-                    if isinstance(first(args), BaseException): break
-```
-
-
-```python
-    class Composition(Composite):
-        """Callable complex composite objects.
-        
-        >>> f = Composition(range, exceptions=TypeError)
-        >>> assert Juxtaposition(f) is f
-        >>> assert f(10) == range(10)  and isinstance(f('10'), TypeError)
-        """
-        def __init__(cls, real=None, exceptions=None, args=None, **kwargs):
-            imag = kwargs.pop('imag', True)
-            return super().__init__(imag, real, exceptions, args=args, kwargs=kwargs)
-        
-        def __call__(self, *args, **kwargs): 
-            results = super().__call__(*args, **kwargs)
-            if isinstance(self.real, dict): return type(self.real)(results)
-            return deque(results, maxlen=1).pop()
-```
-
-
-```python
-    class Function(SysAttributes, HigherOrderOperations, Composition):
+    class Function(CompositeOperations, Composition):
         """Callable complex composite objects.
         
         >>> f = Composition(range, exceptions=TypeError)
@@ -491,14 +516,7 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
 
 
 ```python
-    class Factory(Composition):
-        def __bool__(self): return False
-        __dir__ = __getattr__.__dir__
-```
-
-
-```python
-    class FunctionFactory(SysAttributes, HigherOrderOperations, Factory):        
+    class FunctionFactory(Function, Factory):        
         def __call__(self, *args, **kwargs):
             return super().__call__(args=args, **kwargs)        
         __dir__ = __getattr__.__dir__
@@ -519,18 +537,6 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
             State.__init__(self, imag, real, exceptions, args=args, kwargs=kwargs)
             if not ConditionException in self.exceptions:
                 self.exceptions += ConditionException, 
-```
-
-
-```python
-    class Operator(OperatorOperations, Composition): 
-        """Symbollic compositions that append operations functins.
-        
-        >>> assert (x+10)(10) is 20
-        """
-        __annotations__ = {}
-
-    class OperatorFactory(Operator, Factory): ...
 ```
 
 
@@ -642,11 +648,13 @@ SysAttributes.decorators[partial_object] += [item for item in vars(operator).val
             print('Running ', __name__)
             from IPython import get_ipython
             !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb
+            # Juxtaposition still wont work
+            !pydoc -w composites
             !autopep8 --in-place --aggressive --aggressive composites.py
-            !flake8 composites.py
+            !flake8 composites.py            
             !pyreverse -o png -pcomposites -fALL composites
             !pyreverse -o png -pcomposites.min composites
-            !pydoc -w composites
+
             !python -m composites 
         else:
             print('run from cli')
