@@ -14,6 +14,8 @@ composites work with other composites
 >>> f = (a * (10<x) & (x<100) & range)
 >>> (a/f*tuple)([0, 50, 1000])
 (False, range(0, 50), False)
+>>> assert a.Path('test.md').str().eq('test.md')()
+>>> a.str.replace('a', 'b')('aaa')
 """
 
 
@@ -417,29 +419,33 @@ class __getattr__(object):
                     raise AttributeError(attr)
 
         # Decorate the discovered attribute with the correct partials or call.
+        wrapper = False
+
         for decorator, set in SysAttributes.decorators.items():
             if attr in set:
                 attr = partial(decorator, attr)
                 break
         else:
-            if isinstance(parent, type):
-                attr = partial(partial_object, attr)
-
-        wrapper = wraps(attr) if callable(
-            attr) and not isinstance(attr, type) else False
+            if callable(attr) and not isinstance(attr, type):
+                wrapper = wraps(attr)
+                attr = partial(
+                    isinstance(
+                        parent,
+                        type) and partial_object or partial,
+                    attr)
 
         # Wrap the new object for interaction
         object = __getattr__(self.object, attr, parent)
-
         if wrapper:
             object = wrapper(object)
 
         return object
 
     def __call__(self, *args, **kwargs):
-        object = self.callable
-        if isinstance(object, partial):
-            object = object(*args, **kwargs)
+        if isinstance(self.callable, partial):
+            object = self.callable(*args, **kwargs)
+        else:
+            object = partial(self.callable, *args, **kwargs)
         return self.object.append(object)
 
     def __repr__(self):
