@@ -15,7 +15,7 @@ composites work with other composites
 >>> (a/f*tuple)([0, 50, 1000])
 (False, range(0, 50), False)
 >>> assert a.Path('test.md').str().eq('test.md')()
->>> a.str.replace('a', 'b')('aaa')
+>>> assert a.str.replace('a', 'b').eq('b'*3)('a'*3)
 """
 
 
@@ -72,7 +72,7 @@ class partial_object(partial):
 
 
 @total_ordering
-class State(object):
+class Complex(object):
     __slots__ = 'imag', 'real', 'exceptions', 'args', 'kwargs'
 
     def __init__(
@@ -138,7 +138,7 @@ class State(object):
         return tuple(getattr(self, slot) for slot in self.__slots__)
 
     def __setstate__(self, state):
-        return State.__init__(self, *map(copy, state)) or self
+        return Complex.__init__(self, *map(copy, state)) or self
 
     def __getattr__(self, attr):
         if not(hasattr(unwrap(self.real), attr)):
@@ -150,24 +150,10 @@ class State(object):
             return self
         return wrapped
 
-    def append(self, item):
-        if isinstance(self, Factory):
-            self = self()
-        if not callable(item):
-            if isinstance(item, (int, slice)) or isinstance(self.real, dict):
-                if item == slice(None):
-                    return self
-                return self.real[item]
-            if isiterable(item):
-                item = Juxtaposition(item)
-        return self.__getattr__('append')(item)
-
-    __getitem__ = append
     __signature__ = inspect.signature(null)
 
-
-class Complex(State):
     def __prepare__(self, *args, **kwargs):
+        """Prepare partial arguments."""
         return self.args + args, merge(self.kwargs, kwargs)
 
     def __except__(self, object):
@@ -176,7 +162,8 @@ class Complex(State):
             object,
             identity) if self.exceptions and callable(object) else object
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> bool:
+        """Evaluate the imaginary part of a composite function."""
 
         # Is the imaginary part already true?
         if isinstance(self.imag, bool):
@@ -210,28 +197,38 @@ class Complex(State):
 
 class Composite(Complex):
     """A complex composite function.
-
-    >>> assert isinstance(Composite()(), __import__('collections').Generator)
     """
     def __init__(cls, real=None, exceptions=None, args=None, **kwargs):
         imag = kwargs.pop('imag', True)
         return super().__init__(imag, real, exceptions, args=args, kwargs=kwargs)
+
+    def append(self, item):
+        if isinstance(self, Factory):
+            self = self()
+        if not callable(item):
+            if isinstance(item, (int, slice)) or isinstance(self.real, dict):
+                if item == slice(None):
+                    return self
+                return self.real[item]
+            if isiterable(item):
+                item = Juxtaposition(item)
+        return self.__getattr__('append')(item)
+
+    __getitem__ = append
 
     def __iter__(self):
         yield from map(self.__except__, self.real or [null])
 
     def __call__(self, *args, **kwargs):
         args, kwargs = self.__prepare__(*args, **kwargs)
+
+        # Evaluate the condiiton
         condition = super().__call__(*args, **kwargs)
+
         if condition is False or isinstance(condition, ConditionException):
-            yield condition
+            return condition
         else:
-            for value in self:
-                args, kwargs = [value(*args, **kwargs)
-                                if callable(value) else value], {}
-                yield null(*args, **kwargs)
-                if isinstance(first(args), BaseException):
-                    break
+            return self.call(*args, **kwargs)
 
 
 class Composition(Composite):
@@ -242,11 +239,13 @@ class Composition(Composite):
     >>> assert f(10) == range(10)  and isinstance(f('10'), TypeError)
     """
 
-    def __call__(self, *args, **kwargs):
-        results = super().__call__(*args, **kwargs)
-        if isinstance(self.real, dict):
-            return type(self.real)(results)
-        return deque(results, maxlen=1).pop()
+    def call(self, *args, **kwargs):
+        for value in self:
+            args, kwargs = [value(*args, **kwargs)
+                            if callable(value) else value], {}
+            if isinstance(first(args), BaseException):
+                break
+        return null(*args, **kwargs)
 
 
 class ComplexOperations:
@@ -315,7 +314,7 @@ class ComplexOperations:
     instance = __pow__
     excepts = __xor__
 
-    __neg__ = partialmethod(State.append, operator.not_)
+    __neg__ = partialmethod(Composite.append, operator.not_)
 
 
 class OperatorOperations(ComplexOperations):
@@ -382,15 +381,6 @@ class Operator(OperatorOperations, Composition):
     __annotations__ = {}
 
 
-class SysAttributes(ComplexOperations):
-    shortcuts = 'statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'
-    decorators = dict()
-
-    def __getattr__(self, attr):
-        """Access attributes from sys.modules or self.shortcuts"""
-        return __getattr__(self).__getattr__(attr)
-
-
 class __getattr__(object):
     def __init__(self, object, callable=None, parent=None):
         self.object = object
@@ -404,7 +394,7 @@ class __getattr__(object):
             attr = getattr(self.callable, attr)
         else:
             try:
-                return State.__getattr__(self.object, attr)
+                return Complex.__getattr__(self.object, attr)
             except BaseException:
                 pass
 
@@ -464,6 +454,21 @@ class __getattr__(object):
         return base
 
 
+class SysAttributes(ComplexOperations):
+    """
+    >>> assert not any(x in dir(x) for x in sys.modules if not '.' in x)
+    >>> assert all(x in dir(a) for x in sys.modules if not '.' in x)
+    """
+    shortcuts = 'statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator'
+    decorators = dict()
+
+    def __getattr__(self, attr):
+        """Access attributes from sys.modules or self.shortcuts"""
+        return __getattr__(self).__getattr__(attr)
+
+    def __dir__(self): return dir(__getattr__(self))
+
+
 SysAttributes.decorators[partial_object] = [__import__('fnmatch').fnmatch]
 SysAttributes.decorators[call] = operator.attrgetter(
     'attrgetter', 'itemgetter', 'methodcaller')(operator)
@@ -497,7 +502,7 @@ class CompositeOperations(SysAttributes):
     __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
     __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
     __matmul__ = groupby = partialmethod(_left, groupby, partial=partial)
-    __add__ = __mul__ = __sub__ = __rshift__ = State.append
+    __add__ = __mul__ = __sub__ = __rshift__ = Composite.append
 
     def __lshift__(self, object): return self.append(Do(object))
     do = __lshift__
@@ -519,7 +524,6 @@ class ConditionException(BaseException):
 
 class Factory(Composition):
     def __bool__(self): return False
-    __dir__ = __getattr__.__dir__
 
 
 class OperatorFactory(Operator, Factory):
@@ -535,14 +539,9 @@ class Juxtapose(Composite):
         else:
             yield from map(self.__except__, self.real)
 
-    def __call__(self, *args, **kwargs):
-        args, kwargs = self.__prepare__(*args, **kwargs)
-        condition = super().__call__(*args, **kwargs)
-        if condition is False or isinstance(condition, ConditionException):
-            yield condition
-        else:
-            for value in self:
-                yield call(value, *args, **kwargs)
+    def call(self, *args, **kwargs):
+        for value in self:
+            yield call(value, *args, **kwargs)
 
 
 class Juxtaposition(CompositeOperations, Juxtapose):
@@ -561,7 +560,7 @@ class Juxtaposition(CompositeOperations, Juxtapose):
     >>> assert isinstance(juxt({}).real, dict) and isinstance(juxt([]).real, list)
     """
 
-    def __new__(cls, real=None, exceptions=None, args=None, kwargs=None):
+    def __new__(cls, real=None, exceptions=None, args=None, **kwargs):
         """Juxposition is a callable dispatch operation.
 
         >>> assert Juxtaposition(range) is range
@@ -580,23 +579,21 @@ class Juxtaposition(CompositeOperations, Juxtapose):
 
         # Return generators for generator inputs
         if not isinstance(real, Sized):
-            return Juxtapose(
-                real,
-                exceptions,
-                imag=True,
-                args=args,
-                kwargs=kwargs)
+            return Juxtapose(real, exceptions, args=args, **kwargs)
 
         # Return native types after the
         self = super().__new__(cls)
-        return self.__init__(
+        return Composite.__init__(
+            self,
             real,
             exceptions,
             args=args,
-            kwargs=kwargs) or self
+            **kwargs) or self
 
     def __call__(self, *args, **kwargs):
         iter = super().__call__(*args, **kwargs)
+        if iter in [True, False]:
+            return iter
         return type(self.real)(iter)
 
 
@@ -607,13 +604,11 @@ class Function(CompositeOperations, Composition):
     >>> assert Juxtaposition(f) is f
     >>> assert f(10) == range(10)  and isinstance(f('10'), TypeError)
     """
-    __dir__ = __getattr__.__dir__
 
 
 class FunctionFactory(Function, Factory):
     def __call__(self, *args, **kwargs):
         return super().__call__(args=args, **kwargs)
-    __dir__ = __getattr__.__dir__
 
 
 class IfThen(Function):
@@ -633,7 +628,13 @@ class IfThen(Function):
         # The imaginary part is a composition
         if isinstance(imag, (type, tuple)) and imag is not bool:
             imag = partial_object(isinstance, imag)
-        State.__init__(self, imag, real, exceptions, args=args, kwargs=kwargs)
+        Complex.__init__(
+            self,
+            imag,
+            real,
+            exceptions,
+            args=args,
+            kwargs=kwargs)
         if ConditionException not in self.exceptions:
             self.exceptions += ConditionException,
 

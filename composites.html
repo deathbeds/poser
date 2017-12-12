@@ -13,12 +13,17 @@
 &nbsp;<br>
 composites&nbsp;work&nbsp;with&nbsp;other&nbsp;composites<br>
 &nbsp;<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;(a&nbsp;*&nbsp;juxt({'a':&nbsp;range})&nbsp;*&nbsp;type)(10)&nbsp;is&nbsp;dict<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(a&nbsp;*&nbsp;juxt({'a':&nbsp;range})&nbsp;*&nbsp;type)(10)&nbsp;is&nbsp;<a href="builtins.html#dict">dict</a><br>
 &gt;&gt;&gt;&nbsp;assert&nbsp;(a&nbsp;*&nbsp;(x&nbsp;+&nbsp;32)&nbsp;)(10)&nbsp;==&nbsp;42<br>
 &gt;&gt;&gt;&nbsp;(parallel(4).range()/(1+x+32))(10)<br>
 [33,&nbsp;34,&nbsp;35,&nbsp;36,&nbsp;37,&nbsp;38,&nbsp;39,&nbsp;40,&nbsp;41,&nbsp;42]<br>
 &gt;&gt;&gt;&nbsp;(a&nbsp;/&nbsp;(ifthen(x&gt;5)[range])&nbsp;*&nbsp;list)([0,&nbsp;10])<br>
-[False,&nbsp;range(0,&nbsp;10)]</tt></p>
+[False,&nbsp;range(0,&nbsp;10)]<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;(a&nbsp;*&nbsp;(10&lt;x)&nbsp;&amp;&nbsp;(x&lt;100)&nbsp;&amp;&nbsp;range)<br>
+&gt;&gt;&gt;&nbsp;(a/f*tuple)([0,&nbsp;50,&nbsp;1000])<br>
+(False,&nbsp;range(0,&nbsp;50),&nbsp;False)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a.Path('test.md').str().eq('test.md')()<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;a.str.replace('a',&nbsp;'b').eq('b'*3)('a'*3)</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#aa55cc">
@@ -26,9 +31,10 @@ composites&nbsp;work&nbsp;with&nbsp;other&nbsp;composites<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
     
 <tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="operator.html">operator</a><br>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="inspect.html">inspect</a><br>
+</td><td width="25%" valign=top><a href="operator.html">operator</a><br>
 </td><td width="25%" valign=top><a href="sys.html">sys</a><br>
-</td><td width="25%" valign=top></td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ee77aa">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -36,14 +42,300 @@ composites&nbsp;work&nbsp;with&nbsp;other&nbsp;composites<br>
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#dict">builtins.dict</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#store">store</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#cache">cache</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
 <dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="composites.html#__getattr__">__getattr__</a>
 </font></dt></dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Composite">Composite</a>(<a href="composites.html#Complex">Complex</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Composition">Composition</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Operator">Operator</a>(<a href="composites.html#OperatorOperations">OperatorOperations</a>, <a href="composites.html#Composition">Composition</a>)
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="composites.html#OperatorOperations">OperatorOperations</a>(<a href="composites.html#ComplexOperations">ComplexOperations</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Operator">Operator</a>(<a href="composites.html#OperatorOperations">OperatorOperations</a>, <a href="composites.html#Composition">Composition</a>)
+</font></dt></dl>
+</dd>
 </dl>
  <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Composition">class <strong>Composition</strong></a>(<a href="composites.html#Composite">Composite</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Callable&nbsp;complex&nbsp;composite&nbsp;objects.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;<a href="#Composition">Composition</a>(range,&nbsp;exceptions=TypeError)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;Juxtaposition(f)&nbsp;is&nbsp;f<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;&nbsp;and&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Composition">Composition</a></dd>
+<dd><a href="composites.html#Composite">Composite</a></dd>
+<dd><a href="composites.html#Complex">Complex</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Composition-call"><strong>call</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
+<dl><dt><a name="Composition-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Evaluate&nbsp;the&nbsp;imaginary&nbsp;part&nbsp;of&nbsp;a&nbsp;composite&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Composition-__getitem__"><strong>__getitem__</strong></a> = append(self, item)</dt></dl>
+
+<dl><dt><a name="Composition-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Composition-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Composition-append"><strong>append</strong></a>(self, item)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Composite">Composite</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><a name="Composition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Composition-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
+
+<dl><dt><a name="Composition-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Composition-__ge__"><strong>__ge__</strong></a>(self, other, NotImplemented=NotImplemented)</dt><dd><tt>Return&nbsp;a&nbsp;&gt;=&nbsp;b.&nbsp;&nbsp;Computed&nbsp;by&nbsp;@total_ordering&nbsp;from&nbsp;(not&nbsp;a&nbsp;&lt;&nbsp;b).</tt></dd></dl>
+
+<dl><dt><a name="Composition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
+
+<dl><dt><a name="Composition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Composition-__gt__"><strong>__gt__</strong></a>(self, other, NotImplemented=NotImplemented)</dt><dd><tt>Return&nbsp;a&nbsp;&gt;&nbsp;b.&nbsp;&nbsp;Computed&nbsp;by&nbsp;@total_ordering&nbsp;from&nbsp;(not&nbsp;a&nbsp;&lt;&nbsp;b)&nbsp;and&nbsp;(a&nbsp;!=&nbsp;b).</tt></dd></dl>
+
+<dl><dt><a name="Composition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Composition-__le__"><strong>__le__</strong></a>(self, other, NotImplemented=NotImplemented)</dt><dd><tt>Return&nbsp;a&nbsp;&lt;=&nbsp;b.&nbsp;&nbsp;Computed&nbsp;by&nbsp;@total_ordering&nbsp;from&nbsp;(a&nbsp;&lt;&nbsp;b)&nbsp;or&nbsp;(a&nbsp;==&nbsp;b).</tt></dd></dl>
+
+<dl><dt><a name="Composition-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Composition-__lt__"><strong>__lt__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self&lt;value.</tt></dd></dl>
+
+<dl><dt><a name="Composition-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Prepare&nbsp;partial&nbsp;arguments.</tt></dd></dl>
+
+<dl><dt><a name="Composition-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
+
+<dl><dt><a name="Composition-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>imag</strong></dt>
+</dl>
+<dl><dt><strong>kwargs</strong></dt>
+</dl>
+<dl><dt><strong>real</strong></dt>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Operator">class <strong>Operator</strong></a>(<a href="composites.html#OperatorOperations">OperatorOperations</a>, <a href="composites.html#Composition">Composition</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Symbollic&nbsp;compositions&nbsp;that&nbsp;append&nbsp;operations&nbsp;functins.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(x+10)(10)&nbsp;is&nbsp;20<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Operator">Operator</a></dd>
+<dd><a href="composites.html#OperatorOperations">OperatorOperations</a></dd>
+<dd><a href="composites.html#ComplexOperations">ComplexOperations</a></dd>
+<dd><a href="composites.html#Composition">Composition</a></dd>
+<dd><a href="composites.html#Composite">Composite</a></dd>
+<dd><a href="composites.html#Complex">Complex</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__annotations__</strong> = {}</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#OperatorOperations">OperatorOperations</a>:<br>
+<dl><dt><a name="Operator-__abs__"><strong>__abs__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__add__"><strong>__add__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt></dl>
+
+<dl><dt><a name="Operator-__getitem__"><strong>__getitem__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__mod__"><strong>__mod__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__mul__"><strong>__mul__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operator-__neg__"><strong>__neg__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__pos__"><strong>__pos__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__pow__"><strong>__pow__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operator-__sub__"><strong>__sub__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operator-__truediv__"><strong>__truediv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><a name="Operator-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Operator-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operator-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operator-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;composition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operator-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operator-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
+
+<dl><dt><a name="Operator-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(0)&nbsp;is&nbsp;False&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#ComplexOperations">ComplexOperations</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
+<dl><dt><a name="Operator-call"><strong>call</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
+<dl><dt><a name="Operator-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Evaluate&nbsp;the&nbsp;imaginary&nbsp;part&nbsp;of&nbsp;a&nbsp;composite&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Operator-__init__"><strong>__init__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Operator-__iter__"><strong>__iter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-append"><strong>append</strong></a>(self, item)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><a name="Operator-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Operator-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Operator-__len__"><strong>__len__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operator-__prepare__"><strong>__prepare__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Prepare&nbsp;partial&nbsp;arguments.</tt></dd></dl>
+
+<dl><dt><a name="Operator-__setitem__"><strong>__setitem__</strong></a>(self, item, value)</dt></dl>
+
+<dl><dt><a name="Operator-__setstate__"><strong>__setstate__</strong></a>(self, state)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>imag</strong></dt>
+</dl>
+<dl><dt><strong>kwargs</strong></dt>
+</dl>
+<dl><dt><strong>real</strong></dt>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#Complex">Complex</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+</td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#ffc8d8">
 <td colspan=3 valign=bottom>&nbsp;<br>
@@ -70,6 +362,215 @@ Data descriptors defined here:<br>
 <dl><dt><strong>__weakref__</strong></dt>
 <dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
 </dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="cache">class <strong>cache</strong></a>(<a href="composites.html#store">store</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="builtins.html#dict">dict</a>()&nbsp;-&gt;&nbsp;new&nbsp;empty&nbsp;dictionary<br>
+<a href="builtins.html#dict">dict</a>(mapping)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;from&nbsp;a&nbsp;mapping&nbsp;<a href="builtins.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(key,&nbsp;value)&nbsp;pairs<br>
+<a href="builtins.html#dict">dict</a>(iterable)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;as&nbsp;if&nbsp;via:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;k,&nbsp;v&nbsp;in&nbsp;iterable:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d[k]&nbsp;=&nbsp;v<br>
+<a href="builtins.html#dict">dict</a>(**kwargs)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;with&nbsp;the&nbsp;name=value&nbsp;pairs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;keyword&nbsp;argument&nbsp;list.&nbsp;&nbsp;For&nbsp;example:&nbsp;&nbsp;<a href="builtins.html#dict">dict</a>(one=1,&nbsp;two=2)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#cache">cache</a></dd>
+<dd><a href="composites.html#store">store</a></dd>
+<dd><a href="builtins.html#dict">builtins.dict</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="cache-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#store">store</a>:<br>
+<dl><dt><a name="cache-__getitem__"><strong>__getitem__</strong></a>(self, item)</dt><dd><tt>x.<a href="#cache-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="cache-__init__"><strong>__init__</strong></a>(self, real=None, *args)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#store">store</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__self__</strong></dt>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="builtins.html#dict">builtins.dict</a>:<br>
+<dl><dt><a name="cache-__contains__"><strong>__contains__</strong></a>(self, key, /)</dt><dd><tt>True&nbsp;if&nbsp;D&nbsp;has&nbsp;a&nbsp;key&nbsp;k,&nbsp;else&nbsp;False.</tt></dd></dl>
+
+<dl><dt><a name="cache-__delitem__"><strong>__delitem__</strong></a>(self, key, /)</dt><dd><tt>Delete&nbsp;self[key].</tt></dd></dl>
+
+<dl><dt><a name="cache-__eq__"><strong>__eq__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__ge__"><strong>__ge__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&gt;=value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="cache-__gt__"><strong>__gt__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&gt;value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__iter__"><strong>__iter__</strong></a>(self, /)</dt><dd><tt>Implement&nbsp;iter(self).</tt></dd></dl>
+
+<dl><dt><a name="cache-__le__"><strong>__le__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&lt;=value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__len__"><strong>__len__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;len(self).</tt></dd></dl>
+
+<dl><dt><a name="cache-__lt__"><strong>__lt__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&lt;value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__ne__"><strong>__ne__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self!=value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="cache-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="cache-__setitem__"><strong>__setitem__</strong></a>(self, key, value, /)</dt><dd><tt>Set&nbsp;self[key]&nbsp;to&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="cache-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>D.<a href="#cache-__sizeof__">__sizeof__</a>()&nbsp;-&gt;&nbsp;size&nbsp;of&nbsp;D&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="cache-clear"><strong>clear</strong></a>(...)</dt><dd><tt>D.<a href="#cache-clear">clear</a>()&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Remove&nbsp;all&nbsp;items&nbsp;from&nbsp;D.</tt></dd></dl>
+
+<dl><dt><a name="cache-copy"><strong>copy</strong></a>(...)</dt><dd><tt>D.<a href="#cache-copy">copy</a>()&nbsp;-&gt;&nbsp;a&nbsp;shallow&nbsp;copy&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="cache-fromkeys"><strong>fromkeys</strong></a>(iterable, value=None, /)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#dict">dict</a>&nbsp;with&nbsp;keys&nbsp;from&nbsp;iterable&nbsp;and&nbsp;values&nbsp;equal&nbsp;to&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="cache-get"><strong>get</strong></a>(...)</dt><dd><tt>D.<a href="#cache-get">get</a>(k[,d])&nbsp;-&gt;&nbsp;D[k]&nbsp;if&nbsp;k&nbsp;in&nbsp;D,&nbsp;else&nbsp;d.&nbsp;&nbsp;d&nbsp;defaults&nbsp;to&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="cache-items"><strong>items</strong></a>(...)</dt><dd><tt>D.<a href="#cache-items">items</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;items</tt></dd></dl>
+
+<dl><dt><a name="cache-keys"><strong>keys</strong></a>(...)</dt><dd><tt>D.<a href="#cache-keys">keys</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;keys</tt></dd></dl>
+
+<dl><dt><a name="cache-pop"><strong>pop</strong></a>(...)</dt><dd><tt>D.<a href="#cache-pop">pop</a>(k[,d])&nbsp;-&gt;&nbsp;v,&nbsp;remove&nbsp;specified&nbsp;key&nbsp;and&nbsp;return&nbsp;the&nbsp;corresponding&nbsp;value.<br>
+If&nbsp;key&nbsp;is&nbsp;not&nbsp;found,&nbsp;d&nbsp;is&nbsp;returned&nbsp;if&nbsp;given,&nbsp;otherwise&nbsp;KeyError&nbsp;is&nbsp;raised</tt></dd></dl>
+
+<dl><dt><a name="cache-popitem"><strong>popitem</strong></a>(...)</dt><dd><tt>D.<a href="#cache-popitem">popitem</a>()&nbsp;-&gt;&nbsp;(k,&nbsp;v),&nbsp;remove&nbsp;and&nbsp;return&nbsp;some&nbsp;(key,&nbsp;value)&nbsp;pair&nbsp;as&nbsp;a<br>
+2-tuple;&nbsp;but&nbsp;raise&nbsp;KeyError&nbsp;if&nbsp;D&nbsp;is&nbsp;empty.</tt></dd></dl>
+
+<dl><dt><a name="cache-setdefault"><strong>setdefault</strong></a>(...)</dt><dd><tt>D.<a href="#cache-setdefault">setdefault</a>(k[,d])&nbsp;-&gt;&nbsp;D.<a href="#cache-get">get</a>(k,d),&nbsp;also&nbsp;set&nbsp;D[k]=d&nbsp;if&nbsp;k&nbsp;not&nbsp;in&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="cache-update"><strong>update</strong></a>(...)</dt><dd><tt>D.<a href="#cache-update">update</a>([E,&nbsp;]**F)&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Update&nbsp;D&nbsp;from&nbsp;<a href="builtins.html#dict">dict</a>/iterable&nbsp;E&nbsp;and&nbsp;F.<br>
+If&nbsp;E&nbsp;is&nbsp;present&nbsp;and&nbsp;has&nbsp;a&nbsp;.<a href="#cache-keys">keys</a>()&nbsp;method,&nbsp;then&nbsp;does:&nbsp;&nbsp;for&nbsp;k&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;E[k]<br>
+If&nbsp;E&nbsp;is&nbsp;present&nbsp;and&nbsp;lacks&nbsp;a&nbsp;.<a href="#cache-keys">keys</a>()&nbsp;method,&nbsp;then&nbsp;does:&nbsp;&nbsp;for&nbsp;k,&nbsp;v&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;v<br>
+In&nbsp;either&nbsp;case,&nbsp;this&nbsp;is&nbsp;followed&nbsp;by:&nbsp;for&nbsp;k&nbsp;in&nbsp;F:&nbsp;&nbsp;D[k]&nbsp;=&nbsp;F[k]</tt></dd></dl>
+
+<dl><dt><a name="cache-values"><strong>values</strong></a>(...)</dt><dd><tt>D.<a href="#cache-values">values</a>()&nbsp;-&gt;&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;values</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="builtins.html#dict">builtins.dict</a>:<br>
+<dl><dt><strong>__hash__</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="store">class <strong>store</strong></a>(<a href="builtins.html#dict">builtins.dict</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="builtins.html#dict">dict</a>()&nbsp;-&gt;&nbsp;new&nbsp;empty&nbsp;dictionary<br>
+<a href="builtins.html#dict">dict</a>(mapping)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;from&nbsp;a&nbsp;mapping&nbsp;<a href="builtins.html#object">object</a>'s<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(key,&nbsp;value)&nbsp;pairs<br>
+<a href="builtins.html#dict">dict</a>(iterable)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;as&nbsp;if&nbsp;via:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;d&nbsp;=&nbsp;{}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;k,&nbsp;v&nbsp;in&nbsp;iterable:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;d[k]&nbsp;=&nbsp;v<br>
+<a href="builtins.html#dict">dict</a>(**kwargs)&nbsp;-&gt;&nbsp;new&nbsp;dictionary&nbsp;initialized&nbsp;with&nbsp;the&nbsp;name=value&nbsp;pairs<br>
+&nbsp;&nbsp;&nbsp;&nbsp;in&nbsp;the&nbsp;keyword&nbsp;argument&nbsp;list.&nbsp;&nbsp;For&nbsp;example:&nbsp;&nbsp;<a href="builtins.html#dict">dict</a>(one=1,&nbsp;two=2)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#store">store</a></dd>
+<dd><a href="builtins.html#dict">builtins.dict</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="store-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="store-__getitem__"><strong>__getitem__</strong></a>(self, item)</dt><dd><tt>x.<a href="#store-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="store-__init__"><strong>__init__</strong></a>(self, real=None, *args)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__self__</strong></dt>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="builtins.html#dict">builtins.dict</a>:<br>
+<dl><dt><a name="store-__contains__"><strong>__contains__</strong></a>(self, key, /)</dt><dd><tt>True&nbsp;if&nbsp;D&nbsp;has&nbsp;a&nbsp;key&nbsp;k,&nbsp;else&nbsp;False.</tt></dd></dl>
+
+<dl><dt><a name="store-__delitem__"><strong>__delitem__</strong></a>(self, key, /)</dt><dd><tt>Delete&nbsp;self[key].</tt></dd></dl>
+
+<dl><dt><a name="store-__eq__"><strong>__eq__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
+
+<dl><dt><a name="store-__ge__"><strong>__ge__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&gt;=value.</tt></dd></dl>
+
+<dl><dt><a name="store-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="store-__gt__"><strong>__gt__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&gt;value.</tt></dd></dl>
+
+<dl><dt><a name="store-__iter__"><strong>__iter__</strong></a>(self, /)</dt><dd><tt>Implement&nbsp;iter(self).</tt></dd></dl>
+
+<dl><dt><a name="store-__le__"><strong>__le__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&lt;=value.</tt></dd></dl>
+
+<dl><dt><a name="store-__len__"><strong>__len__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;len(self).</tt></dd></dl>
+
+<dl><dt><a name="store-__lt__"><strong>__lt__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self&lt;value.</tt></dd></dl>
+
+<dl><dt><a name="store-__ne__"><strong>__ne__</strong></a>(self, value, /)</dt><dd><tt>Return&nbsp;self!=value.</tt></dd></dl>
+
+<dl><dt><a name="store-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="store-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="store-__setitem__"><strong>__setitem__</strong></a>(self, key, value, /)</dt><dd><tt>Set&nbsp;self[key]&nbsp;to&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="store-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>D.<a href="#store-__sizeof__">__sizeof__</a>()&nbsp;-&gt;&nbsp;size&nbsp;of&nbsp;D&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="store-clear"><strong>clear</strong></a>(...)</dt><dd><tt>D.<a href="#store-clear">clear</a>()&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Remove&nbsp;all&nbsp;items&nbsp;from&nbsp;D.</tt></dd></dl>
+
+<dl><dt><a name="store-copy"><strong>copy</strong></a>(...)</dt><dd><tt>D.<a href="#store-copy">copy</a>()&nbsp;-&gt;&nbsp;a&nbsp;shallow&nbsp;copy&nbsp;of&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="store-fromkeys"><strong>fromkeys</strong></a>(iterable, value=None, /)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Returns&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#dict">dict</a>&nbsp;with&nbsp;keys&nbsp;from&nbsp;iterable&nbsp;and&nbsp;values&nbsp;equal&nbsp;to&nbsp;value.</tt></dd></dl>
+
+<dl><dt><a name="store-get"><strong>get</strong></a>(...)</dt><dd><tt>D.<a href="#store-get">get</a>(k[,d])&nbsp;-&gt;&nbsp;D[k]&nbsp;if&nbsp;k&nbsp;in&nbsp;D,&nbsp;else&nbsp;d.&nbsp;&nbsp;d&nbsp;defaults&nbsp;to&nbsp;None.</tt></dd></dl>
+
+<dl><dt><a name="store-items"><strong>items</strong></a>(...)</dt><dd><tt>D.<a href="#store-items">items</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;items</tt></dd></dl>
+
+<dl><dt><a name="store-keys"><strong>keys</strong></a>(...)</dt><dd><tt>D.<a href="#store-keys">keys</a>()&nbsp;-&gt;&nbsp;a&nbsp;set-like&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;keys</tt></dd></dl>
+
+<dl><dt><a name="store-pop"><strong>pop</strong></a>(...)</dt><dd><tt>D.<a href="#store-pop">pop</a>(k[,d])&nbsp;-&gt;&nbsp;v,&nbsp;remove&nbsp;specified&nbsp;key&nbsp;and&nbsp;return&nbsp;the&nbsp;corresponding&nbsp;value.<br>
+If&nbsp;key&nbsp;is&nbsp;not&nbsp;found,&nbsp;d&nbsp;is&nbsp;returned&nbsp;if&nbsp;given,&nbsp;otherwise&nbsp;KeyError&nbsp;is&nbsp;raised</tt></dd></dl>
+
+<dl><dt><a name="store-popitem"><strong>popitem</strong></a>(...)</dt><dd><tt>D.<a href="#store-popitem">popitem</a>()&nbsp;-&gt;&nbsp;(k,&nbsp;v),&nbsp;remove&nbsp;and&nbsp;return&nbsp;some&nbsp;(key,&nbsp;value)&nbsp;pair&nbsp;as&nbsp;a<br>
+2-tuple;&nbsp;but&nbsp;raise&nbsp;KeyError&nbsp;if&nbsp;D&nbsp;is&nbsp;empty.</tt></dd></dl>
+
+<dl><dt><a name="store-setdefault"><strong>setdefault</strong></a>(...)</dt><dd><tt>D.<a href="#store-setdefault">setdefault</a>(k[,d])&nbsp;-&gt;&nbsp;D.<a href="#store-get">get</a>(k,d),&nbsp;also&nbsp;set&nbsp;D[k]=d&nbsp;if&nbsp;k&nbsp;not&nbsp;in&nbsp;D</tt></dd></dl>
+
+<dl><dt><a name="store-update"><strong>update</strong></a>(...)</dt><dd><tt>D.<a href="#store-update">update</a>([E,&nbsp;]**F)&nbsp;-&gt;&nbsp;None.&nbsp;&nbsp;Update&nbsp;D&nbsp;from&nbsp;<a href="builtins.html#dict">dict</a>/iterable&nbsp;E&nbsp;and&nbsp;F.<br>
+If&nbsp;E&nbsp;is&nbsp;present&nbsp;and&nbsp;has&nbsp;a&nbsp;.<a href="#store-keys">keys</a>()&nbsp;method,&nbsp;then&nbsp;does:&nbsp;&nbsp;for&nbsp;k&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;E[k]<br>
+If&nbsp;E&nbsp;is&nbsp;present&nbsp;and&nbsp;lacks&nbsp;a&nbsp;.<a href="#store-keys">keys</a>()&nbsp;method,&nbsp;then&nbsp;does:&nbsp;&nbsp;for&nbsp;k,&nbsp;v&nbsp;in&nbsp;E:&nbsp;D[k]&nbsp;=&nbsp;v<br>
+In&nbsp;either&nbsp;case,&nbsp;this&nbsp;is&nbsp;followed&nbsp;by:&nbsp;for&nbsp;k&nbsp;in&nbsp;F:&nbsp;&nbsp;D[k]&nbsp;=&nbsp;F[k]</tt></dd></dl>
+
+<dl><dt><a name="store-values"><strong>values</strong></a>(...)</dt><dd><tt>D.<a href="#store-values">values</a>()&nbsp;-&gt;&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;providing&nbsp;a&nbsp;view&nbsp;on&nbsp;D's&nbsp;values</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="builtins.html#dict">builtins.dict</a>:<br>
+<dl><dt><strong>__hash__</strong> = None</dl>
+
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -77,7 +578,7 @@ Data descriptors defined here:<br>
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ('a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'ifthen')<br>
+<td width="100%"><strong>__all__</strong> = ('a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'ifthen', 'cache', 'store', 'Composition', 'Operator')<br>
 <strong>a</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>an</strong> = &lt;composites.FunctionFactory object&gt;<br>
 <strong>do</strong> = &lt;composites.FunctionFactory object&gt;<br>
