@@ -569,11 +569,13 @@ class Juxtaposition(CompositeOperations, Juxtapose):
             real = real()
         if isinstance(real, str):
             real = Composition([real])
-        if callable(real):
-            return real
-
         if real is None:
             real = list()
+        if callable(real):
+            return real
+        elif not isiterable(real):
+            return Composition(real)
+
         if not isiterable(real):
             real = [real]
 
