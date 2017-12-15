@@ -88,7 +88,8 @@ composites&nbsp;work&nbsp;with&nbsp;other&nbsp;composites<br>
 &nbsp;<br>
 &gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;<a href="#Composition">Composition</a>(range,&nbsp;exceptions=TypeError)<br>
 &gt;&gt;&gt;&nbsp;assert&nbsp;Juxtaposition(f)&nbsp;is&nbsp;f<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;&nbsp;and&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>&nbsp;</tt></td></tr>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;&nbsp;and&nbsp;isinstance(f('10'),&nbsp;TypeError)<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;isinstance(<a href="#Composition">Composition</a>({}),&nbsp;Juxtaposition)<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#Composition">Composition</a></dd>
@@ -99,6 +100,10 @@ composites&nbsp;work&nbsp;with&nbsp;other&nbsp;composites<br>
 <hr>
 Methods defined here:<br>
 <dl><dt><a name="Composition-call"><strong>call</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="Composition-__new__"><strong>__new__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
@@ -125,8 +130,6 @@ Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
 <dl><dt><a name="Composition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
 
 <dl><dt><a name="Composition-__eq__"><strong>__eq__</strong></a>(self, other)</dt><dd><tt>Return&nbsp;self==value.</tt></dd></dl>
-
-<dl><dt><a name="Composition-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
 
 <dl><dt><a name="Composition-__ge__"><strong>__ge__</strong></a>(self, other, NotImplemented=NotImplemented)</dt><dd><tt>Return&nbsp;a&nbsp;&gt;=&nbsp;b.&nbsp;&nbsp;Computed&nbsp;by&nbsp;@total_ordering&nbsp;from&nbsp;(not&nbsp;a&nbsp;&lt;&nbsp;b).</tt></dd></dl>
 
@@ -292,6 +295,10 @@ Methods inherited from <a href="composites.html#Composition">Composition</a>:<br
 <dl><dt><a name="Operator-call"><strong>call</strong></a>(self, *args, **kwargs)</dt></dl>
 
 <hr>
+Static methods inherited from <a href="composites.html#Composition">Composition</a>:<br>
+<dl><dt><a name="Operator-__new__"><strong>__new__</strong></a>(cls, real=None, exceptions=None, args=None, **kwargs)</dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
 Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
 <dl><dt><a name="Operator-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Evaluate&nbsp;the&nbsp;imaginary&nbsp;part&nbsp;of&nbsp;a&nbsp;composite&nbsp;function.</tt></dd></dl>
 
@@ -304,8 +311,6 @@ Methods inherited from <a href="composites.html#Composite">Composite</a>:<br>
 <hr>
 Methods inherited from <a href="composites.html#Complex">Complex</a>:<br>
 <dl><dt><a name="Operator-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
-
-<dl><dt><a name="Operator-__except__"><strong>__except__</strong></a>(self, object)</dt></dl>
 
 <dl><dt><a name="Operator-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
 

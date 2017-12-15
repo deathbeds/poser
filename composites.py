@@ -50,8 +50,12 @@ __all__ = 'a', 'an', 'the', 'function', 'flip', 'parallel', 'star', 'do', 'previ
 
 # Composing function strictly through the Python datamodel.
 
-def call(object, *args, **kwargs):
-    return object(*args, **kwargs) if callable(object) else object
+def call(object, *args, exceptions=None, **kwargs):
+    if callable(object):
+        if exceptions:
+            object = excepts(exceptions, object, identity)
+        return object(*args, **kwargs)
+    return object
 
 
 def null(*args, **kwargs): return args[0] if args else None
@@ -156,12 +160,6 @@ class Complex(object):
         """Prepare partial arguments."""
         return self.args + args, merge(self.kwargs, kwargs)
 
-    def __except__(self, object):
-        return excepts(
-            self.exceptions,
-            object,
-            identity) if self.exceptions and callable(object) else object
-
     def __call__(self, *args, **kwargs) -> bool:
         """Evaluate the imaginary part of a composite function."""
 
@@ -176,10 +174,9 @@ class Complex(object):
 
         # Test the imaginary part of the function.
         elif callable(self.imag):
-            imag = self.__except__(self.imag)(*args, **kwargs)
+            imag = call(self.imag, *args, **kwargs, exceptions=self.exceptions)
             if isinstance(self.imag, Juxtaposition):
                 imag = all(imag)
-
         else:  # Fallback
             imag = self.imag
 
@@ -200,16 +197,19 @@ class Composite(Complex):
     """
     def __init__(cls, real=None, exceptions=None, args=None, **kwargs):
         imag = kwargs.pop('imag', True)
-        return super().__init__(imag, real, exceptions, args=args, kwargs=kwargs)
+        super().__init__(imag, real, exceptions, args=args, kwargs=kwargs)
 
     def append(self, item):
         if isinstance(self, Factory):
             self = self()
         if not callable(item):
-            if isinstance(item, (int, slice)) or isinstance(self.real, dict):
+            if isinstance(item, (int, slice)):
                 if item == slice(None):
                     return self
                 return self.real[item]
+            elif isinstance(self.real, dict):
+                self.real.update(dict([item]))
+                return self
             if isiterable(item):
                 item = Juxtaposition(item)
         return self.__getattr__('append')(item)
@@ -217,7 +217,7 @@ class Composite(Complex):
     __getitem__ = append
 
     def __iter__(self):
-        yield from map(self.__except__, self.real or [null])
+        yield from self.real or [null]
 
     def __call__(self, *args, **kwargs):
         args, kwargs = self.__prepare__(*args, **kwargs)
@@ -237,12 +237,20 @@ class Composition(Composite):
     >>> f = Composition(range, exceptions=TypeError)
     >>> assert Juxtaposition(f) is f
     >>> assert f(10) == range(10)  and isinstance(f('10'), TypeError)
+    >>> assert isinstance(Composition({}), Juxtaposition)
     """
+    def __new__(cls, real=None, exceptions=None, args=None, **kwargs):
+        if isinstance(real, dict):
+            return Juxtaposition(real, exceptions, args, **kwargs)
+        self = object.__new__(cls)
+        self.__init__(real=None, exceptions=None, args=None, **kwargs)
+        return self
 
     def call(self, *args, **kwargs):
         for value in self:
-            args, kwargs = [value(*args, **kwargs)
-                            if callable(value) else value], {}
+            args, kwargs = [
+                call(
+                    value, *args, exceptions=self.exceptions, **kwargs)], {}
             if isinstance(first(args), BaseException):
                 break
         return null(*args, **kwargs)
@@ -535,13 +543,13 @@ class OperatorFactory(Operator, Factory):
 class Juxtapose(Composite):
     def __iter__(self):
         if isinstance(self.real, dict):
-            yield from [Juxtaposition(tuple(map(self.__except__, item))) for item in self.real.items()]
+            yield from map(Juxtaposition, self.real.items())
         else:
-            yield from map(self.__except__, self.real)
+            yield from self.real
 
     def call(self, *args, **kwargs):
         for value in self:
-            yield call(value, *args, **kwargs)
+            yield call(value, *args, exceptions=self.exceptions, **kwargs)
 
 
 class Juxtaposition(CompositeOperations, Juxtapose):
@@ -584,7 +592,7 @@ class Juxtaposition(CompositeOperations, Juxtapose):
             return Juxtapose(real, exceptions, args=args, **kwargs)
 
         # Return native types after the
-        self = super().__new__(cls)
+        self = object.__new__(cls)
         return Composite.__init__(
             self,
             real,
