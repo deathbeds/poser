@@ -227,8 +227,9 @@ class Composite(Complex):
 
         if condition is False or isinstance(condition, ConditionException):
             return condition
-        else:
+        if self.real:
             return self.call(*args, **kwargs)
+        return condition
 
 
 class Composition(Composite):
@@ -270,7 +271,7 @@ class ComplexOperations:
         """Require a complex condition be true before evaluating a composition, otherwise return False.
 
         >>> f = a**int
-        >>> assert f(10) is 10 and f('10') is False
+        >>> assert f(10) is True and f('10') is False
         """
         new = IfThen(
             object,
@@ -334,6 +335,8 @@ class OperatorOperations(ComplexOperations):
             Operator(), callable, left, partial=partial)
 
     def _bool(self, callable, *args):
+        if isinstance(self, Factory):
+            self = self()
         return Operator(self, imag=partial_object(callable, *args))
 
     def __getattr__(self, attr):
@@ -385,6 +388,7 @@ class Operator(OperatorOperations, Composition):
     """Symbollic compositions that append operations functins.
 
     >>> assert (x+10)(10) is 20
+    >>> assert (x=='test')('test')
     """
     __annotations__ = {}
 

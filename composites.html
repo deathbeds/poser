@@ -178,7 +178,8 @@ Data and other attributes inherited from <a href="composites.html#Complex">Compl
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>Symbollic&nbsp;compositions&nbsp;that&nbsp;append&nbsp;operations&nbsp;functins.<br>
 &nbsp;<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;(x+10)(10)&nbsp;is&nbsp;20<br>&nbsp;</tt></td></tr>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(x+10)(10)&nbsp;is&nbsp;20<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;(x=='test')('test')<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#Operator">Operator</a></dd>
@@ -275,7 +276,7 @@ Methods inherited from <a href="composites.html#ComplexOperations">ComplexOperat
 <dl><dt><a name="Operator-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>Require&nbsp;a&nbsp;complex&nbsp;condition&nbsp;be&nbsp;true&nbsp;before&nbsp;evaluating&nbsp;a&nbsp;composition,&nbsp;otherwise&nbsp;return&nbsp;False.<br>
 &nbsp;<br>
 &gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a**int<br>
-&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;True&nbsp;and&nbsp;f('10')&nbsp;is&nbsp;False</tt></dd></dl>
 
 <dl><dt><a name="Operator-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;composition&nbsp;is&nbsp;True.<br>
 &nbsp;<br>
