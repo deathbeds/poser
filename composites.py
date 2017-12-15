@@ -545,7 +545,7 @@ class Juxtapose(Composite):
         if isinstance(self.real, dict):
             yield from map(Juxtaposition, self.real.items())
         else:
-            yield from self.real
+            yield from map(Juxtaposition, self.real)
 
     def call(self, *args, **kwargs):
         for value in self:
@@ -566,6 +566,7 @@ class Juxtaposition(CompositeOperations, Juxtapose):
 
 
     >>> assert isinstance(juxt({}).real, dict) and isinstance(juxt([]).real, list)
+    >>> assert a[[[[[[range]]]]]](10) == [[[[[range(10)]]]]]
     """
 
     def __new__(cls, real=None, exceptions=None, args=None, **kwargs):
