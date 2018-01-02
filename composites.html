@@ -153,9 +153,9 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
-<dl><dt><a name="Composition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Composition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Composition-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
@@ -167,21 +167,21 @@ Data descriptors inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Pro">Pro</a>:<br>
-<dl><dt><a name="Composition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Composition-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Composition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Composition-__init__"><strong>__init__</strong></a>(x, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Composition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Composition-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Composition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Composition-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Composition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Composition-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Composition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Composition-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
@@ -189,57 +189,57 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="Composition-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Composition-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Composition-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Composition-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Composition-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Composition-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Composition-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Composition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Composition-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Composition-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Composition-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Composition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Composition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Composition-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Composition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Composition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Composition-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Composition-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Composition-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Composition-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Composition-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Composition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -253,25 +253,25 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="Composition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Composition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Composition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Composition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="Composition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Composition-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Composition-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-__truediv__"><strong>__truediv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Composition-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Composition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Composition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Composition-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -296,15 +296,15 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Ex">Ex</a>:<br>
-<dl><dt><a name="Exposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Exposition-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Exposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Exposition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Exposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Exposition-__init__"><strong>__init__</strong></a>(x, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Exposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Exposition-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -316,11 +316,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Exposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Exposition-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Exposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Exposition-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Exposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Exposition-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -336,59 +336,59 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="Exposition-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Exposition-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Exposition-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Exposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Exposition-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Exposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Exposition-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Exposition-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Exposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Exposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Exposition-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Exposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Exposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Exposition-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Exposition-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Exposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -402,25 +402,25 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="Exposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Exposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Exposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="Exposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Exposition-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-__truediv__"><strong>__truediv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Exposition-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Exposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Exposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Exposition-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -445,15 +445,15 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Im">Im</a>:<br>
-<dl><dt><a name="Imposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Imposition-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Imposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Imposition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Imposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Imposition-__init__"><strong>__init__</strong></a>(x, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Imposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Imposition-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -465,11 +465,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Imposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Imposition-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Imposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Imposition-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Imposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Imposition-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -485,59 +485,59 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="Imposition-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Imposition-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Imposition-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Imposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Imposition-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Imposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Imposition-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Imposition-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Imposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Imposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Imposition-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Imposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Imposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Imposition-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Imposition-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Imposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -551,25 +551,25 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="Imposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Imposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Imposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="Imposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Imposition-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-__truediv__"><strong>__truediv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Imposition-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Imposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Imposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Imposition-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -594,21 +594,21 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Juxt">Juxt</a>:<br>
-<dl><dt><a name="Juxtaposition-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Juxtaposition-__call__"><strong>__call__</strong></a>(x, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-__init__"><strong>__init__</strong></a>(self, outer=None, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Juxtaposition-__init__"><strong>__init__</strong></a>(x, outer=None, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Static methods inherited from <a href="composites.html#Juxt">Juxt</a>:<br>
-<dl><dt><a name="Juxtaposition-__new__"><strong>__new__</strong></a>(self, object=None, **dict)</dt><dd><tt>Juxtapose&nbsp;is&nbsp;used&nbsp;generically&nbsp;to&nbsp;iterate&nbsp;through&nbsp;Sequences&nbsp;and&nbsp;Mappings.&nbsp;The<br>
+<dl><dt><a name="Juxtaposition-__new__"><strong>__new__</strong></a>(x, object=None, **dict)</dt><dd><tt>Juxtapose&nbsp;is&nbsp;used&nbsp;generically&nbsp;to&nbsp;iterate&nbsp;through&nbsp;Sequences&nbsp;and&nbsp;Mappings.&nbsp;The<br>
 new&nbsp;method&nbsp;returns&nbsp;callables&nbsp;and&nbsp;initializes&nbsp;everything&nbsp;else.&nbsp;&nbsp;When&nbsp;called,&nbsp;Juxt&nbsp;<br>
 will&nbsp;return&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;with&nbsp;the&nbsp;same&nbsp;type&nbsp;as&nbsp;Juxt.Outer.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Juxtaposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Juxtaposition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Juxtaposition-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -620,11 +620,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Juxtaposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Juxtaposition-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Juxtaposition-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Juxtaposition-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -640,59 +640,59 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="Juxtaposition-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Juxtaposition-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Juxtaposition-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Juxtaposition-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Juxtaposition-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Juxtaposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Juxtaposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Juxtaposition-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Juxtaposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Juxtaposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Juxtaposition-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Juxtaposition-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Juxtaposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -706,25 +706,25 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="Juxtaposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Juxtaposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="Juxtaposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-__truediv__"><strong>__truediv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Juxtaposition-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Juxtaposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Juxtaposition-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -752,11 +752,11 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Operation-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Operation-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
-<dl><dt><a name="Operation-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Operation-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
@@ -768,63 +768,63 @@ Data descriptors inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Operate">Operate</a>:<br>
-<dl><dt><a name="Operation-__abs__"><strong>__abs__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__abs__"><strong>__abs__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__add__"><strong>__add__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__add__"><strong>__add__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__eq__"><strong>__eq__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__ge__"><strong>__ge__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__getitem__"><strong>__getitem__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__getitem__"><strong>__getitem__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__gt__"><strong>__gt__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__init__"><strong>__init__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Operation-__init__"><strong>__init__</strong></a>(x, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Operation-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__le__"><strong>__le__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__lshift__"><strong>__lshift__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__lshift__"><strong>__lshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__lt__"><strong>__lt__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__mod__"><strong>__mod__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__mod__"><strong>__mod__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__mul__"><strong>__mul__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__mul__"><strong>__mul__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+<dl><dt><a name="Operation-__ne__"><strong>__ne__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__neg__"><strong>__neg__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__neg__"><strong>__neg__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__pos__"><strong>__pos__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__pos__"><strong>__pos__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__pow__"><strong>__pow__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__pow__"><strong>__pow__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__radd__"><strong>__radd__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rlshift__"><strong>__rlshift__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rlshift__"><strong>__rlshift__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rmod__"><strong>__rmod__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rmul__"><strong>__rmul__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rrshift__"><strong>__rrshift__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rrshift__"><strong>__rrshift__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rshift__"><strong>__rshift__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__rshift__"><strong>__rshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rsub__"><strong>__rsub__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+<dl><dt><a name="Operation-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__sub__"><strong>__sub__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__sub__"><strong>__sub__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__truediv__"><strong>__truediv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__truediv__"><strong>__truediv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Operate">Operate</a>:<br>
@@ -834,11 +834,11 @@ Data and other attributes inherited from <a href="composites.html#Operate">Opera
 
 <hr>
 Methods inherited from <a href="composites.html#Pro">Pro</a>:<br>
-<dl><dt><a name="Operation-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Operation-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Operation-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Operation-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -850,11 +850,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Operation-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Operation-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Operation-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Operation-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Operation-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Operation-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
@@ -862,50 +862,50 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Operation-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Operation-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Operation-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Operation-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Operation-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Operation-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Operation-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Operation-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Operation-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Operation-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Operation-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Operation-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Operation-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Operation-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Operation-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Operation-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Operation-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Operation-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Operation-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Operation-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Operation-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Operation-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Operation-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Operation-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -930,15 +930,15 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Pro">Pro</a>:<br>
-<dl><dt><a name="Proposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="Proposition-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="Proposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Proposition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Proposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="Proposition-__init__"><strong>__init__</strong></a>(x, inner=None, outer=None, *, exception=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="Proposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="Proposition-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -950,11 +950,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="Proposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Proposition-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="Proposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="Proposition-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="Proposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="Proposition-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -970,59 +970,59 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="Proposition-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="Proposition-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Proposition-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Proposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Proposition-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Proposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="Proposition-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="Proposition-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="Proposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Proposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="Proposition-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Proposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Proposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="Proposition-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="Proposition-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Proposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -1036,25 +1036,25 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="Proposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Proposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="Proposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="Proposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="Proposition-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-__truediv__"><strong>__truediv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="Proposition-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="Proposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-map"><strong>map</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="Proposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="Proposition-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -1064,16 +1064,16 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
     
 <tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%">Methods defined here:<br>
-<dl><dt><a name="__getattr__-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="__getattr__-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="__getattr__-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#__getattr__-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="__getattr__-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#__getattr__-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="__getattr__-__getattr__"><strong>__getattr__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="__getattr__-__getattr__"><strong>__getattr__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="__getattr__-__init__"><strong>__init__</strong></a>(self, object, callable=None, parent=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="__getattr__-__init__"><strong>__init__</strong></a>(x, object, callable=None, parent=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="__getattr__-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="__getattr__-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -1108,11 +1108,11 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="cache-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="cache-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#store">store</a>:<br>
-<dl><dt><a name="cache-__init__"><strong>__init__</strong></a>(self, callable=None, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="cache-__init__"><strong>__init__</strong></a>(x, callable=None, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#store">store</a>:<br>
@@ -1207,9 +1207,9 @@ Data and other attributes inherited from <a href="builtins.html#dict">builtins.d
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="flip-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="flip-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="flip-__init__"><strong>__init__</strong></a>(self, callable)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="flip-__init__"><strong>__init__</strong></a>(x, callable)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -1217,11 +1217,11 @@ Data descriptors defined here:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="flip-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="flip-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="flip-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="flip-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="flip-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="flip-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -1264,19 +1264,19 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="parallel-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="parallel-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="parallel-__init__"><strong>__init__</strong></a>(self, jobs=4, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="parallel-__init__"><strong>__init__</strong></a>(x, jobs=4, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
-<dl><dt><a name="parallel-__truediv__"><strong>__truediv__</strong></a> = <a href="#parallel-map">map</a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__truediv__"><strong>__truediv__</strong></a> = <a href="#parallel-map">map</a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-map"><strong>map</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-map"><strong>map</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
-<dl><dt><a name="parallel-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="parallel-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="parallel-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+<dl><dt><a name="parallel-__repr__"><strong>__repr__</strong></a>(x)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
@@ -1288,11 +1288,11 @@ Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#State">State</a>:<br>
-<dl><dt><a name="parallel-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+<dl><dt><a name="parallel-__getstate__"><strong>__getstate__</strong></a>(x)</dt></dl>
 
-<dl><dt><a name="parallel-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+<dl><dt><a name="parallel-__hash__"><strong>__hash__</strong></a>(x)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
 
-<dl><dt><a name="parallel-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+<dl><dt><a name="parallel-__setstate__"><strong>__setstate__</strong></a>(x, tuple)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
@@ -1308,59 +1308,59 @@ Data and other attributes inherited from <a href="composites.html#State">State</
 
 <hr>
 Methods inherited from <a href="composites.html#Append">Append</a>:<br>
-<dl><dt><a name="parallel-__getitem__"><strong>__getitem__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__getitem__"><strong>__getitem__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-append"><strong>append</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
-<dl><dt><a name="parallel-__and__"><strong>__and__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__and__"><strong>__and__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-__or__"><strong>__or__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__or__"><strong>__or__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="parallel-__pow__"><strong>__pow__</strong></a>(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="parallel-__xor__"><strong>__xor__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__xor__"><strong>__xor__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt></dl>
+<dl><dt><a name="parallel-excepts"><strong>excepts</strong></a> = __xor__(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt></dl>
+<dl><dt><a name="parallel-ifnot"><strong>ifnot</strong></a> = __or__(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="parallel-ifthen"><strong>ifthen</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="parallel-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+<dl><dt><a name="parallel-instance"><strong>instance</strong></a> = __pow__(x, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
 #&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
 
-<dl><dt><a name="parallel-then"><strong>then</strong></a> = __and__(self, object)</dt></dl>
+<dl><dt><a name="parallel-then"><strong>then</strong></a> = __and__(x, object)</dt></dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><a name="parallel-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#parallel-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+<dl><dt><a name="parallel-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#parallel-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="parallel-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+<dl><dt><a name="parallel-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, 'operator', &lt;built-in function getitem&gt;, &lt;built-in function neg&gt;, &lt;built-in function mod&gt;, &lt;built-in function length_hint&gt;, &lt;built-in function truediv&gt;, &lt;built-in function ne&gt;, &lt;built-in function and_&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function imul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function iand&gt;, &lt;built-in function delitem&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function floordiv&gt;, &lt;built-in function eq&gt;, &lt;built-in function or_&gt;, &lt;built-in function le&gt;, &lt;built-in function iconcat&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function abs&gt;, ModuleSpec(name='operator', loader=&lt;_frozen_impo...ers/tonyfast/anaconda/lib/python3.5/operator.py'), &lt;built-in function mod&gt;, &lt;built-in function and_&gt;, &lt;built-in function countOf&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function or_&gt;, &lt;built-in function mul&gt;, &lt;built-in function add&gt;, &lt;built-in function iadd&gt;, &lt;built-in function index&gt;, &lt;built-in function ne&gt;, &lt;built-in function getitem&gt;, &lt;built-in function ifloordiv&gt;, &lt;built-in function delitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function truediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function ixor&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
 <hr>
 Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
-<dl><dt><a name="parallel-__add__"><strong>__add__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="parallel-__add__"><strong>__add__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="parallel-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+<dl><dt><a name="parallel-__lshift__"><strong>__lshift__</strong></a>(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-__matmul__"><strong>__matmul__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="parallel-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-__mod__"><strong>__mod__</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="parallel-__mul__"><strong>__mul__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="parallel-__mul__"><strong>__mul__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="parallel-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
 
@@ -1374,21 +1374,21 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 
 <dl><dt><a name="parallel-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="parallel-__rshift__"><strong>__rshift__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="parallel-__rshift__"><strong>__rshift__</strong></a> = __getitem__(x, object)</dt></dl>
 
 <dl><dt><a name="parallel-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
 
 <dl><dt><a name="parallel-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
 
-<dl><dt><a name="parallel-__sub__"><strong>__sub__</strong></a> = __getitem__(self, object)</dt></dl>
+<dl><dt><a name="parallel-__sub__"><strong>__sub__</strong></a> = __getitem__(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+<dl><dt><a name="parallel-do"><strong>do</strong></a> = __lshift__(x, object)</dt></dl>
 
-<dl><dt><a name="parallel-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-filter"><strong>filter</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="parallel-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-groupby"><strong>groupby</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
-<dl><dt><a name="parallel-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+<dl><dt><a name="parallel-reduce"><strong>reduce</strong></a> = _method(x, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -1414,9 +1414,9 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="store-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+<dl><dt><a name="store-__call__"><strong>__call__</strong></a>(x, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
 
-<dl><dt><a name="store-__init__"><strong>__init__</strong></a>(self, callable=None, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+<dl><dt><a name="store-__init__"><strong>__init__</strong></a>(x, callable=None, *tuple, **dict)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
 
 <hr>
 Data descriptors defined here:<br>
@@ -1509,7 +1509,7 @@ Data and other attributes inherited from <a href="builtins.html#dict">builtins.d
 </dl>
 <hr>
 Methods defined here:<br>
-<dl><dt><a name="Ø-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+<dl><dt><a name="Ø-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
 
 <hr>
 Data descriptors defined here:<br>
