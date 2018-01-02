@@ -261,6 +261,7 @@ def _partial_(self, object):
 
 
 class Conditions:
+    # Lambda initializes propositions.
     # The [*]positions are defined later.
     def __pow__(self, object):
         # Sugar for isinstance implementations.
@@ -564,8 +565,9 @@ star = Simple(outer=[Star])
 class Do(Proposition):
     _repr_token_ = '>>'
 
-    def __call__(self, *args, **kwargs): return (super().__call__(* \
-                 args, **kwargs), null(*args, **kwargs))[-1]
+    def __call__(self, *tuple, **dict):
+        super().__call__(*tuple, **dict)
+        return null(*tuple, **dict)
 
 
 do = Simple(outer=[Do])
@@ -627,19 +629,25 @@ class cache(store):
         return self[tuple[0]]
 
 
-if __name__ == '__main__' and 'runtime' in sys.argv[-1]:
-    print(__import__('doctest').testmod())
-
-
 # # Developer
 
 if __name__ == '__main__':
     if 'runtime' in sys.argv[-1]:
+        from IPython import get_ipython, display
         get_ipython().system(
             'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb')
         # Juxtaposition still wont work
+        get_ipython().system('python -m pydoc -w composites')
         get_ipython().system('pyreverse -o png -pcomposites -fALL composites')
+        display.display(
+            display.Image('classes_composites.png'),
+            display.IFrame(
+                'composites.html',
+                height=600,
+                width=800))
+        __import__('doctest').testmod()
+        get_ipython().system('ipython -m doctest  composites.py')
         get_ipython().system('autopep8 --in-place --aggressive --aggressive composites.py')
-        get_ipython().system('flake8 composites.py')
+        get_ipython().system('flake8 composites.py --ignore E501,E704,W503')
     else:
         print('run from cli')
