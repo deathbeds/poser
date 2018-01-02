@@ -54,7 +54,7 @@ from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Composition',  # 'Juxtaposition'
+__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition'
 
 
 # Composing function strictly through the Python datamodel.

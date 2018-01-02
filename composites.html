@@ -28,6 +28,12 @@
     
 <tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="builtins.html#BaseException">builtins.BaseException</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Ø">Ø</a>
+</font></dt></dl>
+</dd>
 <dt><font face="helvetica, arial"><a href="builtins.html#dict">builtins.dict</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
 <dl>
@@ -45,18 +51,63 @@
 <dt><font face="helvetica, arial"><a href="composites.html#__getattr__">__getattr__</a>
 </font></dt></dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Ex">Ex</a>(<a href="composites.html#Pose">Pose</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Exposition">Exposition</a>(<a href="composites.html#Ex">Ex</a>, <a href="composites.html#Position">Position</a>)
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Im">Im</a>(<a href="composites.html#Pose">Pose</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Imposition">Imposition</a>(<a href="composites.html#Im">Im</a>, <a href="composites.html#Position">Position</a>)
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Juxt">Juxt</a>(<a href="composites.html#Pose">Pose</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Juxtaposition">Juxtaposition</a>(<a href="composites.html#Juxt">Juxt</a>, <a href="composites.html#Position">Position</a>)
+</font></dt></dl>
+</dd>
 <dt><font face="helvetica, arial"><a href="composites.html#Lambda">Lambda</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="composites.html#Composition">Composition</a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Proposition">Proposition</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#Operation">Operation</a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Operate">Operate</a>)
 </font></dt></dl>
 </dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Operate">Operate</a>(<a href="composites.html#Proposition">Proposition</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Operation">Operation</a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Operate">Operate</a>)
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Position">Position</a>(<a href="composites.html#Append">Append</a>, <a href="composites.html#Conditions">Conditions</a>, <a href="composites.html#Attributes">Attributes</a>, <a href="composites.html#Symbols">Symbols</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Exposition">Exposition</a>(<a href="composites.html#Ex">Ex</a>, <a href="composites.html#Position">Position</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#Imposition">Imposition</a>(<a href="composites.html#Im">Im</a>, <a href="composites.html#Position">Position</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#Juxtaposition">Juxtaposition</a>(<a href="composites.html#Juxt">Juxt</a>, <a href="composites.html#Position">Position</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#Proposition">Proposition</a>(<a href="composites.html#Pro">Pro</a>, <a href="composites.html#Position">Position</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="composites.html#Composition">Composition</a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Proposition">Proposition</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="composites.html#parallel">parallel</a>
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="composites.html#Pro">Pro</a>(<a href="composites.html#Pose">Pose</a>)
+</font></dt><dd>
+<dl>
 <dt><font face="helvetica, arial"><a href="composites.html#Proposition">Proposition</a>(<a href="composites.html#Pro">Pro</a>, <a href="composites.html#Position">Position</a>)
 </font></dt><dd>
 <dl>
 <dt><font face="helvetica, arial"><a href="composites.html#Composition">Composition</a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Proposition">Proposition</a>)
 </font></dt><dt><font face="helvetica, arial"><a href="composites.html#parallel">parallel</a>
 </font></dt></dl>
+</dd>
+</dl>
 </dd>
 <dt><font face="helvetica, arial"><a href="composites.html#State">State</a>(<a href="builtins.html#object">builtins.object</a>)
 </font></dt><dd>
@@ -190,7 +241,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function concat&gt;, &lt;built-in function ne&gt;, &lt;built-in function sub&gt;, &lt;built-in function imod&gt;, &lt;built-in function contains&gt;, &lt;built-in function mul&gt;, &lt;built-in function is_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function irshift&gt;, &lt;built-in function xor&gt;, &lt;built-in function and_&gt;, &lt;built-in function imul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function gt&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function imul&gt;, '', &lt;built-in function mod&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -237,6 +288,869 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 <dl><dt><a name="Composition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 <dl><dt><a name="Composition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Exposition">class <strong>Exposition</strong></a>(<a href="composites.html#Ex">Ex</a>, <a href="composites.html#Position">Position</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Pass&nbsp;~Null&nbsp;inner&nbsp;function&nbsp;return&nbsp;values&nbsp;as&nbsp;input&nbsp;to&nbsp;the&nbsp;outer&nbsp;function.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Exposition">Exposition</a></dd>
+<dd><a href="composites.html#Ex">Ex</a></dd>
+<dd><a href="composites.html#Pose">Pose</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Position">Position</a></dd>
+<dd><a href="composites.html#Append">Append</a></dd>
+<dd><a href="composites.html#Conditions">Conditions</a></dd>
+<dd><a href="composites.html#Attributes">Attributes</a></dd>
+<dd><a href="composites.html#Symbols">Symbols</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Ex">Ex</a>:<br>
+<dl><dt><a name="Exposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><a name="Exposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Exposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exceptions=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>inner</strong></dt>
+</dl>
+<dl><dt><strong>outer</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Exposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Exposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Append">Append</a>:<br>
+<dl><dt><a name="Exposition-__getitem__"><strong>__getitem__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
+<dl><dt><a name="Exposition-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Exposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Exposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Exposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Exposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Exposition-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><a name="Exposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Exposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
+
+<dl><dt><a name="Exposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
+
+<dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
+<dl><dt><a name="Exposition-__add__"><strong>__add__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-__mul__"><strong>__mul__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rmul__"><strong>__rmul__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rshift__"><strong>__rshift__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Exposition-__sub__"><strong>__sub__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+
+<dl><dt><a name="Exposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Exposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Imposition">class <strong>Imposition</strong></a>(<a href="composites.html#Im">Im</a>, <a href="composites.html#Position">Position</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Evaluate&nbsp;the&nbsp;other&nbsp;outer&nbsp;function&nbsp;is&nbsp;the&nbsp;inner&nbsp;function&nbsp;is&nbsp;Null.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Imposition">Imposition</a></dd>
+<dd><a href="composites.html#Im">Im</a></dd>
+<dd><a href="composites.html#Pose">Pose</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Position">Position</a></dd>
+<dd><a href="composites.html#Append">Append</a></dd>
+<dd><a href="composites.html#Conditions">Conditions</a></dd>
+<dd><a href="composites.html#Attributes">Attributes</a></dd>
+<dd><a href="composites.html#Symbols">Symbols</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Im">Im</a>:<br>
+<dl><dt><a name="Imposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><a name="Imposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Imposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exceptions=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>inner</strong></dt>
+</dl>
+<dl><dt><strong>outer</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Imposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Imposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Append">Append</a>:<br>
+<dl><dt><a name="Imposition-__getitem__"><strong>__getitem__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
+<dl><dt><a name="Imposition-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Imposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Imposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Imposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Imposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Imposition-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><a name="Imposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Imposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
+
+<dl><dt><a name="Imposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
+
+<dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
+<dl><dt><a name="Imposition-__add__"><strong>__add__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-__mul__"><strong>__mul__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rmul__"><strong>__rmul__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rshift__"><strong>__rshift__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Imposition-__sub__"><strong>__sub__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+
+<dl><dt><a name="Imposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Imposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Juxtaposition">class <strong>Juxtaposition</strong></a>(<a href="composites.html#Juxt">Juxt</a>, <a href="composites.html#Position">Position</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Pass&nbsp;arguments&nbsp;to&nbsp;all&nbsp;callables&nbsp;in&nbsp;all&nbsp;iterables.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Juxtaposition">Juxtaposition</a></dd>
+<dd><a href="composites.html#Juxt">Juxt</a></dd>
+<dd><a href="composites.html#Pose">Pose</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Position">Position</a></dd>
+<dd><a href="composites.html#Append">Append</a></dd>
+<dd><a href="composites.html#Conditions">Conditions</a></dd>
+<dd><a href="composites.html#Attributes">Attributes</a></dd>
+<dd><a href="composites.html#Symbols">Symbols</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Juxt">Juxt</a>:<br>
+<dl><dt><a name="Juxtaposition-__call__"><strong>__call__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__init__"><strong>__init__</strong></a>(self, outer=None, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Static methods inherited from <a href="composites.html#Juxt">Juxt</a>:<br>
+<dl><dt><a name="Juxtaposition-__new__"><strong>__new__</strong></a>(cls, object=None, **kwargs)</dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><a name="Juxtaposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>inner</strong></dt>
+</dl>
+<dl><dt><strong>outer</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Juxtaposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Append">Append</a>:<br>
+<dl><dt><a name="Juxtaposition-__getitem__"><strong>__getitem__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
+<dl><dt><a name="Juxtaposition-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><a name="Juxtaposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Juxtaposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
+
+<dl><dt><a name="Juxtaposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
+
+<dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
+<dl><dt><a name="Juxtaposition-__add__"><strong>__add__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__mul__"><strong>__mul__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rmul__"><strong>__rmul__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rshift__"><strong>__rshift__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__sub__"><strong>__sub__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Juxtaposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Operation">class <strong>Operation</strong></a>(<a href="composites.html#Lambda">Lambda</a>, <a href="composites.html#Operate">Operate</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Evaluate&nbsp;the&nbsp;outer&nbsp;callable&nbsp;if&nbsp;the&nbsp;inner&nbsp;callable&nbsp;is&nbsp;~Null.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Operation">Operation</a></dd>
+<dd><a href="composites.html#Lambda">Lambda</a></dd>
+<dd><a href="composites.html#Operate">Operate</a></dd>
+<dd><a href="composites.html#Proposition">Proposition</a></dd>
+<dd><a href="composites.html#Pro">Pro</a></dd>
+<dd><a href="composites.html#Pose">Pose</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Position">Position</a></dd>
+<dd><a href="composites.html#Append">Append</a></dd>
+<dd><a href="composites.html#Conditions">Conditions</a></dd>
+<dd><a href="composites.html#Attributes">Attributes</a></dd>
+<dd><a href="composites.html#Symbols">Symbols</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Operation-append"><strong>append</strong></a>(self, object)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
+<dl><dt><a name="Operation-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Lambda">Lambda</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Operate">Operate</a>:<br>
+<dl><dt><a name="Operation-__abs__"><strong>__abs__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__add__"><strong>__add__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__eq__"><strong>__eq__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__ge__"><strong>__ge__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__getattr__"><strong>__getattr__</strong></a>(self, object)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+
+<dl><dt><a name="Operation-__getitem__"><strong>__getitem__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__gt__"><strong>__gt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__init__"><strong>__init__</strong></a>(self, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Operation-__le__"><strong>__le__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__lt__"><strong>__lt__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__mod__"><strong>__mod__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__mul__"><strong>__mul__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__ne__"><strong>__ne__</strong></a> = _method(self, *args)</dt></dl>
+
+<dl><dt><a name="Operation-__neg__"><strong>__neg__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__pos__"><strong>__pos__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__pow__"><strong>__pow__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__radd__"><strong>__radd__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rfloordiv__"><strong>__rfloordiv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rmod__"><strong>__rmod__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rmul__"><strong>__rmul__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rsub__"><strong>__rsub__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(self, left)</dt></dl>
+
+<dl><dt><a name="Operation-__sub__"><strong>__sub__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__truediv__"><strong>__truediv__</strong></a> = _method(self, arg=None, partial=&lt;class 'composites.partial_object'&gt;)</dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Operate">Operate</a>:<br>
+<dl><dt><strong>__annotations__</strong> = {}</dl>
+
+<dl><dt><strong>__wrapped__</strong> = None</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pro">Pro</a>:<br>
+<dl><dt><a name="Operation-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><a name="Operation-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>inner</strong></dt>
+</dl>
+<dl><dt><strong>outer</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Operation-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Operation-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Operation-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
+<dl><dt><a name="Operation-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Operation-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operation-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operation-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Operation-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Operation-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Operation-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Operation-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><a name="Operation-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Operation-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
+
+<dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
+<dl><dt><a name="Operation-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Operation-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Operation-__rshift__"><strong>__rshift__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Operation-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+
+<dl><dt><a name="Operation-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Proposition">class <strong>Proposition</strong></a>(<a href="composites.html#Pro">Pro</a>, <a href="composites.html#Position">Position</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Evaluate&nbsp;the&nbsp;outer&nbsp;callable&nbsp;if&nbsp;the&nbsp;inner&nbsp;callable&nbsp;is&nbsp;~Null.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Proposition">Proposition</a></dd>
+<dd><a href="composites.html#Pro">Pro</a></dd>
+<dd><a href="composites.html#Pose">Pose</a></dd>
+<dd><a href="composites.html#State">State</a></dd>
+<dd><a href="composites.html#Position">Position</a></dd>
+<dd><a href="composites.html#Append">Append</a></dd>
+<dd><a href="composites.html#Conditions">Conditions</a></dd>
+<dd><a href="composites.html#Attributes">Attributes</a></dd>
+<dd><a href="composites.html#Symbols">Symbols</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#Pro">Pro</a>:<br>
+<dl><dt><a name="Proposition-__call__"><strong>__call__</strong></a>(self, *tuple, **dict)</dt><dd><tt>Call&nbsp;self&nbsp;as&nbsp;a&nbsp;function.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><a name="Proposition-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Proposition-__init__"><strong>__init__</strong></a>(self, inner=None, outer=None, *, exceptions=None)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#Pose">Pose</a>:<br>
+<dl><dt><strong>exceptions</strong></dt>
+</dl>
+<dl><dt><strong>inner</strong></dt>
+</dl>
+<dl><dt><strong>outer</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><a name="Proposition-__getstate__"><strong>__getstate__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Proposition-__hash__"><strong>__hash__</strong></a>(self)</dt><dd><tt>Return&nbsp;hash(self).</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__setstate__"><strong>__setstate__</strong></a>(self, tuple)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="composites.html#State">State</a>:<br>
+<dl><dt><strong>__signature__</strong> = &lt;Signature (*args, **kwargs)&gt;</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Append">Append</a>:<br>
+<dl><dt><a name="Proposition-__getitem__"><strong>__getitem__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-append"><strong>append</strong></a>(self, object)</dt></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Conditions">Conditions</a>:<br>
+<dl><dt><a name="Proposition-__and__"><strong>__and__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__or__"><strong>__or__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__pow__"><strong>__pow__</strong></a>(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__xor__"><strong>__xor__</strong></a>(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Proposition-excepts"><strong>excepts</strong></a> = __xor__(self, object)</dt><dd><tt>Evaluate&nbsp;a&nbsp;proposition&nbsp;returning&nbsp;exceptions&nbsp;in&nbsp;<a href="builtins.html#object">object</a>.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a&nbsp;*&nbsp;range&nbsp;^&nbsp;TypeError<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;==&nbsp;range(10)&nbsp;and&nbsp;isinstance(f('string'),&nbsp;TypeError)</tt></dd></dl>
+
+<dl><dt><a name="Proposition-ifnot"><strong>ifnot</strong></a> = __or__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;False.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;|&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;f(10)&nbsp;is&nbsp;10&nbsp;and&nbsp;f(0)&nbsp;==&nbsp;range(0)</tt></dd></dl>
+
+<dl><dt><a name="Proposition-ifthen"><strong>ifthen</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Proposition-instance"><strong>instance</strong></a> = __pow__(self, object)</dt><dd><tt>#&nbsp;Lambda&nbsp;initializes&nbsp;propositions.<br>
+#&nbsp;The&nbsp;[*]positions&nbsp;are&nbsp;defined&nbsp;later.</tt></dd></dl>
+
+<dl><dt><a name="Proposition-then"><strong>then</strong></a> = __and__(self, object)</dt><dd><tt>Evaluate&nbsp;<a href="builtins.html#object">object</a>&nbsp;if&nbsp;the&nbsp;current&nbsp;proposition&nbsp;is&nbsp;True.<br>
+&nbsp;<br>
+&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;a[bool]&nbsp;&amp;&nbsp;range<br>
+&gt;&gt;&gt;&nbsp;assert&nbsp;not&nbsp;f(0)&nbsp;and&nbsp;f(10)&nbsp;==&nbsp;range(10)</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><a name="Proposition-__dir__"><strong>__dir__</strong></a>(self)</dt><dd><tt><a href="#Proposition-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
+default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
+
+<dl><dt><a name="Proposition-__getattr__"><strong>__getattr__</strong></a>(self, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;self.<strong>shortcuts</strong></tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
+
+<dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
+
+<hr>
+Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
+<dl><dt><a name="Proposition-__add__"><strong>__add__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-__floordiv__"><strong>__floordiv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-__lshift__"><strong>__lshift__</strong></a>(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-__matmul__"><strong>__matmul__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-__mod__"><strong>__mod__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-__mul__"><strong>__mul__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-__radd__"><strong>__radd__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rgetitem__"><strong>__rgetitem__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rlshift__"><strong>__rlshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rmul__"><strong>__rmul__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rrshift__"><strong>__rrshift__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rshift__"><strong>__rshift__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-__rsub__"><strong>__rsub__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(right, left)</dt></dl>
+
+<dl><dt><a name="Proposition-__sub__"><strong>__sub__</strong></a> = _append_(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-__truediv__"><strong>__truediv__</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-do"><strong>do</strong></a> = __lshift__(self, object)</dt></dl>
+
+<dl><dt><a name="Proposition-filter"><strong>filter</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-groupby"><strong>groupby</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-map"><strong>map</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
+
+<dl><dt><a name="Proposition-reduce"><strong>reduce</strong></a> = _method(self, object=None, *, partial=&lt;class 'functools.partial'&gt;)</dt></dl>
 
 </td></tr></table> <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -540,7 +1454,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function concat&gt;, &lt;built-in function ne&gt;, &lt;built-in function sub&gt;, &lt;built-in function imod&gt;, &lt;built-in function contains&gt;, &lt;built-in function mul&gt;, &lt;built-in function is_&gt;, &lt;built-in function sub&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function irshift&gt;, &lt;built-in function xor&gt;, &lt;built-in function and_&gt;, &lt;built-in function imul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function gt&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function imul&gt;, '', &lt;built-in function mod&gt;, ...]}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;), &lt;class 'composites.partial_object'&gt;: [&lt;function fnmatch&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function lshift&gt;, {'ArithmeticError': &lt;class 'ArithmeticError'&gt;, 'AssertionError': &lt;class 'AssertionError'&gt;, 'AttributeError': &lt;class 'AttributeError'&gt;, 'BaseException': &lt;class 'BaseException'&gt;, 'BlockingIOError': &lt;class 'BlockingIOError'&gt;, 'BrokenPipeError': &lt;class 'BrokenPipeError'&gt;, 'BufferError': &lt;class 'BufferError'&gt;, 'BytesWarning': &lt;class 'BytesWarning'&gt;, 'ChildProcessError': &lt;class 'ChildProcessError'&gt;, 'ConnectionAbortedError': &lt;class 'ConnectionAbortedError'&gt;, ...}, &lt;built-in function delitem&gt;, &lt;built-in function setitem&gt;, &lt;built-in function ipow&gt;, &lt;built-in function getitem&gt;, &lt;built-in function is_&gt;, &lt;built-in function inv&gt;, &lt;built-in function truth&gt;, &lt;built-in function is_not&gt;, &lt;built-in function floordiv&gt;, &lt;built-in function sub&gt;, &lt;built-in function index&gt;, &lt;built-in function inv&gt;, &lt;built-in function floordiv&gt;, 'operator', &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, ...]}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -687,6 +1601,68 @@ In&nbsp;either&nbsp;case,&nbsp;this&nbsp;is&nbsp;followed&nbsp;by:&nbsp;for&nbsp
 Data and other attributes inherited from <a href="builtins.html#dict">builtins.dict</a>:<br>
 <dl><dt><strong>__hash__</strong> = None</dl>
 
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Ø">class <strong>Ø</strong></a>(<a href="builtins.html#BaseException">builtins.BaseException</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Common&nbsp;base&nbsp;class&nbsp;for&nbsp;all&nbsp;exceptions<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="composites.html#Ø">Ø</a></dd>
+<dd><a href="builtins.html#BaseException">builtins.BaseException</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Ø-__bool__"><strong>__bool__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><a name="Ø-__delattr__"><strong>__delattr__</strong></a>(self, name, /)</dt><dd><tt>Implement&nbsp;delattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="Ø-__getattribute__"><strong>__getattribute__</strong></a>(self, name, /)</dt><dd><tt>Return&nbsp;getattr(self,&nbsp;name).</tt></dd></dl>
+
+<dl><dt><a name="Ø-__init__"><strong>__init__</strong></a>(self, /, *args, **kwargs)</dt><dd><tt>Initialize&nbsp;self.&nbsp;&nbsp;See&nbsp;help(type(self))&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Ø-__new__"><strong>__new__</strong></a>(*args, **kwargs)<font color="#909090"><font face="helvetica, arial"> from <a href="builtins.html#type">builtins.type</a></font></font></dt><dd><tt>Create&nbsp;and&nbsp;return&nbsp;a&nbsp;new&nbsp;<a href="builtins.html#object">object</a>.&nbsp;&nbsp;See&nbsp;help(type)&nbsp;for&nbsp;accurate&nbsp;signature.</tt></dd></dl>
+
+<dl><dt><a name="Ø-__reduce__"><strong>__reduce__</strong></a>(...)</dt><dd><tt>helper&nbsp;for&nbsp;pickle</tt></dd></dl>
+
+<dl><dt><a name="Ø-__repr__"><strong>__repr__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;repr(self).</tt></dd></dl>
+
+<dl><dt><a name="Ø-__setattr__"><strong>__setattr__</strong></a>(self, name, value, /)</dt><dd><tt>Implement&nbsp;setattr(self,&nbsp;name,&nbsp;value).</tt></dd></dl>
+
+<dl><dt><a name="Ø-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="Ø-__str__"><strong>__str__</strong></a>(self, /)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="Ø-with_traceback"><strong>with_traceback</strong></a>(...)</dt><dd><tt>Exception.<a href="#Ø-with_traceback">with_traceback</a>(tb)&nbsp;--<br>
+set&nbsp;self.<strong>__traceback__</strong>&nbsp;to&nbsp;tb&nbsp;and&nbsp;return&nbsp;self.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="builtins.html#BaseException">builtins.BaseException</a>:<br>
+<dl><dt><strong>__cause__</strong></dt>
+<dd><tt>exception&nbsp;cause</tt></dd>
+</dl>
+<dl><dt><strong>__context__</strong></dt>
+<dd><tt>exception&nbsp;context</tt></dd>
+</dl>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>__suppress_context__</strong></dt>
+</dl>
+<dl><dt><strong>__traceback__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
 </td></tr></table></td></tr></table><p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
 <tr bgcolor="#55aa55">
@@ -694,7 +1670,7 @@ Data and other attributes inherited from <a href="builtins.html#dict">builtins.d
 <font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
     
 <tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
-<td width="100%"><strong>__all__</strong> = ('a', 'an', 'the', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Composition')<br>
+<td width="100%"><strong>__all__</strong> = ('a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', ...)<br>
 <strong>__test__</strong> = {'gold': '<font color="#c040c0">\n</font>    &gt;&gt;&gt; g = a**str*[[str.upper]]|a**int*range|a...0), float]<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert copy(g).type()({}) is Ø', 'juxt': '<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert juxt[range](10) == [range(10)]<font color="#c040c0">\n</font> ...) and isinstance(Juxtaposition(tuple())(), tuple)', 'simple': '&gt;&gt;&gt; assert simple[range](10) == range(10)<font color="#c040c0">\n</font>    &gt;&gt;...turn range(x)<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert thang[len](10) is 10'}<br>
 <strong>a</strong> = []^[&lt;class 'composites.Proposition'&gt;]<br>
 <strong>an</strong> = []^[&lt;class 'composites.Proposition'&gt;]<br>
@@ -702,6 +1678,7 @@ Data and other attributes inherited from <a href="builtins.html#dict">builtins.d
 <strong>juxt</strong> = []^[&lt;class 'composites.Juxtaposition'&gt;]<br>
 <strong>op</strong> = [[]^[]]^[&lt;class 'composites.Operate'&gt;]<br>
 <strong>preview</strong> = []^[&lt;class 'composites.Preview'&gt;]<br>
+<strong>simple</strong> = []^[&lt;class 'composites.Proposition'&gt;]<br>
 <strong>star</strong> = []^[&lt;class 'composites.Star'&gt;]<br>
 <strong>the</strong> = []^[&lt;class 'composites.Proposition'&gt;]<br>
 <strong>x</strong> = [[]^[]]^[&lt;class 'composites.Operate'&gt;]</td></tr></table>
