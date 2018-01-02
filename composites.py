@@ -57,21 +57,38 @@ dunder = '__{}__'.format
 __all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition'
 
 
+binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift'
+boolop = 'gt', 'ge', 'le', 'lt', 'eq', 'ne'
+nop = 'abs', 'pos', 'neg', 'pow'
+
+
 # Composing function strictly through the Python datamodel.
 
-def call(object, *tuple, exceptions=None, **dict):
-    """(a**callable)|identity(a**callable)|identity"""
-    if callable(object):
-        if Exception:
-            object = excepts(Exception, object, identity)
-        return object(*tuple, **dict)
-    return object
+def call(object, *tuple, Exception=None, **dict):
+    """Call the object with an argument tuple, a keyword dict, and E
+
+    >>> assert call(10) is 10
+    >>> assert call(range, 10, 20) == range(10, 20)"""
+    return (
+        excepts(Exception, object, identity) if Exception else object
+    )(*tuple, **dict) if callable(object) else object
 
 
-def null(*args, **kwargs): return args[0] if args else None
+def null(*tuple, **dict):
+    """A null/identity function that returns the first arguments if it exists.
+
+    >>> assert not null(**dict(foo=42))
+    >>> assert null(10, 20, dict(foo=42)) is 10
+    """
+    return tuple[0] if tuple else None
 
 
-class partial_object(partial):
+class Self(partial):
+    """Supply partial arguments to objects.
+
+    >>> assert Self(str.replace, 'a', 'b')('abc') == 'bbc'
+    """
+
     def __call__(
         self,
         object): return self.func(
@@ -81,6 +98,8 @@ class partial_object(partial):
 
 
 class State:
+    """State attributes for pickling and copying propositions."""
+
     def __hash__(self): return hash(map(hash, self))
 
     def __getstate__(self):
@@ -96,6 +115,10 @@ class State:
 
 
 class flip(State):
+    """Flip the argument of a callable.
+
+    >>> assert flip(range)(20, 10) == range(10, 20)
+    """
     __slots__ = 'callable',
 
     def __init__(self, callable): self.callable = callable
@@ -103,13 +126,6 @@ class flip(State):
     def __call__(self, *
                  tuple, **dict): return call(self.callable, *
                                              reversed(tuple), **dict)
-
-
-class Ø(BaseException):
-    def __bool__(self): return False
-
-
-Null = Ø
 
 
 class Outer(State):
@@ -149,20 +165,35 @@ class Inner(Outer):
         return object if object else Null(self.callable)
 
 
+class Ø(BaseException):
+    """An Inner callable may return a Ø Exception."""
+
+    def __bool__(self): return False
+
+
+Null = Ø
+
+
 def _is_isinstance(object):
-    """Prepare types and types as isinstance functions"""
+    """Prepare types and types as isinstance functions.
+
+    >>> assert _is_isinstance(int)(10) and not _is_isinstance(int)('10')
+    """
     if isinstance(object, type) and object is not bool:
         object = object,
     if isinstance(object, tuple):
-        object = partial_object(isinstance, object)
+        object = Self(isinstance, object)
     return object
 
 
 class Pose(State):
-    __slots__ = 'inner', 'outer', 'exceptions'
+    """Pose a complex function with Inner and Outer callable. The Outer callable may accept exceptions.
+    Pose is combined with the prefixes Pro, Ex, Im, and Juxt to evaluate inner call methods.
+    """
+    __slots__ = 'Inner', 'Outer', 'Exception'
     _repr_token_ = '^'
 
-    def __init__(self, inner=None, outer=None, *, exceptions=None):
+    def __init__(self, inner=None, outer=None, *, exception=None):
         inner = _is_isinstance(inner)
         if inner is not None and not isiterable(
                 inner) or isinstance(inner, Pose):
@@ -174,46 +205,49 @@ class Pose(State):
                     object) or isinstance(object, Pose):
                 locals()[name] = [object]
 
-        self.inner, self.outer = Inner(inner), Outer(outer)
-        self.exceptions = exceptions
+        self.Inner, self.Outer = Inner(inner), Outer(outer)
+        self.Exception = exception
 
-    def __bool__(self): return bool(self.outer)
+    def __bool__(self): return bool(self.Outer)
 
     def __repr__(self): return self._repr_token_.join(
-        map(repr, (self.inner, self.outer)))
+        map(repr, (self.Inner, self.Outer)))
 
     def __call__(self, *tuple, **dict):
         return call(
-            self.outer,
+            self.Outer,
             *tuple,
             **dict,
-            exceptions=dict.pop(
-                'exceptions',
-                self.exceptions))
+            Exception=dict.pop(
+                'Exception',
+                self.Exception))
 
 
 class Juxt(Pose):
     """Juxtapose arguments cross callables."""
-    def __new__(cls, object=None, **kwargs):
-        if object is None:
-            object = list()
+
+    def __new__(self, object=None, **dict):
+        """Juxtapose is used generically to iterate through Sequences and Mappings. The
+        new method returns callables and initializes everything else.  When called, Juxt
+        will return an object with the same type as Juxt.Outer.
+        """
         if callable(object):
             return object
+        if object is None:
+            object = list()
         if isiterable(object) and not isinstance(object, str):
-            self = super().__new__(cls)
-            return self.__init__(**kwargs) or self
+            self = super().__new__(self)
+            return self.__init__(**dict) or self
         return object
 
-    def __init__(self,
-                 outer=None,
-                 **kwargs): super().__init__(outer=outer,
-                                             **kwargs)
+    def __init__(self, outer=None, **
+                 dict): super().__init__(outer=outer, **dict)
 
     def __call__(self, *args, **kwargs):
-        iter = (call(callable, *args, **kwargs) for callable in self.outer)
+        iter = (call(callable, *args, **kwargs) for callable in self.Outer)
         return type(
-            self.outer.callable)(iter) if isinstance(
-            self.outer.callable,
+            self.Outer.callable)(iter) if isinstance(
+            self.Outer.callable,
             Sized) else iter
 
 
@@ -223,8 +257,8 @@ class Pro(Pose):
     """Propose a non-null inner condition then evaluate the outer function."""
 
     def __call__(self, *tuple, **dict):
-        object = self.inner(*tuple, **dict)
-        if self.outer:
+        object = self.Inner(*tuple, **dict)
+        if self.Outer:
             return object if isinstance(
                 object, Null) else super().__call__(
                 *tuple, **dict)
@@ -238,7 +272,7 @@ class Ex(Pose):
     _repr_token_ = '&'
 
     def __call__(self, *tuple, **dict):
-        object = self.inner(*tuple, **dict)
+        object = self.Inner(*tuple, **dict)
         if object is True:
             object = null(*tuple, **dict)
         return object if isinstance(object, Null) else super().__call__(object)
@@ -249,56 +283,39 @@ class Im(Pose):
     _repr_token_ = '|'
 
     def __call__(self, *tuple, **dict):
-        object = self.inner(*tuple, **dict)
+        object = self.Inner(*tuple, **dict)
         if object is True:
             object = null(*tuple, **dict)
         return super().__call__(*tuple, **dict) if isinstance(object, Null) else object
 
 
-def _partial_(self, object):
-    tuple, dict = getattr(self, 'args', []), getattr(self, 'kwargs', {})
-    return partial(object, *tuple, **dict) if tuple or dict else object
+def _inner_(self): return [] if isinstance(self, Lambda) else [self]
 
 
 class Conditions:
     # Lambda initializes propositions.
     # The [*]positions are defined later.
-    def __pow__(self, object):
-        # Sugar for isinstance implementations.
-        return Proposition(inner=([] if isinstance(self, Lambda) else [
-                           self]) + [_is_isinstance(object)])
+    def __pow__(self, object): return Proposition(
+        inner=_inner_(self) + [_is_isinstance(object)])
 
-    def __and__(self, object):
-        """Evaluate object if the current proposition is True.
+    def __and__(
+        self,
+        object): return Exposition(
+        inner=_inner_(self),
+        outer=[object])
 
-        >>> f = a[bool] & range
-        >>> assert not f(0) and f(10) == range(10)
-        """
-        return Exposition(
-            inner=[] if isinstance(
-                self,
-                Lambda) else [self],
-            outer=[object])
+    def __or__(
+        self,
+        object): return Imposition(
+        inner=_inner_(self),
+        outer=[object])
 
-    def __or__(self, object):
-        """Evaluate object if the current proposition is False.
-
-        >>> f = a[bool] | range
-        >>> assert f(10) is 10 and f(0) == range(0)
-        """
-        return Imposition(
-            inner=[] if isinstance(
-                self,
-                Lambda) else [self],
-            outer=[object])
-
-    def __xor__(self, object):
-        """Evaluate a proposition returning exceptions in object.
-
-        >>> f = a * range ^ TypeError
-        >>> assert f(10) == range(10) and isinstance(f('string'), TypeError)
-        """
-        return setattr(self, 'exceptions', object) or self
+    def __xor__(
+        self,
+        object): return setattr(
+        self,
+        'exceptions',
+        object) or self
 
     then = __and__
     ifnot = __or__
@@ -308,9 +325,7 @@ class Conditions:
 
 class __getattr__(object):
     def __init__(self, object, callable=None, parent=None):
-        self.object = object
-        self.callable = callable
-        self.parent = parent
+        self.object, self.callable, self.parent = object, callable, parent
 
     def __getattr__(self, object):
         parent = self.callable
@@ -342,7 +357,7 @@ class __getattr__(object):
                 object = partial(
                     isinstance(
                         parent,
-                        type) and partial_object or partial,
+                        type) and Self or partial,
                     object)
 
         # Wrap the new object for interaction
@@ -366,7 +381,7 @@ class __getattr__(object):
     def __dir__(self):
         if not self.callable or isinstance(self, Attributes):
             base = (
-                list(filter(partial_object(complement(str.__contains__), '.'), sys.modules.keys()))
+                list(filter(Self(complement(str.__contains__), '.'), sys.modules.keys()))
                 + list(concat(dir(__import__(module)) for module in Attributes.shortcuts)))
         else:
             base = dir(self.callable)
@@ -388,19 +403,17 @@ class Attributes:
     def __dir__(self): return dir(__getattr__(self))
 
 
-Attributes.decorators[partial_object] = [__import__('fnmatch').fnmatch]
+Attributes.decorators[Self] = [__import__('fnmatch').fnmatch]
 Attributes.decorators[call] = operator.attrgetter(
     'attrgetter', 'itemgetter', 'methodcaller')(operator)
-Attributes.decorators[partial_object] += [item for item in vars(
+Attributes.decorators[Self] += [item for item in vars(
     operator).values() if item not in Attributes.decorators[call]]
 
 
-def _append_(self, object): return self.append(object)
-
-
 class Append:
-    def append(self, object): return self.outer.callable.append(object) or self
-    __getitem__ = _append_
+    def append(self, object): return self.Outer.callable.append(object) or self
+
+    def __getitem__(self, object): return self.append(object)
 
 
 class Symbols:
@@ -413,7 +426,7 @@ class Symbols:
     >>> assert copy(a%range) == a.reduce(range)
     """
 
-    def _left(self, callable, object=None, partial=partial_object):
+    def _left(self, callable, object=None, partial=Self):
         return self.append(
             callable if object is None else partial(
                 callable, object))
@@ -425,20 +438,20 @@ class Symbols:
     __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
     __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
     __matmul__ = groupby = partialmethod(_left, groupby, partial=partial)
-    __add__ = __mul__ = __sub__ = __rshift__ = _append_
+    __add__ = __mul__ = __sub__ = __rshift__ = Append.__getitem__
 
     def __lshift__(self, object): return self.append(Do(object))
     do = __lshift__
 
 
-for attr in ['add', 'sub', 'mul', 'truediv', 'getitem', 'rshift', 'lshift']:
+list(
     setattr(
         Symbols,
         '__r' +
         dunder(attr).lstrip('__'),
         partialmethod(
             Symbols._right,
-            attr))
+            attr)) for attr in binop)
 
 
 # # Juxtapositions
@@ -467,7 +480,9 @@ IfThen, IfNot = Exposition, Imposition
 
 
 class Lambda:
-    def append(self, object): return self().append(_partial_(self, object))
+    def append(self, object):
+        tuple, dict = getattr(self, 'args', []), getattr(self, 'kwargs', {})
+        return self().append(partial(object, *tuple, **dict) if tuple or dict else object)
 
     def __bool__(self): return False
 
@@ -490,34 +505,25 @@ a = an = the = simple = λ = Simple(outer=[Proposition])
 juxt = juxtaposition = Simple(outer=[Juxtaposition])
 
 
-binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'getitem'
-boolop = 'gt', 'ge', 'le', 'lt', 'eq', 'ne'
-nop = 'abs', 'pos', 'neg', 'pow'
-
-
 class Operate(Proposition):
     __wrapped__ = None
     __annotations__ = {}
 
     def __init__(self, *args, **kwargs):
-        super().__init__(kwargs.pop('inner', Juxtaposition()), *args, **kwargs)
+        super().__init__(None, *args, **kwargs)
+        self.__qualname__ = '.'.join((__name__, type(self).__name__))
 
-    def _left(self, callable, arg=None, partial=partial_object):
+    def _left(self, callable, arg=None, partial=Self):
         return self.append(partial(callable, arg))
 
     def _right(self, callable, left):
         return Operate._left(Operate(), callable, left, partial=partial)
 
     def _bool(self, callable, *args):
-        return Operate(inner=[partial_object(callable, *args)], outer=[self])
-
-    def __getattr__(self, object):
-        if object == dunder('qualname'):
-            return '.'.join((__name__, type(self).__name__))
-        return self._left(getattr, object, )
+        return Operate(inner=[Self(callable, *args)], outer=[self])
 
 
-for attr in binop:
+for attr in binop + ('getitem',):
     op, rop = getattr(operator, attr), '__r' + dunder(attr).lstrip('__')
     setattr(Operate, dunder(attr), partialmethod(Operate._left, op))
     setattr(Operate, rop, partialmethod(Operate._right, op))
@@ -545,6 +551,7 @@ pass
 
 class Operation(Lambda, Operate):
     def append(self, object): return self().append(object)
+    __qualname__ = 'Operation'
 
 
 x = op = Operation(outer=[Operate])
@@ -647,6 +654,8 @@ if __name__ == '__main__':
                 width=800))
         __import__('doctest').testmod()
         get_ipython().system('ipython -m doctest  composites.py')
+        get_ipython().system('python -m pydoc -w composites')
+
         get_ipython().system('autopep8 --in-place --aggressive --aggressive composites.py')
         get_ipython().system('flake8 composites.py --ignore E501,E704,W503')
     else:
