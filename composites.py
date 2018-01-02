@@ -70,7 +70,7 @@ def call(object, *tuple, Exception=None, **dict):
     >>> assert call(10) is 10
     >>> assert call(range, 10, 20) == range(10, 20)"""
     return (
-        excepts(Exception, object, identity) if Exception else object
+        Exception and excepts(Exception, object, identity) or object
     )(*tuple, **dict) if callable(object) else object
 
 
@@ -140,10 +140,9 @@ class Outer(State):
             tuple, dict = (call(callable, *tuple, **dict),), {}
         return null(*tuple, **dict)
 
-    def __len__(x): return len(
-        x.callable) if isinstance(
-        x.callable,
-        Sized) else 0
+    def __len__(x): return isinstance(
+        x.callable, Sized) and len(
+        x.callable) or 0
 
     def __repr__(x): return repr(x.callable)
 
@@ -151,20 +150,17 @@ class Outer(State):
 
 
 class Inner(Outer):
-    def __iter__(x):
-        yield from x.callable and super().__iter__() or (True,)
+    def __iter__(x): yield from x.callable and super().__iter__() or (True,)
 
     def __call__(x, *tuple, **dict):
-        object = super().__call__(*tuple, **dict)
-        return object if object else Null(x.callable)
+        return super().__call__(*tuple, **dict) or Ø(x.callable)
 
 
 class Ø(BaseException):
     """An Inner callable may return a Ø Exception."""
     def __bool__(x): return False
 
-
-Null = Ø
+    def __invert__(x): return True
 
 
 def _is_isinstance(object):
@@ -248,36 +244,36 @@ class Pro(Pose):
         object = x.Inner(*tuple, **dict)
         if x.Outer:
             return object if isinstance(
-                object, Null) else super().__call__(
+                object, Ø) else super().__call__(
                 *tuple, **dict)
 
         # If there is not outer function return a boolean.
-        return not isinstance(object, Null)
+        return not isinstance(object, Ø)
 
 
 class Ex(Pose):
-    """Pipe non-null inner return values to the outer callable."""
+    """Pipe ~Ø inner return values to the outer callable."""
     _repr_token_ = '&'
 
     def __call__(x, *tuple, **dict):
         object = x.Inner(*tuple, **dict)
         if object is True:
             object = null(*tuple, **dict)
-        return object if isinstance(object, Null) else super().__call__(object)
+        return object if isinstance(object, Ø) else super().__call__(object)
 
 
 class Im(Pose):
-    """If the inner function is Null evaluate the outer function."""
+    """If the inner function is Ø evaluate the outer function."""
     _repr_token_ = '|'
 
     def __call__(x, *tuple, **dict):
         object = x.Inner(*tuple, **dict)
         if object is True:
             object = null(*tuple, **dict)
-        return super().__call__(*tuple, **dict) if isinstance(object, Null) else object
+        return super().__call__(*tuple, **dict) if isinstance(object, Ø) else object
 
 
-def _inner_(x): return [] if isinstance(x, Lambda) else [x]
+def _inner_(x): return [] if isinstance(x, Λ) else [x]
 
 
 class Conditions:
@@ -429,19 +425,20 @@ list(
 # # Juxtapositions
 
 class Position(Append, Conditions, Attributes, Symbols):
-    ...
+    """Composition methods for establishing Positions using __magic__ Python methods.
+    """
 
 
 class Proposition(Pro, Position):
-    """Evaluate the outer callable if the inner callable is ~Null."""
+    """Evaluate the outer callable if the inner callable is ~Ø."""
 
 
 class Exposition(Ex, Position):
-    """Pass ~Null inner function return values as input to the outer function."""
+    """Pass ~Ø inner function return values as input to the outer function."""
 
 
 class Imposition(Im, Position):
-    """Evaluate the other outer function is the inner function is Null."""
+    """Evaluate the other outer function is the inner function is Ø."""
 
 
 class Juxtaposition(Juxt, Position):
@@ -451,7 +448,8 @@ class Juxtaposition(Juxt, Position):
 IfThen, IfNot = Exposition, Imposition
 
 
-class Lambda:
+class Λ:
+    """A new """
     def append(x, object):
         tuple, dict = getattr(x, 'args', []), getattr(x, 'kwargs', {})
         return x().append(partial(object, *tuple, **dict) if tuple or dict else object)
@@ -459,7 +457,7 @@ class Lambda:
     def __bool__(x): return False
 
 
-class Composition(Lambda, Proposition):
+class Composition(Λ, Proposition):
     __slots__ = Pose.__slots__ + ('args', 'kwargs')
 
 
@@ -522,7 +520,7 @@ list(
 pass
 
 
-class Operation(Lambda, Operate):
+class Operation(Λ, Operate):
     def append(x, object): return x().append(object)
     __qualname__ = 'Operation'
 
