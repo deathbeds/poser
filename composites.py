@@ -287,7 +287,7 @@ class Conditions:
 
     def __or__(x, object): return Imposition(inner=_inner_(x), outer=[object])
 
-    def __xor__(x, object): return setattr(x, 'exceptions', object) or x
+    def __xor__(x, object): return setattr(x, 'Exception', object) or x
 
     then = __and__
     ifnot = __or__
