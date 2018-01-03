@@ -123,7 +123,7 @@
 <font color="#000000" face="helvetica, arial"><a name="Composition">class <strong>Composition</strong></a>(<a href="composites.html#Λ">Λ</a>, <a href="composites.html#Proposition">Proposition</a>)</font></td></tr>
     
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;new<br>&nbsp;</tt></td></tr>
+<td colspan=2><tt>Evaluate&nbsp;the&nbsp;outer&nbsp;callable&nbsp;if&nbsp;the&nbsp;inner&nbsp;callable&nbsp;is&nbsp;~<a href="#Ø">Ø</a>.<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#Composition">Composition</a></dd>
@@ -140,6 +140,10 @@
 <dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
+Methods defined here:<br>
+<dl><dt><a name="Composition-append"><strong>append</strong></a>(x, object)</dt></dl>
+
+<hr>
 Data descriptors defined here:<br>
 <dl><dt><strong>Exception</strong></dt>
 </dl>
@@ -154,8 +158,6 @@ Data descriptors defined here:<br>
 <hr>
 Methods inherited from <a href="composites.html#Λ">Λ</a>:<br>
 <dl><dt><a name="Composition-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
-
-<dl><dt><a name="Composition-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Λ">Λ</a>:<br>
@@ -223,7 +225,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -372,7 +374,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -521,7 +523,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -676,7 +678,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -732,9 +734,7 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 <td colspan=3 valign=bottom>&nbsp;<br>
 <font color="#000000" face="helvetica, arial"><a name="Operation">class <strong>Operation</strong></a>(<a href="composites.html#Λ">Λ</a>, <a href="composites.html#Operate">Operate</a>)</font></td></tr>
     
-<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
-<td colspan=2><tt>A&nbsp;new<br>&nbsp;</tt></td></tr>
-<tr><td>&nbsp;</td>
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#Operation">Operation</a></dd>
 <dd><a href="composites.html#Λ">Λ</a></dd>
@@ -751,12 +751,10 @@ Methods inherited from <a href="composites.html#Symbols">Symbols</a>:<br>
 <dd><a href="builtins.html#object">builtins.object</a></dd>
 </dl>
 <hr>
-Methods defined here:<br>
-<dl><dt><a name="Operation-append"><strong>append</strong></a>(x, object)</dt></dl>
-
-<hr>
 Methods inherited from <a href="composites.html#Λ">Λ</a>:<br>
 <dl><dt><a name="Operation-__bool__"><strong>__bool__</strong></a>(x)</dt></dl>
+
+<dl><dt><a name="Operation-append"><strong>append</strong></a>(x, object)</dt></dl>
 
 <hr>
 Data descriptors inherited from <a href="composites.html#Λ">Λ</a>:<br>
@@ -768,17 +766,19 @@ Data descriptors inherited from <a href="composites.html#Λ">Λ</a>:<br>
 </dl>
 <hr>
 Methods inherited from <a href="composites.html#Operate">Operate</a>:<br>
-<dl><dt><a name="Operation-__abs__"><strong>__abs__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__abs__"><strong>__abs__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__add__"><strong>__add__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__add__"><strong>__add__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__eq__"><strong>__eq__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__floordiv__"><strong>__floordiv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__ge__"><strong>__ge__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__getitem__"><strong>__getitem__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__getattr__"><strong>__getattr__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
+
+<dl><dt><a name="Operation-__getitem__"><strong>__getitem__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__gt__"><strong>__gt__</strong></a> = _method(x, *args)</dt></dl>
 
@@ -786,21 +786,21 @@ Methods inherited from <a href="composites.html#Operate">Operate</a>:<br>
 
 <dl><dt><a name="Operation-__le__"><strong>__le__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__lshift__"><strong>__lshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__lshift__"><strong>__lshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__lt__"><strong>__lt__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__mod__"><strong>__mod__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__mod__"><strong>__mod__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__mul__"><strong>__mul__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__mul__"><strong>__mul__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__ne__"><strong>__ne__</strong></a> = _method(x, *args)</dt></dl>
 
-<dl><dt><a name="Operation-__neg__"><strong>__neg__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__neg__"><strong>__neg__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__pos__"><strong>__pos__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__pos__"><strong>__pos__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__pow__"><strong>__pow__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__pow__"><strong>__pow__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__radd__"><strong>__radd__</strong></a> = _method(x, left)</dt></dl>
 
@@ -816,15 +816,15 @@ Methods inherited from <a href="composites.html#Operate">Operate</a>:<br>
 
 <dl><dt><a name="Operation-__rrshift__"><strong>__rrshift__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__rshift__"><strong>__rshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__rshift__"><strong>__rshift__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <dl><dt><a name="Operation-__rsub__"><strong>__rsub__</strong></a> = _method(x, left)</dt></dl>
 
 <dl><dt><a name="Operation-__rtruediv__"><strong>__rtruediv__</strong></a> = _method(x, left)</dt></dl>
 
-<dl><dt><a name="Operation-__sub__"><strong>__sub__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__sub__"><strong>__sub__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
-<dl><dt><a name="Operation-__truediv__"><strong>__truediv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.Self'&gt;)</dt></dl>
+<dl><dt><a name="Operation-__truediv__"><strong>__truediv__</strong></a> = _method(x, arg=None, partial=&lt;class 'composites.This'&gt;)</dt></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Operate">Operate</a>:<br>
@@ -885,11 +885,9 @@ Methods inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
 <dl><dt><a name="Operation-__dir__"><strong>__dir__</strong></a>(x)</dt><dd><tt><a href="#Operation-__dir__">__dir__</a>()&nbsp;-&gt;&nbsp;list<br>
 default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
-<dl><dt><a name="Operation-__getattr__"><strong>__getattr__</strong></a>(x, attr)</dt><dd><tt>Access&nbsp;attributes&nbsp;from&nbsp;sys.modules&nbsp;or&nbsp;x.shortcuts</tt></dd></dl>
-
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1006,7 +1004,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 
@@ -1344,7 +1342,7 @@ default&nbsp;dir()&nbsp;implementation</tt></dd></dl>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#Attributes">Attributes</a>:<br>
-<dl><dt><strong>decorators</strong> = {&lt;class 'composites.Self'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function delitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function imod&gt;, &lt;built-in function itruediv&gt;, &lt;_frozen_importlib_external.SourceFileLoader object&gt;, &lt;built-in function irshift&gt;, &lt;built-in function truth&gt;, &lt;built-in function pos&gt;, &lt;built-in function le&gt;, &lt;built-in function isub&gt;, &lt;built-in function setitem&gt;, &lt;built-in function imatmul&gt;, "Operator interface.<font color="#c040c0">\n\n</font>This module exports a set o... trailing<font color="#c040c0">\n</font>'__' are also provided for convenience.", &lt;built-in function iand&gt;, &lt;built-in function imatmul&gt;, &lt;built-in function ipow&gt;, &lt;built-in function ilshift&gt;, &lt;built-in function index&gt;, &lt;built-in function truediv&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
+<dl><dt><strong>decorators</strong> = {&lt;class 'composites.This'&gt;: [&lt;function fnmatch&gt;, &lt;built-in function le&gt;, &lt;built-in function iadd&gt;, &lt;built-in function itruediv&gt;, &lt;built-in function neg&gt;, &lt;built-in function xor&gt;, &lt;built-in function ipow&gt;, &lt;built-in function pow&gt;, &lt;built-in function isub&gt;, &lt;built-in function eq&gt;, &lt;built-in function getitem&gt;, '/Users/tonyfast/anaconda/lib/python3.5/__pycache__/operator.cpython-35.pyc', &lt;built-in function itruediv&gt;, &lt;built-in function setitem&gt;, &lt;built-in function concat&gt;, &lt;built-in function mod&gt;, &lt;built-in function matmul&gt;, &lt;built-in function iconcat&gt;, &lt;built-in function ior&gt;, &lt;built-in function contains&gt;, ...], &lt;function call&gt;: (&lt;class 'operator.attrgetter'&gt;, &lt;class 'operator.itemgetter'&gt;, &lt;class 'operator.methodcaller'&gt;)}</dl>
 
 <dl><dt><strong>shortcuts</strong> = ('statistics', 'toolz', 'requests', 'builtins', 'json', 'pickle', 'io', 'collections', 'itertools', 'functools', 'pathlib', 'importlib', 'inspect', 'operator')</dl>
 

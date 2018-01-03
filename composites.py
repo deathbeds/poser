@@ -43,18 +43,19 @@ __test__ = dict(
 # ### Operator
 
 from functools import partialmethod, wraps, partial
-
-import operator
-from collections import Sized, Mapping
-from toolz import isiterable, excepts, identity, complement, concat, reduce, groupby
 import sys
+import operator
 import inspect
-
+from collections import Sized, Mapping, Iterable
+from toolz import excepts, complement, concat, reduce, groupby
 from copy import copy
 
 dunder = '__{}__'.format
 
 __all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition'
+
+
+def isiterable(object): return isinstance(object, Iterable)
 
 
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift'
@@ -74,19 +75,19 @@ def call(object, *tuple, Exception=None, **dict):
     )(*tuple, **dict) if callable(object) else object
 
 
-def null(*tuple, **dict):
-    """A null/identity function that returns the first arguments if it exists.
+def identity(*tuple, **dict):
+    """A identity function that returns the first arguments if it exists.
 
-    >>> assert not null(**dict(foo=42))
-    >>> assert null(10, 20, dict(foo=42)) is 10
+    >>> assert not identity(**dict(foo=42))
+    >>> assert identity(10, 20, dict(foo=42)) is 10
     """
     return tuple[0] if tuple else None
 
 
-class Self(partial):
+class This(partial):
     """Supply partial arguments to objects.
 
-    >>> assert Self(str.replace, 'a', 'b')('abc') == 'bbc'
+    >>> assert This(str.replace, 'a', 'b')('abc') == 'bbc'
     """
     def __call__(x, object): return x.func(object, *x.args, **x.keywords)
 
@@ -107,7 +108,7 @@ class State:
     @property
     def __name__(x): return type(x).__name__
 
-    __signature__ = inspect.signature(null)
+    __signature__ = inspect.signature(identity)
 
 
 class flip(State):
@@ -138,7 +139,7 @@ class Outer(State):
     def __call__(x, *tuple, **dict):
         for callable in x:
             tuple, dict = (call(callable, *tuple, **dict),), {}
-        return null(*tuple, **dict)
+        return identity(*tuple, **dict)
 
     def __len__(x): return isinstance(
         x.callable, Sized) and len(
@@ -171,7 +172,7 @@ def _is_isinstance(object):
     if isinstance(object, type) and object is not bool:
         object = object,
     if isinstance(object, tuple):
-        object = Self(isinstance, object)
+        object = This(isinstance, object)
     return object
 
 
@@ -229,17 +230,22 @@ class Juxt(Pose):
     def __init__(x, outer=None, **dict): super().__init__(outer=outer, **dict)
 
     def __call__(x, *args, **kwargs):
-        iter = (call(callable, *args, **kwargs) for callable in x.Outer)
-        return type(
-            x.Outer.callable)(iter) if isinstance(
-            x.Outer.callable,
-            Sized) else iter
+        return (
+            type(
+                x.Outer.callable) if isinstance(
+                x.Outer.callable,
+                Sized) else identity)(
+            call(
+                callable,
+                *
+                args,
+                **kwargs) for callable in x.Outer)
 
 
 # # Composites
 
 class Pro(Pose):
-    """Propose a non-null inner condition then evaluate the outer function."""
+    """Propose a ~Ø inner condition then evaluate the outer function."""
     def __call__(x, *tuple, **dict):
         object = x.Inner(*tuple, **dict)
         if x.Outer:
@@ -248,7 +254,7 @@ class Pro(Pose):
                 *tuple, **dict)
 
         # If there is not outer function return a boolean.
-        return not isinstance(object, Ø)
+        return isinstance(object, Ø) or Ø()
 
 
 class Ex(Pose):
@@ -258,7 +264,7 @@ class Ex(Pose):
     def __call__(x, *tuple, **dict):
         object = x.Inner(*tuple, **dict)
         if object is True:
-            object = null(*tuple, **dict)
+            object = identity(*tuple, **dict)
         return object if isinstance(object, Ø) else super().__call__(object)
 
 
@@ -269,8 +275,14 @@ class Im(Pose):
     def __call__(x, *tuple, **dict):
         object = x.Inner(*tuple, **dict)
         if object is True:
-            object = null(*tuple, **dict)
+            object = identity(*tuple, **dict)
         return super().__call__(*tuple, **dict) if isinstance(object, Ø) else object
+
+
+class Λ:
+    def append(x, object): return x().append(object)
+
+    def __bool__(x): return False
 
 
 def _inner_(x): return [] if isinstance(x, Λ) else [x]
@@ -328,7 +340,7 @@ class __getattr__(object):
                 object = partial(
                     isinstance(
                         parent,
-                        type) and Self or partial,
+                        type) and This or partial,
                     object)
 
         # Wrap the new object for interaction
@@ -350,7 +362,7 @@ class __getattr__(object):
     def __dir__(x):
         if not x.callable or isinstance(x, Attributes):
             base = (
-                list(filter(Self(complement(str.__contains__), '.'), sys.modules.keys()))
+                list(filter(This(complement(str.__contains__), '.'), sys.modules.keys()))
                 + list(concat(dir(__import__(module)) for module in Attributes.shortcuts)))
         else:
             base = dir(x.callable)
@@ -372,10 +384,10 @@ class Attributes:
     def __dir__(x): return dir(__getattr__(x))
 
 
-Attributes.decorators[Self] = [__import__('fnmatch').fnmatch]
+Attributes.decorators[This] = [__import__('fnmatch').fnmatch]
 Attributes.decorators[call] = operator.attrgetter(
     'attrgetter', 'itemgetter', 'methodcaller')(operator)
-Attributes.decorators[Self] += [item for item in vars(
+Attributes.decorators[This] += [item for item in vars(
     operator).values() if item not in Attributes.decorators[call]]
 
 
@@ -394,7 +406,7 @@ class Symbols:
     >>> assert a%range == a.reduce(range)
     >>> assert copy(a%range) == a.reduce(range)
     """
-    def _left(x, callable, object=None, partial=Self):
+    def _left(x, callable, object=None, partial=This):
         return x.append(
             callable if object is None else partial(
                 callable, object))
@@ -448,16 +460,11 @@ class Juxtaposition(Juxt, Position):
 IfThen, IfNot = Exposition, Imposition
 
 
-class Λ:
-    """A new """
+class Composition(Λ, Proposition):
     def append(x, object):
         tuple, dict = getattr(x, 'args', []), getattr(x, 'kwargs', {})
-        return x().append(partial(object, *tuple, **dict) if tuple or dict else object)
+        return super().append(partial(object, *tuple, **dict) if tuple or dict else object)
 
-    def __bool__(x): return False
-
-
-class Composition(Λ, Proposition):
     __slots__ = Pose.__slots__ + ('args', 'kwargs')
 
 
@@ -480,18 +487,20 @@ class Operate(Proposition):
     __annotations__ = {}
 
     def __init__(x, *args, **kwargs):
-        super().__init__(None, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         x.__qualname__ = '.'.join((__name__, type(x).__name__))
 
-    def _left(x, callable, arg=None, partial=Self):
+    def _left(x, callable, arg=None, partial=This):
         return x.append(partial(callable, arg))
 
     def _right(x, callable, left):
-        # I don't think this is correct
         return Operate._left(Operate(), callable, left, partial=partial)
 
     def _bool(x, callable, *args):
-        return Operate(inner=[Self(callable, *args)], outer=[x])
+        return Operate(inner=[This(callable, *args)], outer=_inner_(x))
+
+
+Operate.__getattr__ = partialmethod(Operate._left, getattr)
 
 
 for attr in binop + ('getitem',):
@@ -517,12 +526,10 @@ list(
             getattr(
                 operator,
                 attr))) for attr in nop)
-pass
 
 
 class Operation(Λ, Operate):
-    def append(x, object): return x().append(object)
-    __qualname__ = 'Operation'
+    """"""
 
 
 x = op = Operation(outer=[Operate])
@@ -545,7 +552,7 @@ class Do(Proposition):
 
     def __call__(x, *tuple, **dict):
         super().__call__(*tuple, **dict)
-        return null(*tuple, **dict)
+        return identity(*tuple, **dict)
 
 
 do = Simple(outer=[Do])
