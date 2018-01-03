@@ -252,9 +252,8 @@ class Pro(Pose):
             return object if isinstance(
                 object, Ø) else super().__call__(
                 *tuple, **dict)
-
         # If there is not outer function return a boolean.
-        return isinstance(object, Ø) or Ø()
+        return object
 
 
 class Ex(Pose):
