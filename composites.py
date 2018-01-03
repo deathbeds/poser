@@ -199,13 +199,8 @@ class Pose(State):
     def __repr__(x): return x._repr_token_.join(map(repr, (x.Inner, x.Outer)))
 
     def __call__(x, *tuple, **dict):
-        return call(
-            x.Outer,
-            *tuple,
-            **dict,
-            Exception=dict.pop(
-                'Exception',
-                x.Exception))
+        yield x.Inner(*tuple, **dict)
+        yield partial(x.Outer, Exception=dict.pop('Exception', x.Exception))
 
 
 class Juxt(Pose):
@@ -226,7 +221,8 @@ class Juxt(Pose):
 
     def __init__(x, outer=None, **dict): super().__init__(outer=outer, **dict)
 
-    def __call__(x, *args, **kwargs):
+    def __call__(x, *tuple, **dict):
+        next(super().__call__(*tuple, **dict))
         return (
             type(
                 x.Outer.callable) if isinstance(
@@ -235,8 +231,8 @@ class Juxt(Pose):
             call(
                 callable,
                 *
-                args,
-                **kwargs) for callable in x.Outer)
+                tuple,
+                **dict) for callable in x.Outer)
 
 
 # # Composites
@@ -244,13 +240,10 @@ class Juxt(Pose):
 class Pro(Pose):
     """Propose a ~Ø inner condition then evaluate the outer function."""
     def __call__(x, *tuple, **dict):
-        object = x.Inner(*tuple, **dict)
+        Inner, Outer = super().__call__(*tuple, **dict)
         if x.Outer:
-            return object if isinstance(
-                object, Ø) else super().__call__(
-                *tuple, **dict)
-        # If there is not outer function return a boolean.
-        return object
+            return Inner if isinstance(Inner, Ø) else Outer(*tuple, **dict)
+        return Inner
 
 
 class Ex(Pose):
@@ -258,10 +251,10 @@ class Ex(Pose):
     _repr_token_ = '&'
 
     def __call__(x, *tuple, **dict):
-        object = x.Inner(*tuple, **dict)
-        if object is True:
-            object = identity(*tuple, **dict)
-        return object if isinstance(object, Ø) else super().__call__(object)
+        Inner, Outer = super().__call__(*tuple, **dict)
+        if Inner is True:
+            Inner = identity(*tuple, **dict)
+        return Inner if isinstance(Inner, Ø) else Outer(Inner)
 
 
 class Im(Pose):
@@ -269,10 +262,10 @@ class Im(Pose):
     _repr_token_ = '|'
 
     def __call__(x, *tuple, **dict):
-        object = x.Inner(*tuple, **dict)
-        if object is True:
-            object = identity(*tuple, **dict)
-        return super().__call__(*tuple, **dict) if isinstance(object, Ø) else object
+        Inner, Outer = super().__call__(*tuple, **dict)
+        if Inner is True:
+            Inner = identity(*tuple, **dict)
+        return Outer(*tuple, **dict) if isinstance(Inner, Ø) else Inner
 
 
 class Λ:
@@ -617,7 +610,6 @@ if __name__ == '__main__':
         from IPython import get_ipython, display
         get_ipython().system(
             'jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True composites.ipynb')
-        # Juxtaposition still wont work
         get_ipython().system('python -m pydoc -w composites')
         get_ipython().system('pyreverse -o png -pcomposites -fALL composites')
         display.display(
