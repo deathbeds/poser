@@ -52,7 +52,7 @@ from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition'
+__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x', 'op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition', 'λ', 'identity'
 
 
 def isiterable(object): return isinstance(object, Iterable)
@@ -66,10 +66,6 @@ nop = 'abs', 'pos', 'neg', 'pow'
 # Composing function strictly through the Python datamodel.
 
 def call(object, *tuple, Exception=None, **dict):
-    """Call the object with an argument tuple, a keyword dict, and E
-
-    >>> assert call(10) is 10
-    >>> assert call(range, 10, 20) == range(10, 20)"""
     return (
         Exception and excepts(Exception, object, identity) or object
     )(*tuple, **dict) if callable(object) else object
@@ -149,6 +145,12 @@ class Outer(State):
 
     def __bool__(x): return bool(len(x))
 
+    def first(self):
+        if not self.callable:
+            return identity
+        next = self.callable[0]
+        return next.first() if isinstance(next, Outer) else next
+
 
 class Inner(Outer):
     def __iter__(x): yield from x.callable and super().__iter__() or (True,)
@@ -202,6 +204,12 @@ class Pose(State):
         yield x.Inner(*tuple, **dict)
         yield partial(x.Outer, Exception=dict.pop('Exception', x.Exception))
 
+    def _very_first_(self):
+        next = self.Inner.callable[0]
+        if isinstance(next, Pose):
+            next = next._very_first_()
+        return next
+
 
 class Juxt(Pose):
     """Juxtapose arguments cross callables."""
@@ -243,7 +251,7 @@ class Pro(Pose):
         Inner, Outer = super().__call__(*tuple, **dict)
         if x.Outer:
             return Inner if isinstance(Inner, Ø) else Outer(*tuple, **dict)
-        return Inner
+        return identity(*tuple, **dict) if Inner is True else Inner
 
 
 class Ex(Pose):
