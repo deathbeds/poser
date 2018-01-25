@@ -42,7 +42,7 @@ __test__ = dict(
 #
 # ### Operator
 
-from functools import partialmethod, wraps, partial
+from functools import partialmethod, wraps
 import sys
 import operator
 import inspect
@@ -80,6 +80,16 @@ def identity(*tuple, **dict):
     return tuple[0] if tuple else None
 
 
+class partial(__import__('functools').partial):
+    """Partial with logical"""
+    def __eq__(partial, object):
+        if type(partial) is type(object):
+            return (
+                partial.func == object.func) and (
+                partial.args == object.args)
+        return False
+
+
 class This(partial):
     """Supply partial arguments to objects.
 
@@ -90,6 +100,7 @@ class This(partial):
 
 class State:
     """State attributes for pickling and copying propositions."""
+    __slots__ = 'callable',
 
     def __hash__(x): return hash(map(hash, x))
 
@@ -106,6 +117,13 @@ class State:
 
     __signature__ = inspect.signature(identity)
 
+    def __eq__(self, object):
+        from itertools import zip_longest
+        if isinstance(object, State):
+            return all(
+                a == b for a, b in zip_longest(self.callable, object.callable))
+        return False
+
 
 class flip(State):
     """Flip the argument of a callable.
@@ -121,8 +139,6 @@ class flip(State):
 
 
 class Outer(State):
-    __slots__ = 'callable',
-
     def __init__(x, object=None):
         x.callable = list() if object is None else object
 
@@ -183,6 +199,7 @@ class Pose(State):
     Pose is combined with the prefixes Pro, Ex, Im, and Juxt to evaluate inner call methods.
     """
     __slots__ = 'Inner', 'Outer', 'Exception'
+
     _repr_token_ = '^'
 
     def __init__(x, inner=None, outer=None, *, exception=None):
@@ -204,11 +221,12 @@ class Pose(State):
         yield x.Inner(*tuple, **dict)
         yield partial(x.Outer, Exception=dict.pop('Exception', x.Exception))
 
-    def _very_first_(self):
-        next = self.Inner.callable[0]
-        if isinstance(next, Pose):
-            next = next._very_first_()
-        return next
+    def __eq__(self, object):
+        if type(self) is type(object):
+            return (
+                self.Inner == object.Inner) and (
+                self.Outer == object.Outer)
+        return False
 
 
 class Juxt(Pose):
@@ -564,7 +582,7 @@ preview = Simple(outer=[Preview])
 
 
 class parallel(Proposition):
-    """An embarassingly parallel proposition.
+    """An embarassingly parallel proposition; call the outer function in parallel in the inner function is ~Ø.
 
     >>> import joblib
     >>> def g(x): return x+10
