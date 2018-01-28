@@ -53,7 +53,7 @@ from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'Composition', 'Operation', 'Juxtaposition', 'Proposition', 'Exposition', 'Imposition', 'λ', 'identity'
+__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'composition', 'operation', 'juxtaposition', 'proposition', 'exposition', 'imposition', 'λ', 'identity'
 
 
 def isiterable(object): return isinstance(object, Iterable)
