@@ -151,7 +151,11 @@ class composite(state):
         
     def __iter__(composite):
         # Juxt is defined way later on unfortunately, but this is the most efficient place.
-        if isiterable(composite.object): yield from composite.object
+        if isiterable(composite.object): 
+            if isinstance(composite.object, Mapping):
+                yield from map(juxt, composite.object.items())
+            else:
+                yield from composite.object
         else: yield composite.object
                 
     def __len__(composite):  
@@ -171,44 +175,55 @@ class composite(state):
         
 
 
+class functional(composite):
+    def __iter__(functional):
+        # Juxt is defined way later on unfortunately, but this is the most efficient place.
+        yield from map(juxt, super().__iter__())
+        
+    def __call__(functional, *tuple, **dict): 
+        for callable in functional: 
+            tuple, dict = (call(callable, *tuple, **dict),), {}
+        return call(identity, *tuple, **dict)
+
+
 @dataclass(hash=False)
 class juxt(composite):
     object: tuple = field(default_factory=tuple)
     def __post_init__(juxt): ...
     def __call__(juxt, *tuple, **dict):
-        if not isiterable(juxt.object): return call(juxt.object, *tuple, **dict)
+        if not isiterable(juxt.object): 
+            return call(juxt.object, *tuple, **dict)
         return call(
             type(juxt.object) if isinstance(juxt.object, Sized) else identity, (
-                call(callable, *tuple, **dict) 
-                for callable in (
-                    map(type(juxt), juxt.object.items()) 
-                    if isinstance(juxt.object, Mapping) else juxt.object)))
+                call(callable, *tuple, **dict) for callable in juxt)
+        )
 
 
-class complex(composite):
-    def __iter__(composite):
-        # Juxt is defined way later on unfortunately, but this is the most efficient place.
-        yield from map(juxt, super().__iter__())
+class logic(juxt):                        
+    """
+    >>> assert logic(bool)(10)
+    >>> assert null(logic(bool)(0))
+    >>> assert null(logic((bool, int))(0))
+    >>> assert logic((bool, int))(10) == (True, 10)
+    """
+    def __post_init__(logic):
+        if isinstance(logic.object, type):
+            logic.object = instance(logic.object)
+        super().__post_init__()
         
-    def __call__(composite, *tuple, **dict): 
-        for callable in composite: 
-            tuple, dict = (call(callable, *tuple, **dict),), {}
-        return call(identity, *tuple, **dict)
-
-
-class logic(composite):                        
-    def __iter__(logic): 
-        yield from super().__iter__() or (True,)
+    def __iter__(logic): yield from super().__iter__() or (True,)
     
     def __call__(logic, *tuple, **dict):
-        object = True
-        for callable in logic:
-            object = callable(*tuple, **dict)
-            if not object:
-                return Ø(callable)
-            if isinstance(object, BaseException):
-                return Ø(callable).with_traceback(object)
-        return object
+        object = super().__call__(*tuple, **dict)
+        
+        if not isiterable(logic.object): 
+            return object or Ø(logic.object)
+        
+        for next in object:
+            if next: continue
+            return Ø(logic.object)
+        
+        return object or True
 
 
 def instance(object):
@@ -216,23 +231,23 @@ def instance(object):
     
     >>> assert instance(int)(10) and not instance(int)('10')
     """
-    if isinstance(object, type) and object is not bool: object = object,
-    if isinstance(object, tuple): object = this(isinstance, object)
+    if object and isinstance(object, type) and object is not bool: object = object,
+    if object and isinstance(object, tuple): object = this(isinstance, object)
     return object
 
 
 @dataclass(hash=False)
 class pose(state):
-    """Pose a complex function with Inner and Outer callable. The Outer callable may accept exceptions. 
+    """Pose a functional function with Inner and Outer callable. The Outer callable may accept exceptions. 
     Pose is combined with the prefixes Pro, Ex, Im, and Juxt to evaluate inner call methods. 
     """
     condition: logic = field(default_factory=logic)
-    object: complex = field(default_factory=complex)    
+    object: functional = field(default_factory=functional)    
     exception: tuple = field(default_factory=tuple)    
         
     def __post_init__(pose):
         if not isinstance(pose.condition, logic): pose.condition = logic(pose.condition)
-        if not isinstance(pose.object, complex): pose.object = complex(pose.object)
+        if not isinstance(pose.object, functional): pose.object = functional(pose.object)
                     
     def __bool__(pose): return bool(pose.object)
     
@@ -513,7 +528,7 @@ class operation(operate, simple):
     """
     >>> f = 0<(x<10) + 90
     >>> f(-5), f(5), f(15)
-    (Ø(this(<built-in function gt>, 0),), 95, Ø(this(<built-in function lt>, 10),))
+    (Ø((this(<built-in function lt>, 10), this(<built-in function gt>, 0)),), 95, Ø((this(<built-in function lt>, 10), this(<built-in function gt>, 0)),))
     """
 
 x = op = operation(operate)

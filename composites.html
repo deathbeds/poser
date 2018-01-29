@@ -278,7 +278,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <dl><dt><a name="exposition-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
 
-<dl><dt><a name="exposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.complex=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
+<dl><dt><a name="exposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.functional=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
 
 <dl><dt><a name="exposition-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
 
@@ -288,7 +288,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#pose">pose</a>:<br>
-<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.complex'&gt;}</dl>
+<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.functional'&gt;}</dl>
 
 <dl><dt><strong>__dataclass_fields__</strong> = OrderedDict([('condition', Field(name='condition...,repr=True,hash=None,compare=True,metadata={}))])</dl>
 
@@ -488,7 +488,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <dl><dt><a name="imposition-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
 
-<dl><dt><a name="imposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.complex=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
+<dl><dt><a name="imposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.functional=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
 
 <dl><dt><a name="imposition-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
 
@@ -498,7 +498,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#pose">pose</a>:<br>
-<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.complex'&gt;}</dl>
+<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.functional'&gt;}</dl>
 
 <dl><dt><strong>__dataclass_fields__</strong> = OrderedDict([('condition', Field(name='condition...,repr=True,hash=None,compare=True,metadata={}))])</dl>
 
@@ -683,7 +683,7 @@ Data and other attributes inherited from <a href="composites.html#state">state</
 <tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
 <td colspan=2><tt>&gt;&gt;&gt;&nbsp;f&nbsp;=&nbsp;0&lt;(x&lt;10)&nbsp;+&nbsp;90<br>
 &gt;&gt;&gt;&nbsp;f(-5),&nbsp;f(5),&nbsp;f(15)<br>
-(<a href="#Ø">Ø</a>(this(&lt;built-in&nbsp;function&nbsp;gt&gt;,&nbsp;0),),&nbsp;95,&nbsp;<a href="#Ø">Ø</a>(this(&lt;built-in&nbsp;function&nbsp;lt&gt;,&nbsp;10),))<br>&nbsp;</tt></td></tr>
+(<a href="#Ø">Ø</a>((this(&lt;built-in&nbsp;function&nbsp;lt&gt;,&nbsp;10),&nbsp;this(&lt;built-in&nbsp;function&nbsp;gt&gt;,&nbsp;0)),),&nbsp;95,&nbsp;<a href="#Ø">Ø</a>((this(&lt;built-in&nbsp;function&nbsp;lt&gt;,&nbsp;10),&nbsp;this(&lt;built-in&nbsp;function&nbsp;gt&gt;,&nbsp;0)),))<br>&nbsp;</tt></td></tr>
 <tr><td>&nbsp;</td>
 <td width="100%"><dl><dt>Method resolution order:</dt>
 <dd><a href="composites.html#operation">operation</a></dd>
@@ -706,7 +706,7 @@ Data and other attributes inherited from <a href="composites.html#state">state</
 Methods defined here:<br>
 <dl><dt><a name="operation-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
 
-<dl><dt><a name="operation-__init__"><strong>__init__</strong></a>(self, object:composites.complex=&lt;factory&gt;, condition:composites.logic=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
+<dl><dt><a name="operation-__init__"><strong>__init__</strong></a>(self, object:composites.functional=&lt;factory&gt;, condition:composites.logic=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
 
 <dl><dt><a name="operation-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
 
@@ -894,7 +894,7 @@ Methods defined here:<br>
 
 <dl><dt><a name="parallel-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
 
-<dl><dt><a name="parallel-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.complex=&lt;factory&gt;, exception:tuple=&lt;factory&gt;, jobs:int=4) -&gt; None</dt></dl>
+<dl><dt><a name="parallel-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.functional=&lt;factory&gt;, exception:tuple=&lt;factory&gt;, jobs:int=4) -&gt; None</dt></dl>
 
 <dl><dt><a name="parallel-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
 
@@ -1052,7 +1052,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <dl><dt><a name="proposition-__eq__"><strong>__eq__</strong></a>(self, other)</dt></dl>
 
-<dl><dt><a name="proposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.complex=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
+<dl><dt><a name="proposition-__init__"><strong>__init__</strong></a>(self, condition:composites.logic=&lt;factory&gt;, object:composites.functional=&lt;factory&gt;, exception:tuple=&lt;factory&gt;) -&gt; None</dt></dl>
 
 <dl><dt><a name="proposition-__ne__"><strong>__ne__</strong></a>(self, other)</dt></dl>
 
@@ -1062,7 +1062,7 @@ Methods inherited from <a href="composites.html#pose">pose</a>:<br>
 
 <hr>
 Data and other attributes inherited from <a href="composites.html#pose">pose</a>:<br>
-<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.complex'&gt;}</dl>
+<dl><dt><strong>__annotations__</strong> = {'condition': &lt;class 'composites.logic'&gt;, 'exception': &lt;class 'tuple'&gt;, 'object': &lt;class 'composites.functional'&gt;}</dl>
 
 <dl><dt><strong>__dataclass_fields__</strong> = OrderedDict([('condition', Field(name='condition...,repr=True,hash=None,compare=True,metadata={}))])</dl>
 
@@ -1556,9 +1556,9 @@ Data descriptors inherited from <a href="builtins.html#BaseException">builtins.B
 <strong>__test__</strong> = {'gold': "<font color="#c040c0">\n</font>    &gt;&gt;&gt; g = a**str*[str.upper]|a**int*range|a**... 'float'&gt;]<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert copy(g).type()({}) is Ø", 'juxt': '<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert juxt(range)(10) == range(10)<font color="#c040c0">\n</font>   ...)(), list) and isinstance(juxt(tuple())(), tuple)', 'simple': '&gt;&gt;&gt; assert a[range](10) == range(10)<font color="#c040c0">\n</font>    &gt;&gt;&gt; ass...turn range(x)<font color="#c040c0">\n</font>    &gt;&gt;&gt; assert thang[len](10) is 10'}<br>
 <strong>a</strong> = simple(object=&lt;class 'composites.proposition'&gt;, args=(), keywords={})<br>
 <strong>an</strong> = simple(object=&lt;class 'composites.proposition'&gt;, args=(), keywords={})<br>
-<strong>op</strong> = operation(object=complex(object=(&lt;class 'composi...rds={}, condition=logic(object=()), exception=())<br>
+<strong>op</strong> = operation(object=functional(object=(&lt;class 'comp...rds={}, condition=logic(object=()), exception=())<br>
 <strong>preview</strong> = simple(object=&lt;class 'composites.preview'&gt;, args=(), keywords={})<br>
 <strong>the</strong> = simple(object=&lt;class 'composites.proposition'&gt;, args=(), keywords={})<br>
-<strong>x</strong> = operation(object=complex(object=(&lt;class 'composi...rds={}, condition=logic(object=()), exception=())<br>
+<strong>x</strong> = operation(object=functional(object=(&lt;class 'comp...rds={}, condition=logic(object=()), exception=())<br>
 <strong>λ</strong> = simple(object=&lt;class 'composites.proposition'&gt;, args=(), keywords={})</td></tr></table>
 </body></html>
