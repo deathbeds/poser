@@ -15,15 +15,15 @@ from distutils.core import setup, Command
 # you can also import from setuptools
 
 setuptools.setup(
-    name="composites",
+    name="poser",
     version="0.2.0",
     author="Tony Fast",
     author_email="tony.fast@gmail.com",
-    description="Callable, composable lists.",
+    description="Callable, composable objects with side effects.",
     license="BSD-3-Clause",
     keywords="IPython Magic Jupyter",
     url="http://github.com/tonyfast/articles",
-    py_modules=['articles'],
+    py_modules=['poser'],
     packages=setuptools.find_packages(),
     #     long_description=read("readme.rst"),
     classifiers=[
