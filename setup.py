@@ -38,4 +38,4 @@ setuptools.setup(
         "License :: OSI Approved :: BSD License",
         "Topic :: Software Development :: Testing",
     ],
-    install_requires=["toolz", "requests"])
+    install_requires=["toolz", "requests", "dataclasses"])
