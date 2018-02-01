@@ -53,7 +53,7 @@ from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'composition', 'operation', 'juxtaposition', 'proposition', 'exposition', 'imposition', 'λ', 'identity'
+__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'functional', 'operation', 'proposition', 'exposition', 'imposition', 'λ', 'identity', 'partial'
 
 
 def isiterable(object): return isinstance(object, Iterable)
@@ -85,7 +85,10 @@ def identity(*tuple, **dict):
 
 
 class partial(__import__('functools').partial):
-    """Partial with logical"""
+    """Partial with logical
+    >>> assert partial(range) == partial(range)
+    >>> 
+    """
     def __eq__(partial, object):
         if type(partial) is type(object):
             return (partial.func == object.func) and (partial.args == object.args)
@@ -108,6 +111,12 @@ class flip(partial):
     def __call__(flip, *tuple, **dict): return super().__call__(*reversed(tuple), *reversed(flip.args), **dict)
 
 
+class do(partial):
+    def __call__(do, *tuple, **dict): 
+        super().__call__(do.args, **dict)
+        return identity(*do.args)
+
+
 class star(partial):
     """Flip the argument of a callable.
     
@@ -122,6 +131,16 @@ class star(partial):
         return super().__call__(object)
 
 
+def instance(object):
+    """Prepare types and types as isinstance functions.
+    
+    >>> assert instance(int)(10) and not instance(int)('10')
+    """
+    if object and isinstance(object, type) and object is not bool: object = object,
+    if object and isinstance(object, tuple): object = this(isinstance, object)
+    return object
+
+
 class state:        
     def __getstate__(state):
         return tuple(getattr(state, slot, None) for slot in state.__dataclass_fields__)
@@ -134,6 +153,9 @@ class state:
     def __name__(state): return type(state).__name__
     
     __signature__ = inspect.signature(identity)
+    
+    def __len__(composite):  
+        return isinstance(composite.object, Sized) and len(composite.object) or 0
 
 
 class Ø(BaseException): 
@@ -158,21 +180,20 @@ class composite(state):
                 yield from composite.object
         else: yield composite.object
                 
-    def __len__(composite):  
-        return isinstance(composite.object, Sized) and len(composite.object) or 0
     
     def __bool__(composite): 
         return bool(len(composite))        
     
     def __hash__(State): return hash(map(hash, State))
     
-    def append(type, object=Ø):
+
+    def append(type=Ø(), object=Ø()):
         if not isinstance(type, composite):
             type = composite()
         
-        if not null(object): type.object += object,
+        if not instance(Ø)(object): type.object += object,
+            
         return type
-        
 
 
 class functional(composite):
@@ -190,20 +211,20 @@ class functional(composite):
 class juxt(composite):
     object: tuple = field(default_factory=tuple)
     def __post_init__(juxt): ...
-    def __call__(juxt, *tuple, **dict):
-        if not isiterable(juxt.object): 
-            return call(juxt.object, *tuple, **dict)
+    def __call__(object, *tuple, **dict):
+        if not isiterable(object.object): 
+            return call(object.object, *tuple, **dict)
         return call(
-            type(juxt.object) if isinstance(juxt.object, Sized) else identity, (
-                call(callable, *tuple, **dict) for callable in juxt)
+            type(object.object) if isinstance(object.object, Sized) else identity, (
+                call(juxt(callable), *tuple, **dict) for callable in object)
         )
 
 
 class logic(juxt):                        
     """
     >>> assert logic(bool)(10)
-    >>> assert null(logic(bool)(0))
-    >>> assert null(logic((bool, int))(0))
+    >>> assert instance(Ø)(logic(bool)(0))
+    >>> assert instance(Ø)(logic((bool, int))(0))
     >>> assert logic((bool, int))(10) == (True, 10)
     """
     def __post_init__(logic):
@@ -258,20 +279,13 @@ class pose(state):
 
 # # Composites
 
-def null(object): 
-    """
-    >>> assert null(Ø) and null(Ø()) and not null(object)
-    """
-    return isinstance(object, Ø) or isinstance(object, type) and object is Ø
-
-
 class pro(pose):
     """Propose a not Ø logic condition then evaluate the callable."""
     def __call__(pose, *tuple, **dict):
         logic, callable = super().__call__(*tuple, **dict)
-        if callable: 
-            return logic if isinstance(logic, Ø) else call(callable, *tuple, Exception=pose.exception, **dict)
-        return logic if null(logic) else True
+        if callable and logic: 
+            return call(callable, *tuple, Exception=pose.exception, **dict)
+        return logic and True
 
 
 class ex(pose):
@@ -280,16 +294,14 @@ class ex(pose):
         logic, object = super().__call__(*tuple, **dict)
         if logic is True: 
             logic = identity(*tuple, **dict)
-        return logic if isinstance(logic, Ø) else call(object, logic, Exception=pose.exception)
+        return logic and call(object, logic, Exception=pose.exception)
 
 
 class im(pose):
     """If the inner function is Ø evaluate the outer function."""
     def __call__(pose, *tuple, **dict):
         logic, object = super().__call__(*tuple, **dict)
-        return call(
-            object, *tuple, **dict, Exception=pose.exception
-        ) if isinstance(logic, Ø) else logic
+        return logic or call(object, *tuple, **dict, Exception=pose.exception)
 
 
 class conditions:
@@ -300,13 +312,13 @@ class conditions:
         return proposition(x and x.append(instance(object)) or instance(object))
     
     def __and__(x, object): 
-        return exposition(x.append(Ø), object)
+        return exposition(x.append(Ø()), object)
     
     def __or__(x, object):  
-        return imposition(x.append(Ø), object)        
+        return imposition(x.append(Ø()), object)        
     
     def __xor__(x, object): 
-        return setattr(x.append(Ø), 'exception', object) or x
+        return setattr(x.append(Ø()), 'exception', object) or x
     
     then = __and__
     ifnot = __or__
@@ -342,7 +354,7 @@ class __getattr__(object):
         else:                
             if callable(next) and not isinstance(next, type): 
                 wrapper = wraps(next)
-                next = partial(isinstance(object, type) and This or partial, next)
+                next = partial(isinstance(object, type) and this or partial, next)
         
         # Wrap the new object for interaction
         next = __getattr__(x.object, next) 
@@ -350,8 +362,13 @@ class __getattr__(object):
 
     def __call__(x, *tuple, **dict):
         object = x.next
-        return x.object.append(object(*tuple, **dict) if isinstance(object, partial) 
-                               else partial(object, *tuple, **dict) if tuple or dict else object)
+        if isinstance(object, partial):
+            object = object(*tuple, **dict) 
+            if isinstance(object, partial) and not(object.args or object.keywords):
+                object = object.func
+        elif tuple or dict:
+            object = partial(object, *tuple, **dict)
+        return x.object.append(object)
 
     def __repr__(x): 
         return repr(isinstance(x.next, partial) and x.next.args and x.next.args[0] or x.next)
@@ -387,17 +404,10 @@ attributes.decorators[this] += [item for item in vars(operator).values() if item
 
 
 class append:
-    def append(x, object): 
+    def append(x, object=Ø()): 
         x.object.append(object)
         return x
     __getitem__ = append
-
-class Λ: 
-    def append(Λ, object=Ø): 
-        Λ = Λ.object()
-        null(object) or Λ.append(object)
-        return Λ
-    def __bool__(Λ): return False
 
 
 class symbols:
@@ -435,7 +445,7 @@ list(setattr(symbols, '__r' + dunder(attr).lstrip('__'), partialmethod(symbols._
 
 # # Juxtapositions
 
-class position(append, conditions, attributes, symbols): 
+class position(append, conditions, attributes, symbols, state): 
     """Composition methods for establishing Positions using __magic__ Python methods.
     
     >>> proposition(bool, range)(0), exposition(bool, range)(0), imposition(bool, range)(0)
@@ -459,10 +469,9 @@ class com(position):
     args: tuple = field(default_factory=tuple, init=False)
     keywords: dict = field(default_factory=dict, init=False)
     
-    def append(com, object):
+    def append(com, object=Ø()):
         tuple, dict = getattr(com, 'args', []), getattr(com, 'keywords', {})
-        return com.object().append(
-            partial(object, *tuple, **dict) if tuple or dict else object)
+        return com.object().append(partial(object, *tuple, **dict) if tuple or dict else object)
     
     def __call__(com, *tuple, **dict):
         args, kwargs = getattr(com, 'args', []), getattr(com, 'keywords', {})
@@ -503,7 +512,7 @@ class canonical:
         return canonical._left(x, callable, left, partial=partial)
 
     def _bool(x, callable, *args):
-        x = x.append(Ø)
+        x = x.append(Ø())
         x.condition.append(this(callable, *args))
         return x
     
@@ -584,6 +593,7 @@ if __name__ == '__main__':
         get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb')
         get_ipython().system('source activate p6 && python -m pydoc -w poser')
         get_ipython().system('source activate p6 && pyreverse -o png -pposer -fALL poser')
+        get_ipython().system('source activate p6 && pytest')
         display.display(display.Image('classes_poser.png'), display.IFrame('poser.html', height=600, width=800))
         
         get_ipython().system('source activate p6 && ipython -m doctest poser.py')
