@@ -56,7 +56,7 @@ dunder = '__{}__'.format
 __all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'functional', 'operation', 'proposition', 'exposition', 'imposition', 'λ', 'identity', 'partial'
 
 
-def isiterable(object): return isinstance(object, Iterable)
+def isiterable(object): return isinstance(object, Iterable) and not callable(object)
 
 
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
@@ -216,8 +216,7 @@ class juxt(composite):
             return call(object.object, *tuple, **dict)
         return call(
             type(object.object) if isinstance(object.object, Sized) else identity, (
-                call(juxt(callable), *tuple, **dict) for callable in object)
-        )
+                call(juxt(callable), *tuple, **dict) for callable in object))
 
 
 class logic(juxt):                        
@@ -557,7 +556,6 @@ class parallel(proposition):
     >>> assert parallel(jobs=4).range().map(x+10)(100)
     >>> assert parallel(jobs=4).range().map(a[range])(100)
     """
-    _repr_token_ = '||'
     
     jobs: int = field(default=4)
     def map(x, object): return super().map(__import__('joblib').delayed(object))
@@ -574,7 +572,7 @@ class store(dict):
     @property
     def __self__(x): return x.__call__.__self__
     def __call__(x, *tuple, **dict):
-        x[tuple[0]] = x.object(*tuple, **dict)
+        x[tuple[0]] = x.callable(*tuple, **dict)
         return x[tuple[0]]
 
 
