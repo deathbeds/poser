@@ -47,13 +47,13 @@ __test__ = dict(
 from dataclasses import dataclass, field
 from functools import partialmethod, wraps
 import sys, operator, inspect
-from collections import Sized, Mapping, Iterable
+from collections import Sized, Mapping, Iterable, UserDict
 from toolz import excepts, complement, concat, reduce, groupby
 from copy import copy
 
 dunder = '__{}__'.format
 
-__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'functional', 'operation', 'proposition', 'exposition', 'imposition', 'λ', 'identity', 'partial'
+__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'functional', 'operation', 'proposition', 'exposition', 'imposition', 'λ', 'identity', 'partial', 'this'
 
 
 def isiterable(object): return isinstance(object, Iterable) and not callable(object)
@@ -332,16 +332,18 @@ class __getattr__(object):
     def __getattr__(x, next):
         object = x.next
         # Convert the attribute to a callable.
-        if x.next: next = getattr(x.next, next)
-
-        if next in sys.modules: next = sys.modules.get(next)
-        
-        elif isinstance(next, str):
+        if x.next: 
+            next = getattr(x.next, next)
+        else:
             for module in map(__import__, attributes.shortcuts):
                 if hasattr(module, next): 
                     next = getattr(module, next)
                     break
-            else: raise AttributeError(next)
+            else:
+                try:
+                    next = __import__(next)
+                except ModuleNotFoundError:
+                    raise AttributeError(next)                
         
         # Decorate the discovered attribute with the correct partials or call.
         wrapper = False
@@ -567,8 +569,13 @@ class parallel(proposition):
 
 
 @dataclass(repr=False)
-class store(dict):
+class store(UserDict):
+    """
+    >>> s = store(range)
+    >>> assert 10 not in s and s(10) and 10 in s
+    """
     callable: object = field(default_factory=proposition)
+    def __post_init__(self): super().__init__()
     @property
     def __self__(x): return x.__call__.__self__
     def __call__(x, *tuple, **dict):
@@ -578,7 +585,8 @@ class store(dict):
 
 class cache(store):
     def __call__(x, *tuple, **dict):
-        if tuple[0] not in x: return super().__call__(*tuple, **dict)
+        if tuple[0] not in x: 
+            return super().__call__(*tuple, **dict)
         return x[tuple[0]]
 
 
