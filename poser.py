@@ -3,11 +3,11 @@
 
 __test__ = dict(
     gold="""
-    >>> g = a**str*[str.upper]|a**int*range|a**float*type
+    >>> g = a**str&[str.upper]|a**int&range|a**float&type
     >>> f = a/g*list
     >>> f(['keep it 💯', 10, 10.])
     [['KEEP IT 💯'], range(0, 10), <class 'float'>]
-    >>> assert copy(g).type()({}) is Ø""",
+    >>> assert type(copy(g)({})) is Ø""",
     simple=""">>> assert a[range](10) == range(10)
     >>> assert a[range][type](10) is range 
     >>> assert a[range][type][type](10) is type
@@ -22,60 +22,43 @@ __test__ = dict(
     >>> assert juxt([range])(10) == [range(10)]
     >>> assert juxt([range, type])(10) == [range(10), int]
     >>> assert juxt([range, type, str, 20])(10) == [range(10), int, '10', 20]
-    
-    Create a juxtaposable object `model`.
-    >>> @juxt.append
-    ... def model(x): return range(x)
-
-    Append more functions to the `model`
-    >>> @model.append
-    ... def _(x): return type(x)
-    
+            
     >>> assert isinstance(juxt({})(), dict) and isinstance(juxt([])(), list) and isinstance(juxt(tuple())(), tuple)""")
 
 
-# # Complex Composite Functions
-# 
-# Complex composite functions have real and imaginary parts that may except specific errors.  
-# 
-# ## Composition
-# 
-# Composite functions use Python syntax to append callable objects to compositions and juxtapositions.  
-# 
-# ### Operator 
-
-from dataclasses import dataclass, field
+from dataclasses import dataclass as _dataclass, field
+from itertools import chain
 from functools import partialmethod, wraps
 import sys, operator, inspect
 from collections import Sized, Mapping, Iterable, UserDict
-from toolz import excepts, complement, concat, reduce, groupby
+from toolz import excepts, concat, reduce, groupby
 from copy import copy
 
+from inspect import unwrap, Signature, signature, Parameter, getdoc
+from abc import ABCMeta, ABC, abstractstaticmethod
+
 dunder = '__{}__'.format
+dataclass = _dataclass(hash=False)
 
-__all__ = 'a', 'an', 'the', 'simple', 'flip', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'functional', 'operation', 'proposition', 'exposition', 'imposition', 'λ', 'identity', 'partial', 'this'
-
-
-def isiterable(object): return isinstance(object, Iterable) and not callable(object)
-
+__all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
 
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
 boolop =  'gt', 'ge', 'le', 'lt', 'eq', 'ne'
 nop = 'abs', 'pos', 'neg', 'pow'
+getters = 'attrgetter', 'itemgetter', 'methodcaller'
 
 
-# Composing function strictly through the Python datamodel.
-
-def call(object, *tuple, Exception=None, **dict):  
-    if Exception is None:
-        return object(*tuple, **dict) if callable(object) else object
-    try:
-        return object(*tuple, **dict) if callable(object) else object
-    except Exception as e:
-        return Ø(object).with_traceback(e.__traceback__)
+def isiterable(object: object) -> bool: 
+    """Is {object} iterable?
     
+    >>> assert all(map(isiterable, (list(), dict(), set())))
+    >>> assert not any(map(isiterable, (10, range, "strings are not iterable")))
+    """
+    return isinstance(object, Iterable) and not isinstance(object, str) and not callable(object)
+
+
 def identity(*tuple, **dict): 
-    """A identity function that returns the first arguments if it exists.
+    """An identity that returns {tuple[0]} if it exists.
     
     >>> assert not identity(**dict(foo=42))
     >>> assert identity(10, 20, dict(foo=42)) is 10
@@ -83,79 +66,83 @@ def identity(*tuple, **dict):
     return tuple[0] if tuple else None
 
 
-
 class partial(__import__('functools').partial):
-    """Partial with logical
-    >>> assert partial(range) == partial(range)
-    >>> 
+    """An overloaded {functools.partial}.  It is not recommended to use this partial directly.
+    >>> from functools import partial as python_partial
+    >>> assert issubclass(partial, python_partial)
     """
+    def __new__(partial, func=None, *tuple, **dict):
+        """A __new__ {partial} transforms non-callables into callables.
+        
+        >>> assert partial(range, 10)(20) == range(10, 20)
+        >>> assert partial(10)(20) is 10
+        
+        A partial with no arguments is an identity
+        >>> assert partial()(10, 20) is 10"""
+        
+        if not callable(func): tuple, func = (func,) + tuple if func is not None else tuple, identity
+        return                 super().__new__(partial, func, *tuple, **dict)
+
     def __eq__(partial, object):
-        if type(partial) is type(object):
-            return (partial.func == object.func) and (partial.args == object.args)
-        return False
+        """Supply an __eq__uality condition {partial}
+        
+        >>> assert partial(range) == partial(range) and partial(range, 10) != partial(range)"""
+        return type(partial) is type(object) and partial.func == object.func and partial.args == object.args
+    
+    def __hash__(partial): 
+        """>>> assert hash(partial())"""
+        return hash((partial.func, partial.args))
+    
+    @property
+    def __wrapped__(partial):
+        """Supply a __wrapped__ Attribute to use inspect.unwrap.
+        
+        >>> assert unwrap(partial(partial(partial(partial(partial(range)))))) is range"""
+        while hasattr(partial, 'func'): partial = getattr(partial, 'func')
+        return                          partial
+    
+    @property
+    def __call__(self):
+        """Supply __call__ as a property that returns the partial with the signature
+        of the wrapped function.
+        
+        >>> assert signature(partial(identity)) == signature(identity)"""
+        @wraps(unwrap(self))
+        def signed(*tuple, **dict):
+            nonlocal self
+            return super(type(self), self).__call__(*tuple, **dict)
+        return signed
 
 
 class this(partial):
-    """Supply partial arguments to objects.
+    """this is a partial for MethodType objects.
     
-    >>> assert this(str.replace, 'a', 'b')('abc') == 'bbc'
-    """
-    def __call__(x, object): return x.func(object, *x.args, **x.keywords)
-
-
-class flip(partial):
-    """Flip the argument of a callable.
-    
-    >>> assert flip(range)(20, 10) == range(10, 20)
-    """
-    def __call__(flip, *tuple, **dict): return super().__call__(*reversed(tuple), *reversed(flip.args), **dict)
+    >>> assert this(str.replace, 'a', 'b')('abc') == 'bbc'"""
+    def __call__(this, object): return partial(this.func, object)(*this.args, **this.keywords)
 
 
 class do(partial):
+    """do calls func, but returns the input arguments.
+    
+    >>> assert do(range)(10) is 10
+    >>> assert do(print)(10)
+    10
+    """
     def __call__(do, *tuple, **dict): 
-        super().__call__(do.args, **dict)
-        return identity(*do.args)
+        partial(do.func, *do.args, **do.keywords)(*tuple, **dict)
+        return identity(*tuple, **dict)
 
 
 class star(partial):
-    """Flip the argument of a callable.
-    
-    >>> assert star(range)((10, 20)) == range(10, 20)
+    """Apply the callable with star args and keywords.
+    >>> assert star(range)((10, 20)) == star(range)([10], {}, [20]) == range(*(10, 20))
     """
-    def __call__(star, object): 
-        if isinstance(object, Mapping):
-            object = {**star.keywords, **object}
-            return super().__call__(*star.args, **object)
-        if isiterable(object):
-            return super().__call__(*star.args, *object, **star.keywords)
-        return super().__call__(object)
-
-
-def instance(object):
-    """Prepare types and types as isinstance functions.
-    
-    >>> assert instance(int)(10) and not instance(int)('10')
-    """
-    if object and isinstance(object, type) and object is not bool: object = object,
-    if object and isinstance(object, tuple): object = this(isinstance, object)
-    return object
-
-
-class state:        
-    def __getstate__(state):
-        return tuple(getattr(state, slot, None) for slot in state.__dataclass_fields__)
-    
-    def __setstate__(state, tuple):
-        list(setattr(state, str, object) for str, object in zip(state.__dataclass_fields__, tuple)) 
-        return state
-    
-    @property
-    def __name__(state): return type(state).__name__
-    
-    __signature__ = inspect.signature(identity)
-    
-    def __len__(composite):  
-        return isinstance(composite.object, Sized) and len(composite.object) or 0
+    def __call__(star, *object): 
+        args, dict = star.args, star.keywords
+        for next in object:
+            if isinstance(next, Mapping): dict = {**dict, **next}
+            if isiterable(object):        args += tuple(next)
+        return partial(star.func)(*args, **dict)
 
 
 class Ø(BaseException): 
@@ -164,78 +151,95 @@ class Ø(BaseException):
     def __invert__(x): return True
 
 
-@dataclass(hash=False)
-class composite(state):
-    object: tuple = field(default_factory=tuple)
-    def __post_init__(pose):
-        if pose.object is None: pose.object = tuple()
-        if not isinstance(pose.object, tuple): pose.object = tuple([pose.object])
+@dataclass
+class composable:
+    object: tuple = field(default_factory=tuple)   
+    def __post_init__(composable):
         
-    def __iter__(composite):
-        # Juxt is defined way later on unfortunately, but this is the most efficient place.
-        if isiterable(composite.object): 
-            if isinstance(composite.object, Mapping):
-                yield from map(juxt, composite.object.items())
-            else:
-                yield from composite.object
-        else: yield composite.object
-                
+        if composable.object is None:                 composable.object = tuple()
+        if not isinstance(composable.object, tuple):  composable.object = tuple([composable.object])
+        
+    def __iter__(composable):
+        if isiterable(composable.object): yield from composable.object
+        else:                             yield composable.object
     
-    def __bool__(composite): 
-        return bool(len(composite))        
+    def __bool__(composable): return bool(len(composable))        
     
-    def __hash__(State): return hash(map(hash, State))
+    def __len__(composable):  return isinstance(composable.object, Sized) and len(composable.object) or 0
     
+    def __hash__(composable): return hash(map(hash, composable))
 
-    def append(type=Ø(), object=Ø()):
-        if not isinstance(type, composite):
-            type = composite()
+    def append(self=Ø(), object=Ø()):
+        if object is getdoc:           return self
         
-        if not instance(Ø)(object): type.object += object,
+        if isinstance(self, type) and         issubclass(self, composable):  self = self()
+        
+        if not isinstance(object, Ø):  self.object = type(self.object)(chain(self.object, [object]))
             
-        return type
+        return self
+
+    def __getstate__(composable):
+        return tuple(getattr(composable, slot, None) for slot in composable.__dataclass_fields__)
+    
+    def __setstate__(composable, tuple):
+        list(setattr(composable, str, object) for str, object in zip(composable.__dataclass_fields__, tuple)) 
+        return composable
+    
+    @property
+    def __name__(composable): return type(composable).__name__
+    
+    __signature__ = inspect.signature(identity)
+    
+    def __call__(composable, *tuple, **dict): 
+        for callable in composable: 
+            tuple, dict = (partial(callable)(*tuple, **dict),), {}
+        return partial(identity)(*tuple, **dict)
+    
+    def __getitem__(composable, object):
+        """Slice the composites or append callables."""
+        if isinstance(object, (int, slice)):
+            return composable.object[object]
+        return composable.append(object)        
 
 
-class functional(composite):
-    def __iter__(functional):
-        # Juxt is defined way later on unfortunately, but this is the most efficient place.
-        yield from map(juxt, super().__iter__())
-        
-    def __call__(functional, *tuple, **dict): 
-        for callable in functional: 
-            tuple, dict = (call(callable, *tuple, **dict),), {}
-        return call(identity, *tuple, **dict)
+class juxt(composable):
+    def __iter__(juxt):
+        if isinstance(juxt.object, Mapping):
+            yield from map(type(juxt), juxt.object.items())
+        else:
+            yield from super().__iter__()
 
-
-@dataclass(hash=False)
-class juxt(composite):
-    object: tuple = field(default_factory=tuple)
+    def __call__(juxt, *tuple, **dict):
+        if not isiterable(juxt.object): 
+            return juxt.object(*tuple, **dict)
+        return (type(juxt.object) if isinstance(juxt.object, Sized) else identity)(
+                partial(callable)(*tuple, **dict) for callable in juxt)
+    
     def __post_init__(juxt): ...
-    def __call__(object, *tuple, **dict):
-        if not isiterable(object.object): 
-            return call(object.object, *tuple, **dict)
-        return call(
-            type(object.object) if isinstance(object.object, Sized) else identity, (
-                call(juxt(callable), *tuple, **dict) for callable in object))
+
+
+class interpolate(composable):
+    def __iter__(interpolate):
+        yield from map(juxt, super().__iter__())
 
 
 class logic(juxt):                        
     """
     >>> assert logic(bool)(10)
-    >>> assert instance(Ø)(logic(bool)(0))
-    >>> assert instance(Ø)(logic((bool, int))(0))
+    >>> assert isinstance(logic(bool)(0), Ø)
+    >>> assert isinstance(logic((bool, int))(0), Ø)
     >>> assert logic((bool, int))(10) == (True, 10)
     """
     def __post_init__(logic):
-        if isinstance(logic.object, type):
-            logic.object = instance(logic.object)
+        if isinstance(logic.object, type) and logic.object is not bool:
+            logic.object = this(isinstance, logic.object)
         super().__post_init__()
         
-    def __iter__(logic): yield from super().__iter__() or (True,)
+    def __iter__(logic): 
+        yield from super().__iter__() or (True,)
     
     def __call__(logic, *tuple, **dict):
         object = super().__call__(*tuple, **dict)
-        
         if not isiterable(logic.object): 
             return object or Ø(logic.object)
         
@@ -246,75 +250,83 @@ class logic(juxt):
         return object or True
 
 
-def instance(object):
-    """Prepare types and types as isinstance functions.
-    
-    >>> assert instance(int)(10) and not instance(int)('10')
-    """
-    if object and isinstance(object, type) and object is not bool: object = object,
-    if object and isinstance(object, tuple): object = this(isinstance, object)
-    return object
+class Composite(interpolate, metaclass=ABCMeta):
+    @abstractstaticmethod
+    def __callable__(Composite):
+        raise NotImplemented("""A Composite must define a __callable__ operation.""")
 
-
-@dataclass(hash=False)
-class pose(state):
-    """Pose a functional function with Inner and Outer callable. The Outer callable may accept exceptions. 
+@dataclass
+class composite(Composite):
+    """Pose a functional composite with Inner and Outer callable. The Outer callable may accept exceptions. 
     Pose is combined with the prefixes Pro, Ex, Im, and Juxt to evaluate inner call methods. 
     """
-    condition: logic = field(default_factory=logic)
-    object: functional = field(default_factory=functional)    
-    exception: tuple = field(default_factory=tuple)    
-        
-    def __post_init__(pose):
-        if not isinstance(pose.condition, logic): pose.condition = logic(pose.condition)
-        if not isinstance(pose.object, functional): pose.object = functional(pose.object)
-                    
-    def __bool__(pose): return bool(pose.object)
+    predicate: logic = field(default_factory=logic)
+    object: interpolate = field(default_factory=interpolate)    
+    exception: tuple = field(default_factory=tuple)
     
-    def __call__(pose, *tuple, **dict):
-        yield pose.condition(*tuple, **dict)
-        yield pose.object 
+    @staticmethod
+    def __callable__(predicate, object, *tuple, **dict):
+        """require the predicate to be true before evaluating the object"""
+        predicate = predicate(*tuple, **dict)
+        if object and predicate: 
+            return partial(object)(*tuple, **dict)
+        return predicate and True   
+        
+    def __post_init__(composite):
+        if not isinstance(composite.predicate, logic): 
+            composite.predicate = logic(composite.predicate)
+        if not isinstance(composite.object, interpolate): 
+            composite.object = interpolate(composite.object)
+                    
+    def append(composite, object):
+        composite.object = composite.object.append(object)
+        return composite
+    
+    def __iter__(composite, *tuple, **dict):
+        yield from (composite.predicate, composite.object)
+        
+    @property
+    def __call__(composite): 
+        @wraps(composite)
+        def signed(*args, **dict):
+            try:
+                return partial(composite.__callable__, *iter(composite))(*args, **dict)
+            except composite.exception or tuple() as Exception:
+                return Ø(Exception)
+        try:
+            signed.__signature__  = signature(composite.object[0])
+        except: 
+            assert True, "The first callable has no signature."
+            signed.__signature__ = Signature(Parameter(f'_{i}', Parameter.POSITIONAL_OR_KEYWORD) for i in range(10))
+        return signed
 
 
-# # Composites
-
-class pro(pose):
-    """Propose a not Ø logic condition then evaluate the callable."""
-    def __call__(pose, *tuple, **dict):
-        logic, callable = super().__call__(*tuple, **dict)
-        if callable and logic: 
-            return call(callable, *tuple, Exception=pose.exception, **dict)
-        return logic and True
-
-
-class ex(pose):
-    """Pipe ~Ø inner return values to the outer callable."""        
-    def __call__(pose, *tuple, **dict):
-        logic, object = super().__call__(*tuple, **dict)
-        if logic is True: 
-            logic = identity(*tuple, **dict)
-        return logic and call(object, logic, Exception=pose.exception)
+class pipe(composite):
+    @staticmethod
+    def __callable__(predicate, object, *tuple, **dict):
+        """pipe a ~Ø predicate """
+        predicate = predicate(*tuple, **dict)
+        if predicate is True: 
+            predicate = identity(*tuple, **dict)
+        return predicate and partial(object)(predicate)
 
 
-class im(pose):
-    """If the inner function is Ø evaluate the outer function."""
-    def __call__(pose, *tuple, **dict):
-        logic, object = super().__call__(*tuple, **dict)
-        return logic or call(object, *tuple, **dict, Exception=pose.exception)
+class conjugate(composite):
+    @staticmethod
+    def __callable__(predicate, object, *tuple, Exception=None, **dict):
+        return predicate(*tuple, **dict) or partial(object)(*tuple, **dict)
 
 
 class conditions:
-    # Lambda initializes propositions.
-    # The [*]positions are defined later.
-    
     def __pow__(x, object):
-        return proposition(x and x.append(instance(object)) or instance(object))
+        object = this(isinstance, object)
+        return compose(predicate=object, object=(x.append(Ø()),))
     
     def __and__(x, object): 
-        return exposition(x.append(Ø()), object)
+        return ifthen(predicate=x.append(Ø()), object=object)
     
     def __or__(x, object):  
-        return imposition(x.append(Ø()), object)        
+        return ifnot(predicate=x.append(Ø()), object=object)
     
     def __xor__(x, object): 
         return setattr(x.append(Ø()), 'exception', object) or x
@@ -325,64 +337,90 @@ class conditions:
     excepts = __xor__
 
 
-class __getattr__(object):
-    def __init__(x, object, next=None):
-        x.object, x.next = object, next
+class symbols:
+    """Operations that operator on containers.
 
-    def __getattr__(x, next):
-        object = x.next
-        # Convert the attribute to a callable.
-        if x.next: 
-            next = getattr(x.next, next)
+    >>> assert a@range == a.groupby(range)
+    >>> assert a/range == a.map(range)
+    >>> assert a//range == a.filter(range)
+    >>> assert a%range == a.reduce(range)
+    >>> assert copy(a%range) == a.reduce(range)
+    """        
+    def _left(x, callable, object=None, partial=this):
+        return x.append(callable if object is None else partial(callable, object))    
+
+    def _right(right, attr, left):
+        return getattr(symbols._left(compose(), left), dunder(attr))(right)            
+
+    __truediv__ = map = partialmethod(_left, map, partial=partial)
+    __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
+    __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
+    __matmul__ = groupby =  partialmethod(_left, groupby, partial=partial)
+
+    @property
+    def __mul__(symbols): return symbols.append
+    __add__ = __sub__ = __rshift__= __mul__
+    
+    def __lshift__(x, object): return x.append(do(object))
+    do = __lshift__
+
+list(setattr(symbols, '__r' + dunder(attr).lstrip('__'), partialmethod(symbols._right, attr))
+     for attr in binop);
+
+
+class __getattr__:
+    def __init__(__getattr__, parent=None, object=None):
+        __getattr__.parent = composite() if parent is None else parent
+        __getattr__.object = object or tuple()
+        
+    def __getattr__(x, str):
+        if str.startswith('_repr'): raise AttributeError(str)
+            
+        object = x.object
+        if object:
+            object += getattr(object[-1], str),
         else:
             for module in map(__import__, attributes.shortcuts):
-                if hasattr(module, next): 
-                    next = getattr(module, next)
+                if hasattr(module, str): 
+                    object += getattr(module, str),
                     break
             else:
                 try:
-                    next = __import__(next)
+                    object += __import__(str),
                 except ModuleNotFoundError:
                     raise AttributeError(next)                
-        
-        # Decorate the discovered attribute with the correct partials or call.
-        wrapper = False
-        
-        for decorator, set in attributes.decorators.items():
-            if next in set: 
-                next = partial(decorator, next)
-                break
-        else:                
-            if callable(next) and not isinstance(next, type): 
-                wrapper = wraps(next)
-                next = partial(isinstance(object, type) and this or partial, next)
-        
-        # Wrap the new object for interaction
-        next = __getattr__(x.object, next) 
-        return wrapper(next) if wrapper else next
+        return __getattr__(parent=x.parent, object=object) 
 
-    def __call__(x, *tuple, **dict):
-        object = x.next
-        if isinstance(object, partial):
-            object = object(*tuple, **dict) 
-            if isinstance(object, partial) and not(object.args or object.keywords):
+    @property
+    def __call__(x):
+        *parent, object = x.object
+        @wraps(object)
+        def signed(*tuple, **dict):
+            nonlocal object, parent, x
+            for decorate, set in attributes.decorators.items():
+                if object in set: 
+                    object = decorate(object)
+                    break
+            else:
+                object = partial(this if parent and isinstance(parent[-1], type) else partial, object)
+            object = object(*tuple, **dict)
+            if not (object.args or object.keywords):
                 object = object.func
-        elif tuple or dict:
-            object = partial(object, *tuple, **dict)
-        return x.object.append(object)
+            return x.parent.append(object)
+        return signed
 
-    def __repr__(x): 
-        return repr(isinstance(x.next, partial) and x.next.args and x.next.args[0] or x.next)
-        
-
+    @property
+    def __wrapped__(x): 
+        *parent, object = x.object
+        return unwrap(object)
+    
+    def __repr__(x): return repr(unwrap(x))
+    
     def __dir__(x):
-        if not x.next or isinstance(x, attributes):
-            base = (
-                list(filter(this(complement(str.__contains__), '.'), sys.modules.keys())) 
-                + list(concat(dir(__import__(module)) for module in attributes.shortcuts)))
-        else:
-            base = dir(x.next)
-        return super().__dir__() + base
+        if x.object: return dir(x.object[-1])
+        return super().__dir__() + (
+            list(object for object in __import__('sys').modules if not '.' in object) 
+            + list(concat(dir(__import__(module)) for module in attributes.shortcuts)))
 
 
 class attributes:
@@ -395,162 +433,111 @@ class attributes:
     
     def __getattr__(x, attr):
         """Access attributes from sys.modules or x.shortcuts"""
-        return __getattr__(x).__getattr__(attr)
+        return __getattr__(parent=x).__getattr__(attr)
     
-    def __dir__(x): return dir(__getattr__(x))
+    def __dir__(x): return dir(__getattr__(parent=x))
 
-attributes.decorators[this] = [__import__('fnmatch').fnmatch]
-attributes.decorators[call] = operator.attrgetter('attrgetter', 'itemgetter', 'methodcaller')(operator)
-attributes.decorators[this] += [item for item in vars(operator).values() if item not in attributes.decorators[call]]
+attributes.decorators[identity] = operator.attrgetter(*getters)(operator)
+attributes.decorators[partial(partial, this)] = [object for object in vars(operator).values() 
+ if object not in attributes.decorators[identity]] + [__import__('fnmatch').fnmatch]
 
 
-class append:
-    def append(x, object=Ø()): 
-        x.object.append(object)
-        return x
+class composition(attributes, symbols, conditions): 
+    """Composition methods for establishing Positions using __magic__ Python methods.
+    """
+class compose(composite, composition):
+    """Evaluate the outer callable if the inner callable is ~Ø."""
+class ifthen(pipe, composition): 
+    """Pass ~Ø inner function return values as input to the outer function."""
+class ifnot(conjugate, composition): 
+    """Evaluate the other outer function is the inner function is Ø."""        
+
+
+class factory: 
+    args = keywords = None
+    def append(factory, object=Ø()):
+        tuple, dict = getattr(factory, 'args', []), getattr(factory, 'keywords', {})
+        return super().__call__().append(
+            partial(object, *tuple, **dict) if tuple or dict else object)
+    
+    def __call__(factory, *tuple, **dict):
+        args, kwargs = getattr(factory, 'args', []), getattr(factory, 'keywords', {})
+        if args or kwargs:
+            return partial(identity)(*args, *tuple, **kwargs)
+        return super().__call__(*tuple, **dict)
+    
+    def __bool__(factory): return False
+    
     __getitem__ = append
 
 
-class symbols:
-    """Operations that operator on containers.
-    
-    >>> assert a@range == a.groupby(range)
-    >>> assert a/range == a.map(range)
-    >>> assert a//range == a.filter(range)
-    >>> assert a%range == a.reduce(range)
-    >>> assert copy(a%range) == a.reduce(range)
-    """        
-    def _left(x, callable, object=None, partial=this):
-        return x.append(callable if object is None else partial(callable, object))    
-
-    def _right(right, attr, left):
-        return getattr(symbols._left(proposition(), left), dunder(attr))(right)            
-    
-    __truediv__ = map = partialmethod(_left, map, partial=partial)
-    __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
-    __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
-    __matmul__ = groupby =  partialmethod(_left, groupby, partial=partial)
-    
-    @property
-    def __mul__(symbols): return symbols.append
-        
-    __add__ = __sub__ = __rshift__= __mul__
-    
-    def __lshift__(x, object): return x.append(do(object))
-    do = __lshift__
-
-list(setattr(symbols, '__r' + dunder(attr).lstrip('__'), partialmethod(symbols._right, attr))
-     for attr in binop);
-    
-
-
-# # Juxtapositions
-
-class position(append, conditions, attributes, symbols, state): 
-    """Composition methods for establishing Positions using __magic__ Python methods.
-    
-    >>> proposition(bool, range)(0), exposition(bool, range)(0), imposition(bool, range)(0)
-    (Ø(<class 'bool'>,), Ø(<class 'bool'>,), range(0, 0))
-
-    >>> proposition(bool, range)(10), exposition(bool, range)(10), imposition(bool, range)(10)
-    (range(0, 10), range(0, 10), True)
-    """
-class proposition(pro, position): 
-    """Evaluate the outer callable if the inner callable is ~Ø."""
-class exposition(ex, position): 
-    """Pass ~Ø inner function return values as input to the outer function."""
-class imposition(im, position): 
-    """Evaluate the other outer function is the inner function is Ø."""
-
-ifthen, ifnot = exposition, imposition
-
-@dataclass(hash=True)
-class com(position): 
-    object: state = None
+@_dataclass
+class curry(factory, composition, interpolate):
     args: tuple = field(default_factory=tuple, init=False)
     keywords: dict = field(default_factory=dict, init=False)
-    
-    def append(com, object=Ø()):
-        tuple, dict = getattr(com, 'args', []), getattr(com, 'keywords', {})
-        return com.object().append(partial(object, *tuple, **dict) if tuple or dict else object)
-    
-    def __call__(com, *tuple, **dict):
-        args, kwargs = getattr(com, 'args', []), getattr(com, 'keywords', {})
-        if args or kwargs:
-            return call(identity, *args, *tuple, **kwargs)
-        return com.object(*tuple, **dict)
-    
-    def __bool__(com): return False
-    
-    __getitem__ = append
 
-
-class simple(com):
-    def __call__(simple, *tuple, **dict): 
+    def __call__(curry, *tuple, **dict): 
         if tuple or dict:
-            simple = copy(simple)
-            simple.args, simple.keywords = tuple, dict
-            return simple
-        return super().__call__(dict.get('logic', None), *tuple, **dict)
+            curry = copy(curry)
+            curry.args, curry.keywords = tuple, dict
+            return curry
+        return super().__call__(*tuple, **dict)
 
 
-compose = com(proposition)
-a = an = the = λ = simple(proposition)
+a = an = the = then = λ = curry(object=compose)
 
 
-class canonical:
-    __wrapped__ = None
+@_dataclass
+class canonical(compose):
     __annotations__ = {}
-    
+    args = keywords = None
     def __post_init__(x, *args, **kwargs): 
         super().__post_init__(*args, **kwargs)
-        x.__qualname__ = '.'.join((__name__, type(x).__name__))
         
-    def _left(x, callable, arg=None, partial=this):
+    def _left_(x, callable, arg=None, partial=this):
+        if callable is getattr and isinstance(arg, str) and arg.startswith('_ipython'):
+            return x
         return x.append(partial(callable, arg))
 
-    def _right(x, callable, left):
-        return canonical._left(x, callable, left, partial=partial)
+    def _right_(x, callable, left):
+        return canonical._left_(x, callable, left, partial=partial)
 
-    def _bool(x, callable, *args):
-        x = x.append(Ø())
-        x.condition.append(this(callable, *args))
-        return x
+    def _bool_(x, callable, *args):
+        return ifthen(predicate=x.append(this(callable, *args)))
     
-canonical.__getattr__ = partialmethod(canonical._left, getattr)
+    def __getattr__(x, object):
+        if object == '__qualname__': return canonical.__qualname__
+        if object not in ('func', '__wrapped__'):
+            return canonical._left_(x, getattr, object)
+        raise AttributeError(object)
     
 for attr in binop + ('getitem',):
     op, rop =  getattr(operator, attr), '__r' + dunder(attr).lstrip('__')
-    setattr(canonical, dunder(attr), partialmethod(canonical._left, op))
-    setattr(canonical, rop, partialmethod(canonical._right, op))        
+    setattr(canonical, dunder(attr), partialmethod(canonical._left_, op))
+    setattr(canonical, rop, partialmethod(canonical._right_, op))        
     
-list(setattr(canonical, dunder(attr), partialmethod(canonical._bool, getattr(operator, attr)))
+list(setattr(canonical, dunder(attr), partialmethod(canonical._bool_, getattr(operator, attr)))
      for attr in boolop)
-list(setattr(canonical, dunder(attr), partialmethod(canonical._left, getattr(operator, attr)))
+list(setattr(canonical, dunder(attr), partialmethod(canonical._left_, getattr(operator, attr)))
      for attr in nop);
 
 
-class operate(canonical, proposition): ...
-
-@dataclass(hash=False)
-class operation(operate, simple): 
+class operate(factory, canonical): 
     """
-    >>> f = 0<(x<10) + 90
-    >>> f(-5), f(5), f(15)
-    (Ø((this(<built-in function lt>, 10), this(<built-in function gt>, 0)),), 95, Ø((this(<built-in function lt>, 10), this(<built-in function gt>, 0)),))
-    """
-
-x = op = operation(operate)
+    >>> f = (0<x)&(x<10)*(x+90)
+    >>> assert all(map(a**Ø, (f(-5), f(15))))
+    >>> assert f(5) is 95"""
+x = op = operate(object=canonical)
 
 
-class preview(proposition):
+class preview(compose):
     def __repr__(x): return repr(x())
     
-pre = preview = simple(preview)
+pre = preview = curry(object=preview)
 
 
-@dataclass(hash=False)
-class parallel(proposition):
+@dataclass
+class parallel(compose):
     """An embarassingly parallel proposition; call the outer function in parallel in the inner function is ~Ø.
     
     >>> import joblib
@@ -568,19 +555,20 @@ class parallel(proposition):
     __truediv__ = map
 
 
-@dataclass(repr=False)
+@_dataclass(repr=False)
 class store(UserDict):
     """
     >>> s = store(range)
     >>> assert 10 not in s and s(10) and 10 in s
     """
-    callable: object = field(default_factory=proposition)
-    def __post_init__(self): super().__init__()
+    callable: object = field(default_factory=compose)
+    __post_init__ = UserDict.__init__
     @property
     def __self__(x): return x.__call__.__self__
     def __call__(x, *tuple, **dict):
         x[tuple[0]] = x.callable(*tuple, **dict)
         return x[tuple[0]]
+    def __repr__(x): return str(x.data.keys())
 
 
 class cache(store):
@@ -590,8 +578,6 @@ class cache(store):
         return x[tuple[0]]
 
 
-# # Developer
-
 if __name__ == '__main__':
     if 'runtime' in sys.argv[-1]:
         from IPython import get_ipython, display
@@ -599,11 +585,8 @@ if __name__ == '__main__':
         get_ipython().system('jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb')
         get_ipython().system('source activate p6 && python -m pydoc -w poser')
         get_ipython().system('source activate p6 && pyreverse -o png -pposer -fALL poser')
-        get_ipython().system('source activate p6 && pytest')
+        get_ipython().system('source activate p6 && pytest test_poser.ipynb --doctest-modules')
         display.display(display.Image('classes_poser.png'), display.IFrame('poser.html', height=600, width=800))
-        
-        get_ipython().system('source activate p6 && ipython -m doctest poser.py')
-        get_ipython().system('source activate p6 && python -m pydoc -w poser')
     else:
         print('run from cli')
 
