@@ -28,12 +28,10 @@ __test__ = dict(
 
 from dataclasses import dataclass as _dataclass, field
 from itertools import chain
-from functools import partialmethod, wraps
+from functools import partialmethod, wraps, reduce
 import sys, operator, inspect
 from collections import Sized, Mapping, Iterable, UserDict
-from toolz import excepts, concat, reduce, groupby
 from copy import copy
-
 from inspect import unwrap, Signature, signature, Parameter, getdoc
 from abc import ABCMeta, ABC, abstractstaticmethod
 
@@ -41,7 +39,6 @@ dunder = '__{}__'.format
 dataclass = _dataclass(hash=False)
 
 __all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
-
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
 boolop =  'gt', 'ge', 'le', 'lt', 'eq', 'ne'
 nop = 'abs', 'pos', 'neg', 'pow'
@@ -55,6 +52,10 @@ def isiterable(object: object) -> bool:
     >>> assert not any(map(isiterable, (10, range, "strings are not iterable")))
     """
     return isinstance(object, Iterable) and not isinstance(object, str) and not callable(object)
+
+
+def groupby(callable, iter): 
+    return dict(__import__('itertools').groupby(iter, callable))
 
 
 def identity(*tuple, **dict): 
@@ -346,16 +347,16 @@ class symbols:
     >>> assert a%range == a.reduce(range)
     >>> assert copy(a%range) == a.reduce(range)
     """        
-    def _left(x, callable, object=None, partial=this):
-        return x.append(callable if object is None else partial(callable, object))    
+    def _left_(x, callable, object=None, partial=this):
+        return x.append(callable if object is None else partial(callable, juxt(object)))    
 
     def _right(right, attr, left):
-        return getattr(symbols._left(compose(), left), dunder(attr))(right)            
+        return getattr(symbols._left_(compose(), left), dunder(attr))(right)            
 
-    __truediv__ = map = partialmethod(_left, map, partial=partial)
-    __floordiv__ = filter = partialmethod(_left, filter, partial=partial)
-    __mod__ = reduce = partialmethod(_left, reduce, partial=partial)
-    __matmul__ = groupby =  partialmethod(_left, groupby, partial=partial)
+    __truediv__ = map = partialmethod(_left_, map, partial=partial)
+    __floordiv__ = filter = partialmethod(_left_, filter, partial=partial)
+    __mod__ = reduce = partialmethod(_left_, reduce, partial=partial)
+    __matmul__ = groupby =  partialmethod(_left_, groupby, partial=partial)
 
     @property
     def __mul__(symbols): return symbols.append
@@ -404,7 +405,7 @@ class __getattr__:
             else:
                 object = partial(this if parent and isinstance(parent[-1], type) else partial, object)
             object = object(*tuple, **dict)
-            if not (object.args or object.keywords):
+            if isinstance(object, partial) and not (object.args or object.keywords):
                 object = object.func
             return x.parent.append(object)
         return signed
@@ -420,7 +421,8 @@ class __getattr__:
         if x.object: return dir(x.object[-1])
         return super().__dir__() + (
             list(object for object in __import__('sys').modules if not '.' in object) 
-            + list(concat(dir(__import__(module)) for module in attributes.shortcuts)))
+            + sum((dir(__import__(module)) for module in attributes.shortcuts), [])
+        )
 
 
 class attributes:
