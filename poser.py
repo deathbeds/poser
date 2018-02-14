@@ -54,10 +54,6 @@ def isiterable(object: object) -> bool:
     return isinstance(object, Iterable) and not isinstance(object, str) and not callable(object)
 
 
-def groupby(callable, iter): 
-    return dict(__import__('itertools').groupby(iter, callable))
-
-
 def identity(*tuple, **dict): 
     """An identity that returns {tuple[0]} if it exists.
     
@@ -65,6 +61,16 @@ def identity(*tuple, **dict):
     >>> assert identity(10, 20, dict(foo=42)) is 10
     """
     return tuple[0] if tuple else None
+
+
+def groupby(callable, iter, reducer=identity): 
+    return {
+        key: reducer(list(value)) for key, value in __import__('itertools').groupby(iter, callable)}
+
+def reduceby(callable, reducer, iter): 
+    """>>> assert reduceby(type, len, [1,1,1,1, 'asdf'])
+    """
+    return groupby(callable, iter, reducer)
 
 
 class partial(__import__('functools').partial):
@@ -118,7 +124,9 @@ class partial(__import__('functools').partial):
 class this(partial):
     """this is a partial for MethodType objects.
     
-    >>> assert this(str.replace, 'a', 'b')('abc') == 'bbc'"""
+    >>> assert this(str.replace, 'a', 'b')('abc') == 'bbc'
+    >>> assert this(range) != partial(range)
+    """
     def __call__(this, object): return partial(this.func, object)(*this.args, **this.keywords)
 
 
@@ -381,10 +389,13 @@ class __getattr__:
         if object:
             object += getattr(object[-1], str),
         else:
-            for module in map(__import__, attributes.shortcuts):
-                if hasattr(module, str): 
-                    object += getattr(module, str),
-                    break
+            for module in attributes.shortcuts:
+                try:
+                    module = __import__(module)
+                    if hasattr(module, str): 
+                        object += getattr(module, str),
+                        break
+                except ModuleNotFoundError: ...
             else:
                 try:
                     object += __import__(str),
