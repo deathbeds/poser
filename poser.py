@@ -450,9 +450,13 @@ class attributes:
     
     def __dir__(x): return dir(__getattr__(parent=x))
 
+attributes.decorators[partial(partial, this)] = [__import__('fnmatch').fnmatch]
+attributes.decorators[partial(partial, this)] += [object for str, object in vars(__import__('builtins')).items() if map(
+    str.endswith, ('attr', 'instance'))] 
 attributes.decorators[identity] = operator.attrgetter(*getters)(operator)
-attributes.decorators[partial(partial, this)] = [object for object in vars(operator).values() 
- if object not in attributes.decorators[identity]] + [__import__('fnmatch').fnmatch]
+attributes.decorators[partial(partial, this)] += [object for object in vars(operator).values() 
+ if object not in attributes.decorators[identity]] 
+
 
 
 class composition(attributes, symbols, conditions): 
@@ -523,7 +527,7 @@ class canonical(compose):
         if object not in ('func', '__wrapped__'):
             return canonical._left_(x, getattr, object)
         raise AttributeError(object)
-    
+        
 for attr in binop + ('getitem',):
     op, rop =  getattr(operator, attr), '__r' + dunder(attr).lstrip('__')
     setattr(canonical, dunder(attr), partialmethod(canonical._left_, op))
@@ -540,6 +544,8 @@ class operate(factory, canonical):
     >>> f = (0<x)&(x<10)*(x+90)
     >>> assert all(map(a**Ø, (f(-5), f(15))))
     >>> assert f(5) is 95"""
+    def __getitem__(self, object): return super().__getitem__(this(operator.getitem, object))
+    
 x = op = operate(object=canonical)
 
 
