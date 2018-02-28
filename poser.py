@@ -38,7 +38,7 @@ from abc import ABCMeta, ABC, abstractstaticmethod
 dunder = '__{}__'.format
 dataclass = _dataclass(hash=False)
 
-__all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'preview', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
+__all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'view', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
 boolop =  'gt', 'ge', 'le', 'lt', 'eq', 'ne'
 nop = 'abs', 'pos', 'neg', 'pow'
@@ -387,7 +387,12 @@ class __getattr__:
             
         object = x.object
         if object:
-            object += getattr(object[-1], str),
+            try:
+                object += getattr(object[-1], str),
+            except AttributeError:                     
+                try:
+                    object += getattr(__import__(object[-1].__package__ +'.'+str), str),
+                except ModuleNotFoundError: ...
         else:
             for module in attributes.shortcuts:
                 try:
@@ -399,8 +404,9 @@ class __getattr__:
             else:
                 try:
                     object += __import__(str),
-                except ModuleNotFoundError:
-                    raise AttributeError(next)                
+                except ModuleNotFoundError:                     
+                    raise AttributeError(next)  
+                    
         return __getattr__(parent=x.parent, object=object) 
 
     @property
@@ -549,10 +555,10 @@ class operate(factory, canonical):
 x = op = operate(object=canonical)
 
 
-class preview(compose):
+class view(compose):
     def __repr__(x): return repr(x())
     
-pre = preview = curry(object=preview)
+view = curry(object=view)
 
 
 @dataclass
