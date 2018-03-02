@@ -150,7 +150,7 @@ class star(partial):
         args, dict = star.args, star.keywords
         for next in object:
             if isinstance(next, Mapping): dict = {**dict, **next}
-            if isiterable(object):        args += tuple(next)
+            elif isiterable(object):        args += tuple(next)
         return partial(star.func)(*args, **dict)
 
 
@@ -181,9 +181,11 @@ class composable:
     def append(self=Ø(), object=Ø()):
         if object is getdoc:           return self
         
-        if isinstance(self, type) and         issubclass(self, composable):  self = self()
+        if isinstance(self, type) and issubclass(self, composable):  
+            self = self()
         
-        if not isinstance(object, Ø):  self.object = type(self.object)(chain(self.object, [object]))
+        if not isinstance(object, Ø):  
+            self.object = type(self.object)(chain(self.object, [object]))
             
         return self
 
@@ -410,6 +412,7 @@ class __getattr__:
     @property
     def __call__(x):
         *parent, object = x.object
+        
         @wraps(object)
         def signed(*tuple, **dict):
             nonlocal object, parent, x
@@ -418,7 +421,10 @@ class __getattr__:
                     object = decorate(object)
                     break
             else:
-                object = partial(this if parent and isinstance(parent[-1], type) else partial, object)
+                if parent and isinstance(parent[-1], type):
+                    object = partial(this, object)
+                else:
+                    object = partial(partial, object)
             object = object(*tuple, **dict)
             if isinstance(object, partial) and not (object.args or object.keywords):
                 object = object.func
@@ -430,7 +436,7 @@ class __getattr__:
         *parent, object = x.object
         return unwrap(object)
     
-    def __repr__(x): return repr(unwrap(x))
+    def __repr__(x): return x.object and repr(unwrap(x)) or repr(x.parent)
     
     def __dir__(x):
         if x.object: return dir(x.object[-1])
@@ -455,8 +461,7 @@ class attributes:
     def __dir__(x): return dir(__getattr__(parent=x))
 
 attributes.decorators[partial(partial, this)] = [__import__('fnmatch').fnmatch]
-attributes.decorators[partial(partial, this)] += [object for str, object in vars(__import__('builtins')).items() if map(
-    str.endswith, ('attr', 'instance'))] 
+attributes.decorators[partial(partial, this)] += [object for str, object in vars(__import__('builtins')).items() if any(map(str.endswith, ('attr', 'instance')))] 
 attributes.decorators[identity] = operator.attrgetter(*getters)(operator)
 attributes.decorators[partial(partial, this)] += [object for object in vars(operator).values() 
  if object not in attributes.decorators[identity]] 
@@ -616,4 +621,10 @@ if __name__ == '__main__':
         display.display(display.Image('classes_poser.png'), display.IFrame('poser.html', height=600, width=800))
     else:
         print('run from cli')
+
+
+the.range(10)(20)
+
+
+__getattr__
 
