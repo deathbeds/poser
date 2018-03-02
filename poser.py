@@ -390,9 +390,7 @@ class __getattr__:
             try:
                 object += getattr(object[-1], str),
             except AttributeError:                     
-                try:
-                    object += getattr(__import__(object[-1].__package__ +'.'+str), str),
-                except ModuleNotFoundError: ...
+                ...
         else:
             for module in attributes.shortcuts:
                 try:
@@ -591,16 +589,20 @@ class store(UserDict):
     @property
     def __self__(x): return x.__call__.__self__
     def __call__(x, *tuple, **dict):
-        x[tuple[0]] = x.callable(*tuple, **dict)
-        return x[tuple[0]]
+        x[tuple] = x.callable(*tuple, **dict)
+        return x[tuple]
     def __repr__(x): return str(x.data.keys())
+    def __contains__(x, object):
+        if not isinstance(object, tuple):
+            object = object,
+        return super().__contains__(object)
 
 
 class cache(store):
     def __call__(x, *tuple, **dict):
-        if tuple[0] not in x: 
+        if tuple not in x: 
             return super().__call__(*tuple, **dict)
-        return x[tuple[0]]
+        return x[tuple]
 
 
 if __name__ == '__main__':
