@@ -11,6 +11,7 @@ __test__ = dict(
     simple=""">>> assert a[range](10) == range(10)
     >>> assert a[range][type](10) is range 
     >>> assert a[range][type][type](10) is type
+    >>> assert hash(a[range])
             
     Begin a composition with a decorator.
     >>> @a.append
@@ -22,6 +23,7 @@ __test__ = dict(
     >>> assert juxt([range])(10) == [range(10)]
     >>> assert juxt([range, type])(10) == [range(10), int]
     >>> assert juxt([range, type, str, 20])(10) == [range(10), int, '10', 20]
+    
             
     >>> assert isinstance(juxt({})(), dict) and isinstance(juxt([])(), list) and isinstance(juxt(tuple())(), tuple)""")
 
@@ -36,7 +38,7 @@ from inspect import unwrap, Signature, signature, Parameter, getdoc
 from abc import ABCMeta, ABC, abstractstaticmethod
 
 dunder = '__{}__'.format
-dataclass = _dataclass(unsafe_hash=False)
+dataclass = _dataclass(unsafe_hash=True)
 
 __all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'view', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
@@ -175,8 +177,6 @@ class composable:
     def __bool__(composable): return bool(len(composable))        
     
     def __len__(composable):  return isinstance(composable.object, Sized) and len(composable.object) or 0
-    
-    def __hash__(composable): return hash(map(hash, composable))
 
     def append(self=Ø(), object=Ø()):
         if object is getdoc:           return self
@@ -210,7 +210,7 @@ class composable:
         """Slice the composites or append callables."""
         if isinstance(object, (int, slice)):
             return composable.object[object]
-        return composable.append(object)        
+        return composable.append(object)
 
 
 class juxt(composable):

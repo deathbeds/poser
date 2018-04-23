@@ -8,8 +8,10 @@ install:
 - python setup.py bdist_wheel
 - pip install -r requirements.txt
 - python -m pip install dist/poser-*.tar.gz --ignore-installed --no-deps
+- pip install -r requirements-test.txt
 script:
 - python -m doctest poser.py --verbose
+- pytest test_poser.ipynb
 deploy:
   provider: pypi
   user: docfast
