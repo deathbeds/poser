@@ -7,7 +7,7 @@ install:
 - python setup.py sdist
 - python setup.py bdist_wheel
 - pip install -r requirements.txt
-- python -m pip install dist/importnb-*.tar.gz --ignore-installed --no-deps
+- python -m pip install dist/poser-*.tar.gz --ignore-installed --no-deps
 script:
 - python -m doctest poser.py --verbose
 deploy:
