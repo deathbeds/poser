@@ -22,6 +22,7 @@ setup_args = dict(
         "dataclasses",
         "toolz",
         "requests",
+        "joblib"
     ],
     include_package_data=True,
     py_modules=["poser"],
