@@ -1,41 +1,44 @@
-# coding: utf-8
-
-# In[85]:
-
-from os.path import join, dirname
+from pathlib import Path
 import setuptools
 
+name = "poser"
 
-def read(fname):
-    with open(join(dirname(__file__), fname)) as f:
-        return f.read()
+__version__ = None
 
+here = Path(__file__).parent
 
-from distutils.core import setup, Command
-# you can also import from setuptools
+exec((here / "_version.py").read_text())
 
-setuptools.setup(
-    name="poser",
-    version="0.2.0",
-    author="Tony Fast",
+setup_args = dict(
+    name=name,
+    version=__version__,
+    author="deathbeds",
     author_email="tony.fast@gmail.com",
-    description="Callable, composable objects with side effects.",
+    description="Import .ipynb files as modules in the system path.",
+    long_description=here / "readme.md").read_text(),
+    long_description_content_type='text/markdown',
+    url="https://github.com/deathbeds/importnb",
+    python_requires=">=3.6",
     license="BSD-3-Clause",
-    keywords="IPython Magic Jupyter",
-    url="http://github.com/tonyfast/articles",
-    py_modules=['poser'],
-    packages=setuptools.find_packages(),
-    #     long_description=read("readme.rst"),
-    classifiers=[
-        "Topic :: Utilities",
-        "Framework :: IPython",
-        "Natural Language :: English",
-        "Programming Language :: Python",
-        "Intended Audience :: Developers",
-        "Development Status :: 3 - Alpha",
-        "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: BSD License",
-        "Topic :: Software Development :: Testing",
+    install_requires=[
+        "dataclasses",
+        "toolz",
+        "requests",
     ],
-    install_requires=["toolz", "requests", "dataclasses"])
+    include_package_data=True,
+    py_modules=["poser"],
+    classifiers=(
+        "Development Status :: 4 - Beta",
+        "Framework :: IPython",
+        "Framework :: Jupyter",
+        "Intended Audience :: Developers",
+        "Natural Language :: English",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3.6",
+    ),
+    zip_safe=False,
+)
+
+if __name__ == "__main__":
+    setuptools.setup(**setup_args)
