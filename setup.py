@@ -15,7 +15,7 @@ setup_args = dict(
     author="deathbeds",
     author_email="tony.fast@gmail.com",
     description="Import .ipynb files as modules in the system path.",
-    long_description=here / "readme.md").read_text(),
+    long_description=(here / "readme.md").read_text(),
     long_description_content_type='text/markdown',
     url="https://github.com/deathbeds/importnb",
     python_requires=">=3.6",
