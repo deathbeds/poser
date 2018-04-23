@@ -1,8 +1,9 @@
 language: python
 python:
+- '3.5'
 - '3.6'
 - 3.6-dev
-- 3.7-dev
+# - 3.7-dev
 install:
 - python setup.py sdist
 - python setup.py bdist_wheel
@@ -13,9 +14,11 @@ script:
 deploy:
   provider: pypi
   user: docfast
+  skip_cleanup: true
   password:
     secure: Cc+WqwcHMJGqab4cmVREYnaqclM9lcQzKyHSExhj3u3ZY+OTV+86CxwNhkfMtHXiTziIwjIRAJLdQalURlcIvmnTkHSt2f++2vInJGXlrpznpiX2rAhJlbGtFWW3WXxmmbvfNMQkyWwYyGB4FSulz4voDNY7N7BqQTeZ0woaJl+hc+Sh6AwdHhaKKDPRDlXigL3bTuxPPsAA5HhAcc67eQ7q6SXjbvhYDnvOVdgbEJGK1GxpiVrQUoqeHL3boF8Mc9kUjSfrV1Ab08B5qeN5sl8eQst8Y8Bcs2rF8nVonMVdGtYXZ3Bn/qnOzjhNz4BXI//bzEevwkGYatXs3kaBbX4aclv9Ag7uI4yWYABQKcJRO/I7MHPfw1AwzIOiW7pOcUiblYBQ0SZ3B7Y29d78sNjmt1SMnfJdcpOqJdcLEWawZe5CMadMU0bvcKbrdrW8xlwFRseK6C6aTsKdhzydiA4x0a9ew0vnUW5QjIyU2/0nGBmgTOUjnzG2a771XOuI0ITEg21EI5yM1DWsh8Hyw7krFsT/J6Rkvl42Ox6zSOtE7ILxDdr0RsaKu7H7zVie0lQbC3IUdj0NXRw0ekZ8Qp05xexoVd+YfxmZYOkjzGXXTpotUGjWM02K3iEwmgfxXOoGbN/kzIS9qhw+4MRybAVuq/vTSsklvBsJPLC6860=
   on:
     tags: true
     distributions: sdist bdist_wheel
     repo: deathbeds/poser
+    python: '3.6'

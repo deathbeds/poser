@@ -3,7 +3,7 @@ import setuptools
 
 name = "poser"
 
-__version__ = "0.0.2"
+__version__ = "0.0.3"
 
 here = Path(__file__).parent
 
