@@ -36,7 +36,7 @@ from inspect import unwrap, Signature, signature, Parameter, getdoc
 from abc import ABCMeta, ABC, abstractstaticmethod
 
 dunder = '__{}__'.format
-dataclass = _dataclass(hash=False)
+dataclass = _dataclass(unsafe_hash=False)
 
 __all__ = 'a', 'an', 'the', 'parallel', 'star', 'do', 'view', 'x','op', 'juxt', 'cache', 'store', 'Ø', 'λ', 'identity', 'partial', 'this', 'composite'
 binop = 'add', 'sub', 'mul', 'truediv', 'floordiv', 'mod', 'lshift', 'rshift', 'matmul'
@@ -467,7 +467,6 @@ attributes.decorators[partial(partial, this)] += [object for object in vars(oper
  if object not in attributes.decorators[identity]] 
 
 
-
 class composition(attributes, symbols, conditions): 
     """Composition methods for establishing Positions using __magic__ Python methods.
     """
@@ -621,10 +620,4 @@ if __name__ == '__main__':
         display.display(display.Image('classes_poser.png'), display.IFrame('poser.html', height=600, width=800))
     else:
         print('run from cli')
-
-
-the.range(10)(20)
-
-
-__getattr__
 
