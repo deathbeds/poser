@@ -3,11 +3,9 @@ import setuptools
 
 name = "poser"
 
-__version__ = None
+__version__ = "0.0.1"
 
 here = Path(__file__).parent
-
-exec((here / "_version.py").read_text())
 
 setup_args = dict(
     name=name,
