@@ -3,7 +3,7 @@ import setuptools
 
 name = "poser"
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 here = Path(__file__).parent
 
@@ -16,7 +16,7 @@ setup_args = dict(
     long_description=(here / "readme.md").read_text(),
     long_description_content_type='text/markdown',
     url="https://github.com/deathbeds/importnb",
-    python_requires=">=3.4",
+    python_requires=">=3.6",
     license="BSD-3-Clause",
     install_requires=[
         "dataclasses",
