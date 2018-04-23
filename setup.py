@@ -16,7 +16,7 @@ setup_args = dict(
     long_description=(here / "readme.md").read_text(),
     long_description_content_type='text/markdown',
     url="https://github.com/deathbeds/importnb",
-    python_requires=">=3.5",
+    python_requires=">=3.4",
     license="BSD-3-Clause",
     install_requires=[
         "dataclasses",
