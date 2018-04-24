@@ -571,15 +571,19 @@ class parallel(compose):
     >>> def g(x): return x+10
     >>> assert parallel(jobs=4).range().map(x+10)(100)
     >>> assert parallel(jobs=4).range().map(a[range])(100)
-    """
-    
+    """        
     jobs: int = field(default=4)
+    def __init__(self, jobs=4): 
+        self.jobs = jobs
+        super().__init__()
+        
     def map(x, object): return super().map(__import__('joblib').delayed(object))
 
     def __call__(x, *tuple, **dict):
         return __import__('joblib').Parallel(x.jobs)(super().__call__(*tuple, **dict))
 
     __truediv__ = map
+    __signature__ = Signature(parameters=[Parameter('jobs', Parameter.POSITIONAL_OR_KEYWORD, default=4)])
 
 
 @_dataclass(repr=False)
