@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # coding: utf-8
 
 __test__ = dict(
@@ -465,6 +465,7 @@ attributes.decorators[partial(partial, this)] += [object for str, object in vars
 attributes.decorators[identity] = operator.attrgetter(*getters)(operator)
 attributes.decorators[partial(partial, this)] += [object for object in vars(operator).values() 
  if object not in attributes.decorators[identity]] 
+attributes.decorators[partial(partial, this)] += [sum]
 
 
 class composition(attributes, symbols, conditions): 
