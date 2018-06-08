@@ -1,170 +1,93 @@
 
-# `composites` compose complex functions
+> The readme is a work in progress.
 
-`composites` are untyped functional programming objects in Python _with all the side effects_.  `composites` make it easier to compose/pipeline/chain callables, classes, and other objects into higher-order functions.
+# Be a `poser`
 
-                pip install git+https://github.com/tonyfast/composites
+`poser` is a fluent interface for lazy, functional python programming.
 
-# compose functions with `a`, `an`, `the`, or `λ`
+        pip install poser
 
+# `poser` API
 
-    from composites import *; assert a is an is the
+Commonly, a `poser` expression will start with `λ`.
 
-A basic example, __enumerate__ a __range__ and create a __dict__ionary.
 
-    f = the[range][reversed][enumerate][dict]
-    f(3), f
----
+```python
+    from poser import λ, a, an, the, x, composition
+    assert λ is a is an is the
+```
 
+`poser` is inspired by Python functional programming library `toolz`.  `poser` provides dense API to integrate functional programming into python code.
 
 
 
+```python
+    from toolz.curried import *; from toolz.curried.operator import *
+```
 
-    ({0: 2, 1: 1, 2: 0}, <composites.Function at 0x10e0eba68>)
+# Chainable methods
 
+λ composes a higher-order function that will `pipe` a set of arguments and keywords through a order list of functions.
 
 
+```python
+    f = (
+        λ.range()
+        .map(
+            λ.mul(10))
+        .list())
+```
 
-Each <b><code>[bracket]</code></b> may accept a __callable__ or __iterable__. In either case,
-a __callable__ is appended to the composition.  Compositions are immutable and may have
-arbitrary complexity.
+This composition is compared below with a toolz.compose, toolz.pipe, and standard lib python.
 
-    g = f.copy()  # copy f from above so it remains unchanged.
-    g[type, len]
-    g[{'foo': a.do(print).len(), 'bar': the.identity()}]
 
+```python
+   assert f(10) \
+        == compose(list, map(mul(10)), range)(10) \
+        == pipe(10, range, map(mul(10)), list) \
+        == list(map(mul(10), range(10)))
+```
 
+## The explicit api
 
+The api above uses shortcuts to modules that a hasty programmer may prefer.  The explicit api accesses functions by their package names first.
 
 
-    <composites.Function at 0x10e0eba68>
+```python
+    g = λ.builtins.range().map(
+        λ.operator.mul(10)
+    ).builtins.list()
+```
 
+### Imports
 
+`poser` will import modules if they are not available.  For example, if `pandas` is not __import__ed then `poser` will __import __ it.
 
+    λ.pandas.DataFrame()
 
-Brackets juxtapose iterable objects.
+# Symbollic composition
 
-    the[range, type], the[[range, type]], the[{range, type}], the[{'x': range, 'y': type}]
 
+```python
+    assert (λ * range / λ.mul(10) * list)(10) == f(10)
+```
 
 
-
-
-    (<composites.Function at 0x10e0eed68>,
-     <composites.Function at 0x10e12d048>,
-     <composites.Function at 0x10e12d108>,
-     <composites.Function at 0x10e12d1c8>)
-
-
-
-
-Each each composition is immutable.
-
-    assert f[len] is f; f
-
-
-
-
-
-    <composites.Function at 0x10e0eba68>
-
-
-
-
-# compose functions with attributes
-
-Each composition has an extensible attribution system.  Attributes can be accessed in a shallow or verbose way.
-
-    a.range() == a.builtins.range() == a[range]
-
-
-
-
-
-    False
-
-
-
-
-# compose functions with symbols
-
-    assert a /  range == a.map(range)
-    assert a // range == a.filter(range)
-    assert a @  range == a.groupby(range)
-    assert a %  range == a.reduce(range)
-
-
-#### combine item getters, attributes, symbols, and other compositions to express complex ideas.
-
-    f = a['test', 5, {42}] \
-     / (a**str&[str.upper, str.capitalize]|a**int&a.range().map(
-         a.range(2).len()
-     ).list()|a**object&type) \
-     * list
-    f()
-
-
-#### use compositions recursively
-
-    f = a[:]
-    f[a**a.gt(5)*range | a**a.le(5)*a.add(1)[f]](4)
-
-
-
-
-
-    False
-
-
-
-
-# Why functional programming with `composites`?
-
-[Functional programming](https://en.wikipedia.org/wiki/Functional_programming) _often_ generates less code, or text, to express operations on complex data structures.  A declarative, functional style of programming approach belies Python's imperative, object-oriented (OO) 
-nature. Python provides key [functional programming elements](https://docs.python.org/3/library/functional.html) that are used interchangeably with OO code.  
-
-[`toolz`](https://toolz.readthedocs.io), the nucleus for `composites`, extends Python's functional programming with a set of 
-un-typed, lazy, pure, and composable functions.  The functions in `toolz` look familiar 
-to [__pandas.DataFrame__](https://tomaugspurger.github.io/method-chaining.html) methods, or [__underscorejs__](http://underscorejs.org/) and [__d3js__](https://d3js.org/) in Javascript.
-
-An intermediate user of [`toolz`](https://toolz.readthedocs.io) will use 
-[`toolz.pipe`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.pipe),
-[`toolz.juxt`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.juxt), 
-and [`toolz.compose`](https://toolz.readthedocs.ioen/latest/api.html#toolz.functoolz.compose) to create reusable, 
-higher-order functions.  These patterns allow the programmer to express complex concepts 
-with less typing/text over a longer time.  Repetitive patterns should occupy 
-less screen space; `composites;` helps compose functions with less text. 
-                      
-A successful implementation of __composites__ should compose __un-typed__, __lazy__, and __serializable__ Python functions that allow
-recursion.
-
-
-
-# Syntax
-
-A core property of `composites` is that it will not modify Python's abstract syntax tree, rather it expresses 
-a large portion of Python's magic methods in the [data model](https://docs.python.org/3/reference/datamodel.html).  It considers Python's 
-[order of operations](https://docs.python.org/3/reference/expressions.html#operator-precedence) in the api design.  `composites` provides symbolic expressions for common higher-order 
-function operations like `map`, `filter`, `groupby`, and `reduce`. The attributes can access any of the `sys.modules;` with tab completion.
-
-The efficiency of computing will continue to improve.  In modern collaborative development environments 
-we must consider the efficiency of the programmer. Programming is a repetitive process requiring physical work from a person. 
-__composites__ speed up the creation and reading repetitive and complex tasks.
-
-
-## `composites` structure
-
-![](classes_composites.min.png)
-
-
-# Development
+```python
     if __name__== '__main__':
-        !jupyter nbconvert --to markdown --TemplateExporter.exclude_input=True readme.ipynb
-        !jupyter nbconvert --to markdown --execute composites.ipynb
-        !python -m doctest composites.py
-        !echo complete
-
+        !jupyter nbconvert --to markdown readme.ipynb
+        !source activate p6 && pytest
+        !source activate p6 && python -m doctest poser.py
+```
 
     [NbConvertApp] Converting notebook readme.ipynb to markdown
-    [NbConvertApp] Writing 5152 bytes to readme.md
+    [NbConvertApp] Writing 1761 bytes to readme.md
+    [1m============================= test session starts ==============================[0m
+    platform darwin -- Python 3.6.3, pytest-3.5.0, py-1.5.3, pluggy-0.6.0
+    benchmark: 3.1.1 (defaults: timer=time.perf_counter disable_gc=False min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precision=10 warmup=False warmup_iterations=100000)
+    rootdir: /Users/tonyfast/poser, inifile:
+    plugins: cov-2.5.1, benchmark-3.1.1, hypothesis-3.56.5, importnb-0.3.1
+    collected 0 items                                                              [0m
+    
+    [33m[1m========================= no tests ran in 0.78 seconds =========================[0m
 
