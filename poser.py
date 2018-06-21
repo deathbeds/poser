@@ -215,23 +215,23 @@ class composable:
 
 class juxt(composable):
     def __iter__(juxt):
-        if isinstance(juxt.object, Mapping):
-            yield from map(type(juxt), juxt.object.items())
-        else:
-            yield from super().__iter__()
+            yield from (
+                juxt.object.items() 
+                if isinstance(juxt.object, Mapping) 
+                else super().__iter__())
 
-    def __call__(juxt, *tuple, **dict):
-        if not isiterable(juxt.object): 
-            return juxt.object(*tuple, **dict)
-        return (type(juxt.object) if isinstance(juxt.object, Sized) else identity)(
-                partial(callable)(*tuple, **dict) for callable in juxt)
+    def __call__(self, *tuple, **dict):
+        if not isiterable(self.object): 
+            return partial(self.object)(*tuple, **dict)
+        return (type(self.object) if isinstance(self.object, Sized) else identity)(
+                partial(object if callable(object) else juxt(object))(*tuple, **dict) for object in self)
     
     def __post_init__(juxt): ...
 
 
 class interpolate(composable):
-    def __iter__(interpolate):
-        yield from map(juxt, super().__iter__())
+     def __iter__(interpolate):
+         yield from map(juxt, super().__iter__())
 
 
 class logic(juxt):                        
