@@ -1,6 +1,8 @@
 
 > The readme is a work in progress.
 
+[![Build Status](https://travis-ci.org/deathbeds/poser.svg?branch=master)](https://travis-ci.org/deathbeds/poser)[![Coverage Status](https://coveralls.io/repos/github/deathbeds/poser/badge.svg?branch=master)](https://coveralls.io/github/deathbeds/poser?branch=master)[![PyPI version](https://badge.fury.io/py/poser.svg)](https://badge.fury.io/py/poser)
+
 # Be a `poser`
 
 `poser` is a fluent interface for lazy, (dis)functional python programming.
@@ -70,6 +72,24 @@ The api above uses shortcuts to modules that a hasty programmer may prefer.  The
         !jupyter nbconvert --to markdown readme.ipynb
         !ipython -m poser
 ```
+
+    [NbConvertApp] Converting notebook readme.ipynb to markdown
+    [NbConvertApp] Writing 1600 bytes to readme.md
+    [NbConvertApp] Converting notebook poser.ipynb to python
+    [NbConvertApp] Writing 14787 bytes to poser.py
+    [1mreformatted poser.py[0m
+    [1mAll done! ✨ 🍰 ✨[0m
+    [1m1 file reformatted[0m.[0m
+    Fixing /Users/tonyfast/poser/poser.py
+    ]0;IPython: tonyfast/poserTestResults(failed=0, attempted=67)
+    Name       Stmts   Miss Branch BrPart  Cover
+    --------------------------------------------
+    poser.py     196      0     69      0   100%
+    parsing /Users/tonyfast/poser/poser.py...
+    ]0;IPython: tonyfast/poser<IPython.core.display.SVG object>
+    parsing /Users/tonyfast/poser/poser.py...
+    <IPython.core.display.SVG object>
+
 
 
 ```python
