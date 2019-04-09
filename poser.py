@@ -122,7 +122,15 @@ class Attributes:
             for slot, value in zip(Attributes.__slots__, values)
         )
 
-    __sources__ = collections.ChainMap(vars(toolz), vars(builtins), _patched_operator)
+    __sources__ = collections.ChainMap(
+        vars(toolz),
+        vars(builtins),
+        _patched_operator,
+        {
+            "fnmatch": flip(__import__("fnmatch").fnmatch),
+            "Path": __import__("pathlib").Path,
+        },
+    )
 
     def __getitem__(Composition, object):
         if isinstance(Composition, type):
@@ -487,6 +495,13 @@ Composition(<class 'range'>,<class 'type'>)
 10
 >>> λ.sub(2)(8), λ.truediv(2)(8)
 (6, 4.0)
+
+>>> λ.Path()()
+PosixPath('.')
+
+>>> (λ*λ.fnmatch('foo*')>>list)(('foobar', 'baz'))
+[True, False]
+
 """.replace(
     *"λ Composition".split()
 ).replace(
@@ -499,6 +514,7 @@ try:
     ] = """
 >>> import IPython
 >>> f = λ[range] * (lambda x: x/2) / complement(lambda x: x%2) + list
+
 
 >>> Λ(10)[range]
 Composition(<class 'range'>)
