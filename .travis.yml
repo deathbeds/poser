@@ -1,4 +1,8 @@
 language: python
+addons:
+  apt:
+    packages:
+      - graphviz
 python:
 - '3.6'
 - 3.6-dev
@@ -7,12 +11,10 @@ install:
 - python setup.py sdist
 - python setup.py bdist_wheel
 - pip install -r requirements.txt
+- pip install coverage --upgrade
 - python -m pip install dist/poser-*.tar.gz --ignore-installed --no-deps
 - pip install -r requirements-test.txt
-addons:
-  apt:
-    packages:
-      - graphviz
+
 script:
 - ipython -m poser
 after_success:
