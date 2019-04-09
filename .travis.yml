@@ -11,6 +11,8 @@ install:
 - pip install -r requirements-test.txt
 script:
 - python -m poser
+after_success:
+- coveralls
 deploy:
   provider: pypi
   user: docfast
