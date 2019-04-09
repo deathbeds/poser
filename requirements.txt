@@ -1,3 +1,7 @@
 toolz
 python-coveralls
 IPython
+black 
+isort
+pylint
+pyflakes
