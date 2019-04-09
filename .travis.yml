@@ -10,7 +10,7 @@ install:
 - python -m pip install dist/poser-*.tar.gz --ignore-installed --no-deps
 - pip install -r requirements-test.txt
 script:
-- python -m poser
+- ipython -m poser
 after_success:
 - coveralls
 deploy:

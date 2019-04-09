@@ -1,5 +1,3 @@
-dataclasses
 toolz
-requests
-joblib
 python-coveralls
+IPython
