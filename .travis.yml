@@ -9,6 +9,10 @@ install:
 - pip install -r requirements.txt
 - python -m pip install dist/poser-*.tar.gz --ignore-installed --no-deps
 - pip install -r requirements-test.txt
+addons:
+  apt:
+    packages:
+      - graphviz
 script:
 - ipython -m poser
 after_success:
