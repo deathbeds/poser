@@ -21,8 +21,7 @@ if __name__ == "__main__":
     get_ipython() and get_ipython().events.register(
         "post_execute", lambda: __import__("doctest").testmod(optionflags=8)
     )
-
-__all__ = "Composition", "Juxt", "IfThen", "IfNot", "λ", "partial"
+__all__ = "Composition", "Juxt", "IfThen", "IfNot", "λ", "partial", "stars"
 
 
 class Null(BaseException):
@@ -56,7 +55,7 @@ class Juxtapose:
     __slots__ = ("object",)
 
     def __new__(Juxt, object):
-        if callable(object):
+        if callable(object) or isinstance(object, types.ModuleType):
             return object
         Juxt = super().__new__(Juxt)
         Juxt.__init__(object)
@@ -103,6 +102,17 @@ class Ordering:
 
     __deepcopy__ = functools.partialmethod(__copy__, deep=True)
 
+    def __dir__(self):
+        func = self.funcs and self.funcs[-1] or self.first
+        if isinstance(func, (type(None), functools.partial)):
+            return super().__dir__() + [
+                str
+                for str in __import__("sys").modules
+                if "." not in str and str[0] != "_"
+            ]
+        else:
+            return dir(func)
+
 
 _patched_operator = {}
 for key, op in vars(toolz.curried.operator).items():
@@ -140,7 +150,7 @@ class Attributes:
         object = Juxt(object)
         if not isinstance(object, functools.partial):
             object = functools.partial(object)
-        return copy.deepcopy(Composition).__getattr__(object)
+        return Attributes.__getattr__(copy.deepcopy(Composition), object)
 
     def __getattr__(Composition, object):
         if isinstance(Composition, type):
@@ -150,6 +160,7 @@ class Attributes:
             func = Composition.funcs[-1]
         else:
             func = Composition.funcs and Composition.funcs[-1] or Composition.first
+
         if isinstance(object, str) and not object.startswith("_"):
             if hasattr(func, object):
                 object = getattr(func, object)
@@ -177,7 +188,7 @@ class Attributes:
         return Composition
 
 
-class Ops(Attributes):
+class Ops:
     def _inc(self, func, object):
         return self[:].__getattr__(partial(func(Juxt(object))))
 
@@ -276,11 +287,13 @@ class Conditions:
         return object and self[object] or self
 
 
-class CompositionBase(Conditions, Ops, abc.ABCMeta):
+class CompositionBase(Conditions, Ops, Attributes, abc.ABCMeta):
     ...
 
 
-class Composition(Ops, Compose, Conditions, Ordering, metaclass=CompositionBase):
+class Composition(
+    Ops, Attributes, Compose, Conditions, Ordering, metaclass=CompositionBase
+):
     def __repr__(Composition):
         return (
             str(type(Composition).__name__)
@@ -373,6 +386,25 @@ IfNot(<class 'bool'>,<class 'range'>)
         return object if object else super().__call__(*args, **kwargs)
 
 
+class stars(Composition):
+    """stars applies containers are starred arguments
+    
+>>> stars[range][list]((10, 20, 2))
+[10, 12, 14, 16, 18]
+
+>>> stars[lambda *a, **kw: (a, kw)]({'foo': 1})
+((), {'foo': 1})
+    """
+
+    def __call__(stars, object=None):
+        if isinstance(object, dict):
+            return super().__call__(**object)
+        elif object is None:
+            return super().__call__()
+        else:
+            return super().__call__(*object)
+
+
 def ipython_display(Composition):  # pragma: no cover
     import IPython
 
@@ -395,6 +427,9 @@ def watch(*args, **kwargs):
 
 def Λ(*args, **kwargs):
     return watch(*args, **kwargs)(Composition[:])
+
+
+shell = get_ipython()
 
 
 __test__ = {}
@@ -433,7 +468,8 @@ __test__[
 
 >>> h = copy.copy(g)
 >>> assert h == g and h is not g
->>> assert h.__getstate__() == g.__getstate__()
+
+> assert h.__getstate__() == g.__getstate__()
 
 >>> m = (λ.range()**(str,))^TypeError
 >>> m
@@ -516,8 +552,22 @@ try:
 >>> f = λ[range] * (lambda x: x/2) / complement(lambda x: x%2) + list
 
 
+>>> async def sleepy_time(i): return await λ.range(i).map(
+...     λ.asyncio.sleep(1)
+... )[stars.asyncio.gather()]()
+>>> import nest_asyncio
+>>> nest_asyncio.apply()
+>>> async def sleepy_time(i): return await λ.range(i).map(
+...     λ.asyncio.sleep(1)
+... )[stars.asyncio.gather()]()
+>>> assert __import__('IPython').get_ipython().loop_runner(sleepy_time(100)) == λ.range(100).list()()
+
 >>> Λ(10)[range]
 Composition(<class 'range'>)
+
+>>> assert dir(f)
+>>> assert dir(λ())
+>>> assert dir(λ.builtins)
 
 >>> with IPython.utils.capture.capture_output() as out: IPython.display.display(watch(10)(λ))
 >>> with IPython.utils.capture.capture_output() as out: IPython.display.display(watch(10)(f))
