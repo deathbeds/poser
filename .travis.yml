@@ -4,9 +4,8 @@ addons:
     packages:
       - graphviz
 python:
-- '3.6'
-- 3.6-dev
 - '3.7'
+- '3.8'
 install:
 - python setup.py sdist
 - python setup.py bdist_wheel
