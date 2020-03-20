@@ -6,7 +6,7 @@ addons:
 python:
 - '3.6'
 - 3.6-dev
-# - 3.7-dev
+- '3.7'
 install:
 - python setup.py sdist
 - python setup.py bdist_wheel
