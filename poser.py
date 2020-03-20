@@ -636,8 +636,9 @@ if __name__ == "__main__":
 
 
 if __name__ == "__main__":
-    if "covtest" in __import__("sys").argv:
-        print(__import__("doctest").testmod(optionflags=8))
+    if "__file__" in locals():
+        if "covtest" in __import__("sys").argv:
+            print(__import__("doctest").testmod(optionflags=8))
     else:
         import IPython
 
