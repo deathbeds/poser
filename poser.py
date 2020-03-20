@@ -541,7 +541,7 @@ Composing compositions.
 Juxtapositions.
 
     >>> λ[type, str]
-    λ(<__main__.juxt object at ...>,)
+    λ(<...juxt object at ...>,)
     >>> λ[type, str](10)
     (<class 'int'>, '10')
     >>> λ[{type, str}][type, len](10)
