@@ -540,7 +540,7 @@ Composing compositions.
 
 Juxtapositions.
 
-    >>> λ[type, str]
+    >>> λ[type, str] #doctest: +ELLIPSIS
     λ(<...juxt object at ...>,)
     >>> λ[type, str](10)
     (<class 'int'>, '10')
