@@ -16,7 +16,7 @@ install:
 - pip install -r requirements-test.txt
 
 script:
-- ipython -m poser
+- pytest --doctest-modules poser.py
 after_success:
 - coveralls
 deploy:
