@@ -32,3 +32,9 @@ jobs:
       run: |
         pip install pytest
         pytest --doctest-modules poser.py
+    - name: Publish package
+      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: docfast
+        password: ${{ secrets.pypi_password }}
