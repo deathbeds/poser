@@ -110,7 +110,7 @@ class Composition(toolz.functoolz.Compose):
 # ### Utility functions
 
 
-class Explicit(getattr(typing, "ForwardRef", "_ForwardRef"), _root=False):
+class Explicit(typing.ForwardRef, _root=False):
     def __new__(cls, object, *args, **kwargs):
         if not isinstance(object, str):
             return object
