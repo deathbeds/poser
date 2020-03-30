@@ -4,9 +4,8 @@ addons:
     packages:
       - graphviz
 python:
-- '3.6'
-- 3.6-dev
 - '3.7'
+- '3.8'
 install:
 - python setup.py sdist
 - python setup.py bdist_wheel
@@ -29,4 +28,4 @@ deploy:
     tags: true
     distributions: sdist bdist_wheel
     repo: deathbeds/poser
-    python: '3.6'
+    python: '3.7'
