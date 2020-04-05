@@ -651,6 +651,6 @@ if __name__ == "__main__":
         get_ipython().system("isort poser.py")
         get_ipython().system("pyreverse -o png -pposer -fALL poser")
         #!pytest test_poser.ipynb --doctest-modules
-        display.display(display.Image("classes_poser.png"))
+        display.display(display.Image("classes_poser.png", embed=True))
     else:
         print("run from cli")
