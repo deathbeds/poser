@@ -26,20 +26,11 @@ BLOG_EMAIL = metadata['author-email']
 BLOG_DESCRIPTION = "This is a demo site for Nikola."  # (translatable)
 source_suffix = ".rst .md .ipynb .py".split()
 POSTS = tuple(
-    F"tests/*{x}", "pages", "page.tmpl")
-    for x in source_suffix
-) if pathlib.Path(module).exists() else tuple(
-    F"test_*{x}", "pages", "page.tmpl")
+    (F"*{x}", "posts", "post.tmpl")
     for x in source_suffix
 )
 
-PAGES = tuple(
-    (F"{module.__name__}/*{x}", "pages", "page.tmpl")
-    for x in source_suffix
-) if pathlib.Path(module).exists() else tuple(
-    (F"*{x}", "pages", "page.tmpl")
-    for x in source_suffix
-)
+PAGES = tuple()
 
 
 # Theming
