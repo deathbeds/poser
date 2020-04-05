@@ -26,7 +26,7 @@ BLOG_EMAIL = metadata['author-email']
 BLOG_DESCRIPTION = "This is a demo site for Nikola."  # (translatable)
 source_suffix = ".rst .md .ipynb .py".split()
 POSTS = tuple(
-    (F"*{x}", "posts", "post.tmpl")
+    (F"poser/*{x}", "posts", "post.tmpl")
     for x in source_suffix
 )
 
