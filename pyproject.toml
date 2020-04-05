@@ -9,8 +9,7 @@ author-email = ""
 home-page = "https://github.com/deathbeds/poser"
 classifiers = []
 description-file = "readme.md"
-requires = [ "click",]
-description = "dysfunctional programming in python "
+requires = [ "click"]
 license = "BSD 3-Clause \"New\" or \"Revised\" License"
 
 [tool.flit.scripts]
