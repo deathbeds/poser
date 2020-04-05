@@ -1,4 +1,4 @@
-  toolz
+toolz
 python-coveralls
 IPython
 black 
@@ -8,3 +8,4 @@ pyflakes
 pytest
 pytest-ipynb
 nest_asyncio
+
