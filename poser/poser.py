@@ -2,7 +2,6 @@
 # coding: utf-8
 
 "dysfunctional programming in python"
-__version__ = "0.2.1"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.

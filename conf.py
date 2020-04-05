@@ -24,7 +24,7 @@ html_base_url = BASE_URL = SITE_URL = metadata['home-page']
 
 BLOG_EMAIL = metadata['author-email']
 BLOG_DESCRIPTION = "This is a demo site for Nikola."  # (translatable)
-source_suffix = ".rst .md .ipynb .py".split()
+source_suffix = ".rst .md .ipynb".split()
 POSTS = tuple(
     (F"poser/*{x}", "posts", "post.tmpl")
     for x in source_suffix
