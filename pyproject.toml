@@ -1,5 +1,5 @@
 [build-system]
-requires = [ "flit_core >=2,<3", "setuptools"]
+requires = [ "flit_core >=2,<3", "setuptools", "toml"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
