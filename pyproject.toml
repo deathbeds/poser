@@ -1,0 +1,18 @@
+[build-system]
+requires = [ "flit_core >=2,<3",]
+build-backend = "flit_core.buildapi"
+
+[tool.flit.metadata]
+module = "poser"
+author = "deathbeds"
+author-email = ""
+home-page = "https://github.com/deathbeds/poser"
+classifiers = []
+description-file = "readme.md"
+requires = [ "click",]
+description = "dysfunctional programming in python "
+license = "BSD 3-Clause \"New\" or \"Revised\" License"
+
+[tool.flit.scripts]
+
+[tool.flit.metadata.urls]

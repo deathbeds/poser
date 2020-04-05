@@ -1,0 +1,10 @@
+  toolz
+python-coveralls
+IPython
+black 
+isort
+pylint
+pyflakes
+pytest
+pytest-ipynb
+nest_asyncio
