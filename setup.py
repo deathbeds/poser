@@ -15,7 +15,7 @@ setup_args = dict(
     description="Dysfunctional programming in Python with all the side effects.",
     long_description=(here / "readme.md").read_text(),
     long_description_content_type='text/markdown',
-    url="https://github.com/deathbeds/importnb",
+    url="https://github.com/deathbeds/poser",
     python_requires=">=3.6",
     license="BSD-3-Clause",
     install_requires=[
