@@ -60,7 +60,7 @@ class Composition(toolz.functoolz.Compose):
     )
 
     def __init__(self, funcs=None, *args, **kwargs):
-        """`Compose` stores `args` and `kwargs` like a partial."""
+        """Compose stores args and kwargs like a partial."""
         super().__init__(funcs or (I,))
         self.args, self.exceptions, self.kwargs = (
             args,
@@ -90,7 +90,7 @@ class Composition(toolz.functoolz.Compose):
         return object
 
     def partial(this, object=None, *args, **kwargs):
-        """append a `partial` an `object` to `this` composition."""
+        """append a `partial` an `object` to this composition."""
         if isinstance(this, type) and issubclass(this, Composition):
             this = this()
         if not isinstance(object, Λ):
@@ -194,15 +194,16 @@ class juxt(toolz.functoolz.juxt):
             object = type(self.funcs)()
             for key, value in self.funcs.items():
                 if callable(key):
-                    key = key(*args, **kwargs)
+                    key = juxt(key)(*args, **kwargs)
                 if callable(value):
-                    value = value(*args, **kwargs)
+                    value = juxt(value)(*args, **kwargs)
                 object[key] = value
             else:
                 return object
         if toolz.isiterable(self.funcs):
             return type(self.funcs)(
-                x(*args, **kwargs) if callable(x) else x for x in self.funcs
+                juxt(x)(*args, **kwargs) if (callable(x) or toolz.isiterable(x)) else x
+                for x in self.funcs
             )
         if callable(self.funcs):
             return self.funcs(*args, **kwargs)
@@ -548,6 +549,11 @@ Juxtapositions.
     (<class 'set'>, 2)
     >>> λ[{'a': type, type: str}](10)
     {'a': <class 'int'>, <class 'int'>: '10'}
+    >>> λ[[[[[{'a': type, type: str}]]]],]
+    λ(<...juxt object at ...>,)
+    >>> λ[[[[[{'a': type, type: str}]]]],](10)
+    ([[[[{'a': <class 'int'>, <class 'int'>: '10'}]]]],)
+
     
 Mapping.
 
