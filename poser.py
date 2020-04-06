@@ -389,19 +389,27 @@ for attr in (
 _type_method_names = set(dir(Type))
 for key, value in toolz.merge(
     toolz.pipe(
+        {x: getattr(object, x) for x in dir(object)},
+        toolz.curried.valfilter(callable),
+        toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
+    )
+    for object in (
         toolz,
-        vars,
-        toolz.curried.valfilter(callable),
-        toolz.curried.keyfilter(toolz.compose(str.islower, toolz.first)),
-    ),
-    toolz.pipe(
         builtins,
-        vars,
-        toolz.curried.valfilter(callable),
-        toolz.curried.keyfilter(toolz.compose(str.islower, toolz.first)),
-    ),
+        operator,
+        inspect,
+        str,
+        dict,
+        list,
+        *map(__import__, "typing statistics itertools json math string random".split()),
+        pathlib.Path,
+        inspect,
+    )
 ).items():
     hasattr(Compose, key) or Compose.macro(key, value)
+Compose.macro("fnmatch", __import__("fnmatch").fnmatch)
+Compose.macro("fnmatchcase", __import__("fnmatch").fnmatchcase)
+Compose.macro("Path", pathlib.Path)
 
 
 class λ(Compose, metaclass=Type):
@@ -629,6 +637,11 @@ Unary functions:
     [0, 1, 2, 3, 4]
     
     
+Math:
+
+    >>> λ.range(2, 10) * λ(1).range().mean() + list + ...
+    [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
+
 """
 
 
