@@ -2,7 +2,6 @@
 branch = True
 include = 
     poser.py
-    jason.py
 
 [report]
 exclude_lines =
