@@ -10,6 +10,8 @@ requires = ["toolz"]
 keywords = ""
 home-page = "https://github.com/deathbeds/poser"
 license = "BSD-3-Clause"
+description-file = 'readme.md'
+
 
 [tool.flit.metadata.requires-extra]
 [tool.flit.metadata.urls]    
