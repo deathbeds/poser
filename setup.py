@@ -18,6 +18,6 @@ setuptools.setup(
     long_description=pathlib.Path(metadata['description-file']).read_text(),
     long_description_content_type="text/markdown",
     extras_require=metadata.get('requires-extra', {}),
-    keywords=metadata.get('keywords', []),
+    #keywords=metadata.get('keywords', ),
     #console_scripts=metadata.get('scripts', []),
 )
