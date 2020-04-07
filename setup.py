@@ -1,43 +1,23 @@
-from pathlib import Path
-import setuptools
+import toml, setuptools, pathlib, flit
 
-name = "poser"
+flit = toml.load('pyproject.toml')['tool']['flit']
+metadata = flit['metadata']
 
-__version__ = "0.2.1"
+description, version = flit.common.get_docstring_and_version_via_import(flit.common.Module('qqq'))
 
-here = Path(__file__).parent
-
-setup_args = dict(
-    name=name,
-    version=__version__,
-    author="deathbeds",
-    author_email="tony.fast@gmail.com",
-    description="Dysfunctional programming in Python with all the side effects.",
-    long_description=(here / "readme.md").read_text(),
-    long_description_content_type='text/markdown',
-    url="https://github.com/deathbeds/poser",
-    python_requires=">=3.6",
-    license="BSD-3-Clause",
-    install_requires=[
-        "dataclasses",
-        "toolz",
-        "requests",
-        "joblib"
-    ],
-    include_package_data=True,
-    py_modules=["poser"],
-    classifiers=(
-        "Development Status :: 4 - Beta",
-        "Framework :: IPython",
-        "Framework :: Jupyter",
-        "Intended Audience :: Developers",
-        "Natural Language :: English",
-        "License :: OSI Approved :: BSD License",
-        "Programming Language :: Python",
-        "Programming Language :: Python :: 3.6",
-    ),
-    zip_safe=False,
+setuptools.setup(
+    name=metadata['module'],
+    version=module.__version__,
+    packages=setuptools.find_packages(),
+    classifiers=metadata['classifiers'],
+    url=metadata['home-page'],
+    author=metadata['author'],
+    install_requires=metadata.get('requires', [])
+    author_email=metadata['author-email'],
+    description=module.__doc__,
+    long_description=pathlib.Path(metadata['description-file']).read_text(),
+    long_description_content_type="text/markdown",
+    extras_require=metadata.get('requires-extra', {}),
+    keywords=metadata.get('keywords', []),
+    #console_scripts=metadata.get('scripts', []),
 )
-
-if __name__ == "__main__":
-    setuptools.setup(**setup_args)
