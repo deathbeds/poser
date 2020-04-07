@@ -3,7 +3,7 @@ import toml, setuptools, pathlib, flit
 flit = toml.load('pyproject.toml')['tool']['flit']
 metadata = flit['metadata']
 
-description, version = flit.common.get_docstring_and_version_via_import(flit.common.Module('qqq'))
+description, version = flit.common.get_docstring_and_version_via_import(flit.common.Module('poser'))
 
 setuptools.setup(
     name=metadata['module'],
