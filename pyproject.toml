@@ -19,7 +19,7 @@ description-file = 'readme.md'
 [tool.flit.sdist]
 
 [tool.coverage.run]
-branch = True
+branch = true
 include = ["poser.py"]
 
 [tool.coverage.report]
