@@ -12,7 +12,7 @@ setuptools.setup(
     classifiers=metadata['classifiers'],
     url=metadata['home-page'],
     author=metadata['author'],
-    install_requires=metadata.get('requires', [])
+    install_requires=metadata.get('requires', []),
     author_email=metadata['author-email'],
     description=module.__doc__,
     long_description=pathlib.Path(metadata['description-file']).read_text(),
