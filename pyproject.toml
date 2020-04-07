@@ -18,3 +18,15 @@ description-file = 'readme.md'
 [tool.flit.scripts]
 [tool.flit.sdist]
 
+[tool.coverage.run]
+branch = true
+include = ["poser.py"]
+
+[tool.coverage.report]
+exclude_lines =[
+    "pragma: no cover",
+    "if __name__ == .__main__.:"
+]
+
+[tool.coverage.html]
+directory = "docs/htmlcov"
