@@ -27,7 +27,6 @@ jobs:
         pytest --doctest-modules poser.py
         
     - name: Build
-      if: github.event_name == 'push' && startsWith(github.event.ref, 'refs/tags')
       run: |
         pip install flit
         flit build
