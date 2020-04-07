@@ -20,13 +20,13 @@ description-file = 'readme.md'
 
 [tool.coverage.run]
 branch = True
-include = 
-    poser.py
+include = ["poser.py"]
 
 [tool.coverage.report]
-exclude_lines =
-    pragma: no cover
-    if __name__ == .__main__.:
+exclude_lines =[
+    "pragma: no cover",
+    "if __name__ == .__main__.:"
+]
 
 [tool.coverage.html]
-directory = docs/htmlcov
+directory = "docs/htmlcov"
