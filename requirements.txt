@@ -1,7 +1,8 @@
 toolz
 python-coveralls
-IPython
 black 
 isort
 pylint
 pyflakes
+pytest
+nest_asyncio

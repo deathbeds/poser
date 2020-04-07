@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+"""dysfunctional programming in python"""
+__version__ = "0.2.2"
+
+
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
 #
 # 1.  [__Motivation__](#Motivation)
@@ -401,7 +405,9 @@ for key, value in toolz.merge(
         str,
         dict,
         list,
-        *map(__import__, "typing statistics itertools json math string random".split()),
+        *map(
+            __import__, "typing statistics itertools json math string random re".split()
+        ),
         pathlib.Path,
         inspect,
     )
@@ -410,6 +416,7 @@ for key, value in toolz.merge(
 Compose.macro("fnmatch", __import__("fnmatch").fnmatch)
 Compose.macro("fnmatchcase", __import__("fnmatch").fnmatchcase)
 Compose.macro("Path", pathlib.Path)
+Compose.macro("concat", toolz.concat)
 
 
 class λ(Compose, metaclass=Type):
@@ -641,6 +648,14 @@ Math:
 
     >>> λ.range(2, 10) * λ(1).range().mean() + list + ...
     [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
+    
+    
+Extra:
+    
+    >>> assert λ(λ) + dir + len + (Λ>700) + ...
+    >>> (Λ[1][1]['a'].__add__(22).__truediv__(7))\\
+    ...     ((None, [None, {'a': 20}]))
+    6.0
 
 """
 

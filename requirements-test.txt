@@ -1,3 +1,0 @@
-pytest
-pytest-ipynb
-nest_asyncio
