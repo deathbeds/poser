@@ -82,13 +82,6 @@ class Composition(toolz.functoolz.Compose):
             try:
                 tuple, dict = (callable(*tuple, **dict),), {}
                 object = tuple[0]
-                if inspect.iscoroutine(object):
-                    try:
-                        object = __import__("asyncio").run(object)
-                    except RuntimeError:
-                        __import__("nest_asyncio").apply()
-                        object = __import__("asyncio").run(object)
-                    tuple = (object,) + tuple[1:]
             except x.exceptions as Exception:
                 return Ø(Exception)
         return object
@@ -284,7 +277,7 @@ class Compose(Composition):
     """Conditionals."""
 
     def excepts(x, *Exceptions):
-        return IfNot(λ(exceptions=Exceptions)[x])
+        return λ(exceptions=Exceptions)[x]
 
     __xor__ = excepts
 
@@ -649,7 +642,11 @@ Math:
     >>> λ.range(2, 10) * λ(1).range().mean() + list + ...
     [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
     
+Exceptions:
     
+    >>> λ[str.split].map(λ[int] ^ BaseException | str).list()("10 aaa")
+    [10, 'aaa']
+
 Extra:
     
     >>> assert λ(λ) + dir + len + (Λ>700) + ...
