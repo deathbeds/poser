@@ -4,8 +4,13 @@
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/deathbeds/poser/master)
     
     import poser, toolz
-    
+https://toolz.readthedocs.io/en/latest/composition.html
+
 # Be a `poser`
+
+
+How is functional programming like legos.
+https://toolz.readthedocs.io/en/latest/composition.html#lego
 
 `poser` is a API for lazy, (dys)functional python programming. It allows complex functions to be composed using fluent or symbollic interfaces.
 
