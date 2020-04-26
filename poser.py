@@ -484,9 +484,14 @@ for key, value in toolz.merge(
         toolz.curried.valfilter(callable),
         toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
     )
-    for object in reversed((builtins, operator, str, dict, list, __import__("fnmatch")))
+    for object in reversed(
+        (builtins, operator, str, dict, list, pathlib.Path, __import__("fnmatch"))
+    )
 ).items():
     _defined(key) or Compose._flip.update({key: value})
+for _ in "compile glob".split():
+    Compose._flip.pop(_)
+del _
 for key, value in toolz.merge(
     toolz.pipe(
         {x: getattr(object, x) for x in dir(object)},
@@ -499,7 +504,7 @@ for key, value in toolz.merge(
             inspect,
             *map(
                 __import__,
-                "copy io typing dataclasses statistics itertools json math string random re glob".split(),
+                "copy io typing types dataclasses abc statistics itertools json math string random re glob".split(),
             ),
         )
     )
