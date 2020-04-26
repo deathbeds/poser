@@ -499,7 +499,7 @@ for key, value in toolz.merge(
             inspect,
             *map(
                 __import__,
-                "copy typing statistics itertools json math string random re glob".split(),
+                "copy io typing dataclasses statistics itertools json math string random re glob".split(),
             ),
         )
     )
@@ -758,24 +758,27 @@ if __name__ == "__main__":
     )
 
 
-#     if __name__ == '__main__':
-#         if '__file__' in locals():
-#             if 'covtest' in __import__('sys').argv:
-#                 print(__import__('doctest').testmod(optionflags=8))
-#         else:
-#             import IPython
-#             from IPython import get_ipython
-#             !jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb
-#             with IPython.utils.capture.capture_output():
-#                 !black poser.py
-#             !isort poser.py
-#             !pyflakes poser.py
-#             !ipython -m coverage -- run poser.py covtest
-#             !coverage report
-#             !coverage html
-#             with IPython.utils.capture.capture_output():
-#                 !pyreverse poser -osvg -pposer
-#             IPython.display.display(IPython.display.SVG('classes_poser.svg'))
-#             with IPython.utils.capture.capture_output():
-#                 !pyreverse poser -osvg -pposer -my -s1
-#             IPython.display.display(IPython.display.SVG('classes_poser.svg'))
+if __name__ == "__main__":
+    if "__file__" in locals():
+        if "covtest" in __import__("sys").argv:
+            print(__import__("doctest").testmod(optionflags=8))
+    else:
+        import IPython
+        from IPython import get_ipython
+
+        get_ipython().system(
+            "jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb"
+        )
+        with IPython.utils.capture.capture_output():
+            get_ipython().system("black poser.py")
+        get_ipython().system("isort poser.py")
+        get_ipython().system("pyflakes poser.py")
+        get_ipython().system("ipython -m coverage -- run poser.py covtest")
+        get_ipython().system("coverage report")
+        get_ipython().system("coverage html")
+        with IPython.utils.capture.capture_output():
+            get_ipython().system("pyreverse poser -osvg -pposer")
+        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
+        with IPython.utils.capture.capture_output():
+            get_ipython().system("pyreverse poser -osvg -pposer -my -s1")
+        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
