@@ -3,6 +3,7 @@
 
 """dysfunctional programming in python"""
 __version__ = "0.2.3"
+__all__ = "λ", "Λ", "poser", "this"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
@@ -458,6 +459,9 @@ _type_method_names = set(dir(Type))
 class λ(Compose, metaclass=Type):
     def __init__(self, *args, **kwargs):
         super().__init__(kwargs.pop("funcs", None), *args, **kwargs)
+
+
+poser = λ
 
 
 def _defined(str):
