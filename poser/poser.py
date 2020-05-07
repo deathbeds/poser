@@ -756,38 +756,3 @@ Extra:
     >>> assert λ.fnmatch('abc*')('abcde')
     
 """
-
-
-if __name__ == "__main__":
-    import doctest
-
-    display(
-        doctest.testmod(optionflags=doctest.ELLIPSIS),
-        __import__("IPython").display.Markdown(__test__[__name__]),
-    )
-
-
-if __name__ == "__main__":
-    if "__file__" in locals():
-        if "covtest" in __import__("sys").argv:
-            print(__import__("doctest").testmod(optionflags=8))
-    else:
-        import IPython
-        from IPython import get_ipython
-
-        get_ipython().system(
-            "jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb"
-        )
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("black poser.py")
-        get_ipython().system("isort poser.py")
-        get_ipython().system("pyflakes poser.py")
-        get_ipython().system("ipython -m coverage -- run poser.py covtest")
-        get_ipython().system("coverage report")
-        get_ipython().system("coverage html")
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("pyreverse poser -osvg -pposer")
-        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("pyreverse poser -osvg -pposer -my -s1")
-        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
