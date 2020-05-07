@@ -1,4 +1,4 @@
-import pluggy, multipledispatch, dataclasses, decorator, contextlib, abc, collections, functools, inspect
+import pluggy, multipledispatch, contextlib, abc, collections, functools, inspect
 _object_dir = dir(object)    
 
 _impl, method_spec, _manager = pluggy.HookimplMarker('methodz'), pluggy.HookspecMarker('methodz'), pluggy.PluginManager('methodz')
