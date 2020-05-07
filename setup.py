@@ -1,15 +1,15 @@
 import toml, setuptools, pathlib, flit
 
-flit = toml.load('pyproject.toml')['tool']['flit']
-metadata = flit['metadata']
+flit_data = toml.load('pyproject.toml')['tool']['flit']
+metadata = flit_data['metadata']
 
-description, version = flit.common.get_docstring_and_version_via_import(flit.common.Module('poser'))
+description, version = flit.common.get_docstring_and_version_via_import(flit.common.Module(metadata['module']))
 
 setuptools.setup(
     name=metadata['module'],
     version=version,
     packages=setuptools.find_packages(),
-    classifiers=metadata['classifiers'],
+    classifiers=metadata.get('classifiers') or [],
     url=metadata['home-page'],
     author=metadata['author'],
     install_requires=metadata.get('requires', []),
