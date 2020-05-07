@@ -9,9 +9,6 @@ https://toolz.readthedocs.io/en/latest/composition.html
 # Be a `poser`
 
 
-How is functional programming like legos.
-https://toolz.readthedocs.io/en/latest/composition.html#lego
-
 `poser` is a API for lazy, (dys)functional python programming. It allows complex functions to be composed using fluent or symbollic interfaces.
 
 ```bash
@@ -24,11 +21,14 @@ New to [functional programming]? Functional programming uses declarative functio
 If you are familiar with python then [`toolz`][toolz] is a great starting point, [`poser`][poser] is a compact [API] for [`toolz`] and the python
 [standard library].
 
+[How is functional programming like legos.](https://toolz.readthedocs.io/en/latest/composition.html#lego)
+
+
 `poser` 
 
 # `poser` API
 
-    from poser import λ, Λ, stars
+    from poser import λ, Λ, stars, method
 
 `λ` is a composition that always returns a function. For example, below we create a list of numbers from 1 to a some value
 
@@ -79,3 +79,7 @@ Value and keyword functions can be supplied to juxtapose functions across dictio
     
     read = λ**Λ.startswith('http') & get | λ.Path().read_text()
     
+
+## `method` is a hot patch for symbollic things.
+
+Check out the example with `shapely` in the tests.
