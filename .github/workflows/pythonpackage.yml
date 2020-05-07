@@ -24,7 +24,7 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest pytest-cov nbval shapely numpy scipy importnb
-        pytest --cov=poser --doctest-modules --nbval poser.py
+        pytest --cov=poser --doctest-modules --nbval poser test_*.ipynb
         
     - name: Build
       run: |
