@@ -23,7 +23,7 @@ jobs:
         pip install .
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov nbval
+        pip install pytest pytest-cov nbval shapely numpy scipy importnb
         pytest --cov=poser --doctest-modules --nbval poser.py
         
     - name: Build
