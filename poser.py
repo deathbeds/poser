@@ -2,7 +2,8 @@
 # coding: utf-8
 
 """dysfunctional programming in python"""
-__version__ = "0.2.2"
+__version__ = "0.2.3"
+__all__ = "λ", "Λ", "poser", "this"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
@@ -38,17 +39,12 @@ __version__ = "0.2.2"
 import abc
 import ast
 import builtins
-import copy
-import fnmatch
 import functools
 import importlib
 import inspect
-import itertools
-import json
 import operator
 import pathlib
 import typing
-import urllib
 
 import toolz
 from toolz.curried import *
@@ -107,6 +103,10 @@ class Composition(toolz.functoolz.Compose):
 # ### Utility functions
 
 
+def istype(object, cls):
+    return isinstance(object, type) and issubclass(object, cls)
+
+
 class Explicit(typing.ForwardRef, _root=False):
     def __new__(cls, object, *args, **kwargs):
         if not isinstance(object, str):
@@ -153,7 +153,7 @@ class Explicit(typing.ForwardRef, _root=False):
         return inspect.getdoc(x._evaluate())
 
     def __str__(x):
-        return self.__forward_arg__
+        return x.__forward_arg__
 
 
 def I(*tuple, **_):
@@ -226,7 +226,21 @@ def stars(callable):
     return Callable
 
 
-class Compose(Composition):
+class Extensions:
+    _flip = {}
+    _partial = {}
+    _method = {}
+
+
+def flip(callable, *args, **kwargs):
+    @functools.wraps(callable)
+    def call(*a, **k):
+        return callable(*a, *args, **{**kwargs, **k})
+
+    return call
+
+
+class Compose(Composition, Extensions):
     """`__add__ or partial` a function into the composition."""
 
     def partial(x, object=None, *args, **kwargs):
@@ -292,14 +306,17 @@ class Compose(Composition):
     __or__ = ifnot
 
     def issubclass(λ, object):
-        return λ[toolz.partial(toolz.flip(issubclass), object)]
+        return λ[toolz.partial(toolz.flip(istype), object)]
 
     def isinstance(λ, object):
-        if isinstance(object, (tuple, type)):
-            return IfThen(λ[toolz.partial(toolz.flip(isinstance), object)])
-        return IfThen(λ[object])
+        return λ[toolz.partial(toolz.flip(isinstance), object)]
 
-    __pow__ = __ipow__ = isinstance
+    def condition(λ, object):
+        return IfThen(
+            λ.isinstance(object) if isinstance(object, (tuple, type)) else λ[object]
+        )
+
+    __pow__ = __ipow__ = condition
 
     def do(λ, callable):
         return λ[toolz.curried.do(juxt(callable))]
@@ -351,6 +368,52 @@ class Compose(Composition):
         setattr(cls, name, append)
         return object
 
+    def _ipython_key_completions_(self):
+        import IPython
+
+        return IPython.core.completerlib.module_completion("import")
+
+    def __getattribute__(cls, str):
+        try:
+            return object.__getattribute__(cls, str)
+        except AttributeError as e:
+            Exception = e
+        if str in cls._partial:
+
+            @functools.wraps(cls._partial[str])
+            def defer(*args, **kwargs):
+                nonlocal str, cls
+                return cls.partial(cls._partial[str], *args, **kwargs)
+
+            return defer
+        elif str in cls._flip:
+
+            @functools.wraps(cls._flip[str])
+            def defer(*args, **kwargs):
+                nonlocal str, cls
+                return cls.partial(flip(cls._flip[str], *args, **kwargs))
+
+            return defer
+
+        elif str in cls._method:
+
+            @functools.wraps(cls._method[str])
+            def defer(*args, **kwargs):
+                nonlocal str, cls
+                return cls.partial(cls._method[str](*args, **kwargs))
+
+            return defer
+        raise Exception
+
+    def __dir__(cls):
+        return sorted(
+            super().__dir__(cls)
+            + sum(map(list, (cls._method, cls._flip, cls._partial)), [])
+        )
+
+    def first(cls):
+        return cls[iter][next]
+
 
 class Conditional(Compose):
     def __init__(self, predicate, *args, **kwargs):
@@ -369,11 +432,18 @@ class IfNot(Conditional):
         return object if object else super().__call__(*args, **kwargs)
 
 
-class Type(abc.ABCMeta):
-    def __getattribute__(cls, str):
-        if str in _type_method_names:
-            return object.__getattribute__(cls, str)
-        return object.__getattribute__(cls(), str)
+class Type(abc.ABCMeta, Extensions):
+    __getattribute__ = Compose.__getattribute__
+
+    def __dir__(cls):
+        return sorted(
+            super().__dir__()
+            + sum(map(list, (cls._method, cls._flip, cls._partial)), [])
+        )
+
+    partial = Compose.partial
+
+    __getitem__ = Compose.__getitem__
 
 
 _type_method_names = set(dir(Type))
@@ -384,32 +454,6 @@ for attr in (
 ):
     setattr(Type, attr, getattr(Type, attr, getattr(Compose, attr)))
 _type_method_names = set(dir(Type))
-for key, value in toolz.merge(
-    toolz.pipe(
-        {x: getattr(object, x) for x in dir(object)},
-        toolz.curried.valfilter(callable),
-        toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
-    )
-    for object in (
-        toolz,
-        builtins,
-        operator,
-        inspect,
-        str,
-        dict,
-        list,
-        *map(
-            __import__, "typing statistics itertools json math string random re".split()
-        ),
-        pathlib.Path,
-        inspect,
-    )
-).items():
-    hasattr(Compose, key) or Compose.macro(key, value)
-Compose.macro("fnmatch", __import__("fnmatch").fnmatch)
-Compose.macro("fnmatchcase", __import__("fnmatch").fnmatchcase)
-Compose.macro("Path", pathlib.Path)
-Compose.macro("concat", toolz.concat)
 
 
 class λ(Compose, metaclass=Type):
@@ -417,7 +461,60 @@ class λ(Compose, metaclass=Type):
         super().__init__(kwargs.pop("funcs", None), *args, **kwargs)
 
 
-Poser = λ
+poser = λ
+
+
+def _defined(str):
+    return any(
+        [
+            str in Extensions._flip,
+            str in Extensions._partial,
+            str in Extensions._method,
+            str in _type_method_names,
+        ]
+    )
+
+
+Compose._method.update(
+    dict(
+        itemgetter=operator.itemgetter,
+        attrgetter=operator.attrgetter,
+        methodcaller=operator.methodcaller,
+    )
+)
+for key, value in toolz.merge(
+    toolz.pipe(
+        {x: getattr(object, x) for x in dir(object)},
+        toolz.curried.valfilter(callable),
+        toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
+    )
+    for object in reversed(
+        (builtins, operator, str, dict, list, pathlib.Path, __import__("fnmatch"))
+    )
+).items():
+    _defined(key) or Compose._flip.update({key: value})
+for _ in "compile glob".split():
+    Compose._flip.pop(_)
+del _
+for key, value in toolz.merge(
+    toolz.pipe(
+        {x: getattr(object, x) for x in dir(object)},
+        toolz.curried.valfilter(callable),
+        toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
+    )
+    for object in reversed(
+        (
+            toolz,
+            inspect,
+            *map(
+                __import__,
+                "copy io typing types dataclasses abc statistics itertools json math string random re glob".split(),
+            ),
+        )
+    )
+).items():
+    _defined(key) or Compose._partial.update({key: value})
+Compose._partial.update(dict(Path=pathlib.Path))
 
 
 def attribute(property, *args, **kwargs):
@@ -460,7 +557,7 @@ for binop in "add sub mul matmul truediv floordiv mod eq lt gt ne xor".split():
             f"__{binop}__",
             functools.wraps(getattr(operator, binop))(
                 functools.partialmethod(
-                    Composition.partial, flip(getattr(operator, binop))
+                    Composition.partial, toolz.flip(getattr(operator, binop))
                 )
             ),
         )
@@ -469,7 +566,7 @@ for binop in "add sub mul matmul truediv floordiv mod eq lt gt ne xor".split():
             f"__i{binop}__",
             functools.wraps(getattr(operator, binop))(
                 functools.partialmethod(
-                    Composition.partial, flip(getattr(operator, binop))
+                    Composition.partial, toolz.flip(getattr(operator, binop))
                 )
             ),
         )
@@ -496,14 +593,14 @@ for binop in (and_, or_):
             cls,
             f"__{binop.__name__}_",
             functools.wraps(binop)(
-                functools.partialmethod(Composition.partial, flip(binop))
+                functools.partialmethod(Composition.partial, toolz.flip(binop))
             ),
         )
         setattr(
             cls,
             f"__i{binop.__name__}_",
             functools.wraps(binop)(
-                functools.partialmethod(Composition.partial, flip(binop))
+                functools.partialmethod(Composition.partial, toolz.flip(binop))
             ),
         )
         setattr(
@@ -648,12 +745,16 @@ Exceptions:
     [10, 'aaa']
 
 Extra:
+`poser` has an enormous api for gluing functions together across python.
     
-    >>> assert λ(λ) + dir + len + (Λ>700) + ...
+    >>> assert λ(λ) + dir + len + (Λ>650) + ...
     >>> (Λ[1][1]['a'].__add__(22).__truediv__(7))\\
     ...     ((None, [None, {'a': 20}]))
     6.0
 
+    >>> assert λ.sub(10).add(3).truediv(2)(20) == 6.5
+    >>> assert λ.fnmatch('abc*')('abcde')
+    
 """
 
 
@@ -672,8 +773,8 @@ if __name__ == "__main__":
             print(__import__("doctest").testmod(optionflags=8))
     else:
         import IPython
+        from IPython import get_ipython
 
-        complement, copy, compose
         get_ipython().system(
             "jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb"
         )

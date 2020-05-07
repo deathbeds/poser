@@ -23,8 +23,8 @@ jobs:
         pip install .
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov
-        pytest --cov=poser --doctest-modules poser.py
+        pip install pytest pytest-cov nbval
+        pytest --cov=poser --doctest-modules --nbval poser.py
         
     - name: Build
       run: |
