@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """dysfunctional programming in python"""
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 __all__ = "λ", "Λ", "poser", "this"
 
 
@@ -54,6 +54,7 @@ from toolz.curried import *
 # `Compose` augments `toolz.Compose` to provide a fluent & symbollic object for function composition in python.
 
 
+
 class Composition(toolz.functoolz.Compose):
     __slots__ = toolz.functoolz.Compose.__slots__ + tuple(
         "args kwargs exceptions".split()
@@ -87,10 +88,20 @@ class Composition(toolz.functoolz.Compose):
         if isinstance(this, type) and issubclass(this, Composition):
             this = this()
         if not isinstance(object, Λ):
-            if object == None:
+            if object is None:
                 return this
             if isinstance(object, slice):
-                return type(this)(funcs=list(this)[object])
+                if all(
+                    isinstance(x, (int, type(None)))
+                    for x in operator.attrgetter(*"start stop step".split())(slice)
+                ):
+                    return type(this)(funcs=list(this)[object])
+                else:
+                    callable(object.start) and this.filter(object.start)
+                    callable(object.stop) and this.map(object.stop)
+                    callable(object.step) and this.partial(object.step)
+                    return this
+
         if args or kwargs:
             object = toolz.partial(object, *args, **kwargs)
         if this.first is I:
@@ -710,7 +721,15 @@ Forward references.
     >>> λ['random.random']()
     0...
     
+Callable slicing
+    
+    >>> slice(filter, pipe, map)
+    slice(...(<...filter...pipe...map...>)
+    >>> λ.range(6)[(Λ-1)%2:λ[str, type]:dict]+...
+    {'0': <class 'int'>, '2': <class 'int'>, '4': <class 'int'>}
 
+
+    
 Syntactic sugar causes cancer of the semicolon.  
 
     
