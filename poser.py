@@ -42,8 +42,10 @@ import builtins
 import functools
 import importlib
 import inspect
+import itertools
 import operator
 import pathlib
+import sys
 import typing
 
 import toolz
@@ -52,7 +54,6 @@ from toolz.curried import *
 # #### Source
 
 # `Compose` augments `toolz.Compose` to provide a fluent & symbollic object for function composition in python.
-
 
 
 class Composition(toolz.functoolz.Compose):
@@ -118,6 +119,19 @@ def istype(object, cls):
     return isinstance(object, type) and issubclass(object, cls)
 
 
+def _evaluate(object, property=None):
+    try:
+        object = importlib.import_module(object)
+        if property is None:
+            return object
+    except ModuleNotFoundError:
+        module, sep, next = object.rpartition(".")
+        property = next if property is None else f"{next}.{property}"
+    else:
+        return operator.attrgetter(property)(object)
+    return _evaluate(module, property)
+
+
 class Explicit(typing.ForwardRef, _root=False):
     def __new__(cls, object, *args, **kwargs):
         if not isinstance(object, str):
@@ -135,21 +149,8 @@ class Explicit(typing.ForwardRef, _root=False):
         return object(*args, **kwargs) if callable(object) else object
 
     def _evaluate(self, globalns=None, localns=None):
-        module, property, period = self.__forward_arg__, "", "."
-        while not self.__forward_evaluated__:
-            try:
-                if not property:
-                    raise ModuleNotFoundError
-                self.__forward_value__ = operator.attrgetter(property)(
-                    importlib.import_module(module)
-                )
-                self.__forward_evaluated__ = True
-                break
-            except ModuleNotFoundError as BaseException:
-                module, period, rest = module.rpartition(".")
-                property = ".".join((rest, property)).rstrip(".")
-                if not module:
-                    raise BaseException
+        self.__forward_value__ = _evaluate(self.__forward_arg__)
+        self.__forward_evaluated__ = True
         return self.__forward_value__
 
     def __repr__(x):
@@ -249,6 +250,9 @@ def flip(callable, *args, **kwargs):
         return callable(*a, *args, **{**kwargs, **k})
 
     return call
+
+
+_evaluate("random.random")()
 
 
 class Compose(Composition, Extensions):
@@ -382,7 +386,14 @@ class Compose(Composition, Extensions):
     def _ipython_key_completions_(self):
         import IPython
 
-        return IPython.core.completerlib.module_completion("import")
+        return IPython.core.completerlib.module_completion("import") + list(
+            itertools.chain(
+                *[
+                    [f"{k}.{v}" for v in dir(v) if not v.startswith("_")]
+                    for k, v in sys.modules.items()
+                ]
+            )
+        )
 
     def __getattribute__(cls, str):
         try:
@@ -720,6 +731,10 @@ Forward references.
     (<class 'range'>, <class 'range'>)
     >>> λ['random.random']()
     0...
+    >>> λ['random itertools'.split()]()
+    [<module 'random'...>, <module 'itertools' (built-in)>]
+    >>> λ['itertools.chain.__name__']()
+    'chain'
     
 Callable slicing
     
@@ -774,6 +789,10 @@ Extra:
     >>> assert λ.sub(10).add(3).truediv(2)(20) == 6.5
     >>> assert λ.fnmatch('abc*')('abcde')
     
+    
+Completions
+
+    >>> assert len(λ._ipython_key_completions_()) > 1000
 """
 
 
