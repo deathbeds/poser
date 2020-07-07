@@ -2,7 +2,7 @@
 # coding: utf-8
 
 """dysfunctional programming in python"""
-__version__ = "0.2.4"
+__version__ = "0.2.3"
 __all__ = "λ", "Λ", "poser", "this"
 
 
