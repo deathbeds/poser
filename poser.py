@@ -3,7 +3,7 @@
 
 """dysfunctional programming in python"""
 __version__ = "0.2.3"
-__all__ = "λ", "Λ", "poser", "this"
+__all__ = "λ", "Λ", "poser", "this", "star"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
@@ -42,8 +42,10 @@ import builtins
 import functools
 import importlib
 import inspect
+import itertools
 import operator
 import pathlib
+import sys
 import typing
 
 import toolz
@@ -72,8 +74,12 @@ class Composition(toolz.functoolz.Compose):
         yield x.first
         yield from x.funcs
 
+    def __bool__(x):
+        return not isinstance(x, type)
+
     def __call__(x, *tuple, **dict):
-        tuple, dict = x.args + tuple, {**x.kwargs, **dict}
+        if not isinstance(x, star):
+            tuple, dict = x.args + tuple, {**x.kwargs, **dict}
         for callable in x:
             try:
                 tuple, dict = (callable(*tuple, **dict),), {}
@@ -82,15 +88,28 @@ class Composition(toolz.functoolz.Compose):
                 return Ø(Exception)
         return object
 
+    def __len__(self):
+        if isinstance(self, type):
+            return 0
+
+        return (self.funcs and len(self.funcs) or 0) + 1
+
     def partial(this, object=None, *args, **kwargs):
         """append a `partial` an `object` to this composition."""
         if isinstance(this, type) and issubclass(this, Composition):
             this = this()
         if not isinstance(object, Λ):
-            if object == None:
+            if object is None:
                 return this
             if isinstance(object, slice):
-                return type(this)(funcs=list(this)[object])
+                if normal_slice(object):
+                    return type(this)(funcs=list(this)[object])
+                else:
+                    callable(object.start) and this.filter(object.start)
+                    callable(object.stop) and this.map(object.stop)
+                    callable(object.step) and this.partial(object.step)
+                    return this
+
         if args or kwargs:
             object = toolz.partial(object, *args, **kwargs)
         if this.first is I:
@@ -105,6 +124,19 @@ class Composition(toolz.functoolz.Compose):
 
 def istype(object, cls):
     return isinstance(object, type) and issubclass(object, cls)
+
+
+def _evaluate(object, property=None):
+    try:
+        object = importlib.import_module(object)
+        if property is None:
+            return object
+    except ModuleNotFoundError:
+        module, sep, next = object.rpartition(".")
+        property = next if property is None else f"{next}.{property}"
+    else:
+        return operator.attrgetter(property)(object)
+    return _evaluate(module, property)
 
 
 class Explicit(typing.ForwardRef, _root=False):
@@ -124,21 +156,8 @@ class Explicit(typing.ForwardRef, _root=False):
         return object(*args, **kwargs) if callable(object) else object
 
     def _evaluate(self, globalns=None, localns=None):
-        module, property, period = self.__forward_arg__, "", "."
-        while not self.__forward_evaluated__:
-            try:
-                if not property:
-                    raise ModuleNotFoundError
-                self.__forward_value__ = operator.attrgetter(property)(
-                    importlib.import_module(module)
-                )
-                self.__forward_evaluated__ = True
-                break
-            except ModuleNotFoundError as BaseException:
-                module, period, rest = module.rpartition(".")
-                property = ".".join((rest, property)).rstrip(".")
-                if not module:
-                    raise BaseException
+        self.__forward_value__ = _evaluate(self.__forward_arg__)
+        self.__forward_evaluated__ = True
         return self.__forward_value__
 
     def __repr__(x):
@@ -212,18 +231,11 @@ class Ø(BaseException):
         return False
 
 
-def stars(callable):
-    @functools.wraps(callable)
-    def Callable(*iter, **kwargs):
-        args, iter = list(), list(iter)
-        while iter:
-            if isinstance(iter[-1], typing.Mapping):
-                kwargs.update(iter.pop())
-            else:
-                args.extend(iter.pop())
-        return callable(*args, **kwargs)
-
-    return Callable
+def normal_slice(slice):
+    return all(
+        isinstance(x, (int, type(None)))
+        for x in operator.attrgetter(*"start stop step".split())(slice)
+    )
 
 
 class Extensions:
@@ -251,10 +263,6 @@ class Compose(Composition, Extensions):
     @property
     def __doc__(x):
         return inspect.getdoc(x.first)
-
-    @property
-    def __signature__(x):
-        return inspect.signature(x.first)
 
     __pos__ = (
         __rshift__
@@ -318,6 +326,15 @@ class Compose(Composition, Extensions):
 
     __pow__ = __ipow__ = condition
 
+    def skip(self, bool: bool = True):
+        return bool and self.off() or self.on()
+
+    def on(self):
+        return self
+
+    def off(self):
+        return self[:-1]
+
     def do(λ, callable):
         return λ[toolz.curried.do(juxt(callable))]
 
@@ -354,24 +371,20 @@ class Compose(Composition, Extensions):
     def methodcaller(this, *args, **kwargs):
         return this[operator.methodcaller(*args, **kwargs)]
 
-    @classmethod
-    def macro(cls, name, object=None):
-        if object == None and not isinstance(name, str):
-            name, object = getattr(name, "__name__", repr(object)), name
-        object = juxt(object)
-
-        @functools.wraps(object)
-        def append(λ, *args, **kwargs):
-            return λ.partial(object, *args, **kwargs)
-
-        append.__doc__ = inspect.getdoc(object)
-        setattr(cls, name, append)
-        return object
-
     def _ipython_key_completions_(self):
-        import IPython
-
-        return IPython.core.completerlib.module_completion("import")
+        object = []
+        try:
+            object = __import__("IPython").core.completerlib.module_completion("import")
+        except:
+            return []  # we wont need this if ipython ain't around
+        return object + list(
+            itertools.chain(
+                *[
+                    [f"{k}.{v}" for v in dir(v) if not v.startswith("_")]
+                    for k, v in sys.modules.items()
+                ]
+            )
+        )
 
     def __getattribute__(cls, str):
         try:
@@ -464,6 +477,14 @@ class λ(Compose, metaclass=Type):
 poser = λ
 
 
+class star(λ, Compose, metaclass=Type):
+    def __call__(x, *object, **dict):
+        args, kwargs = list(), {}
+        for arg in x.args + object:
+            kwargs.update(arg) if isinstance(arg, typing.Mapping) else args.extend(arg)
+        return super().__call__(*args, **kwargs)
+
+
 def _defined(str):
     return any(
         [
@@ -506,9 +527,10 @@ for key, value in toolz.merge(
         (
             toolz,
             inspect,
+            __import__("IPython").display if "IPython" in sys.modules else inspect,
             *map(
                 __import__,
-                "copy io typing types dataclasses abc statistics itertools json math string random re glob".split(),
+                "copy io typing types dataclasses abc statistics itertools json math string random re glob ast dis tokenize".split(),
             ),
         )
     )
@@ -709,17 +731,44 @@ Forward references.
     (<class 'range'>, <class 'range'>)
     >>> λ['random.random']()
     0...
-    
+    >>> λ['random itertools'.split()]()
+    [<module 'random'...>, <module 'itertools' (built-in)>]
+    >>> λ['itertools.chain.__name__']()
+    'chain'
 
+Normal slicing when all the slices are integers or None
+
+    >>> len(λ.range().skip()), len(λ.range().skip())
+    (1, 1)
+
+Callable slicing
+    
+    >>> slice(filter, pipe, map)
+    slice(...(<...filter...pipe...map...>)
+    >>> λ.range(6)[(Λ-1)%2:λ[str, type]:dict]+...
+    {'0': <class 'int'>, '2': <class 'int'>, '4': <class 'int'>}
+
+
+Length and Logic
+
+    >>> len(λ), bool(λ)
+    (0, False)
+    >>> len(λ()), bool(λ())
+    (1, True)
+    
 Syntactic sugar causes cancer of the semicolon.  
 
     
 Starred functions allows arguments and dictionaries to be defined in iterables.
 
-    >>> stars(range)([0,10])
+    >>> star.range()([0,10])
     range(0, 10)
-    >>> stars(λ[dict])(λ[range][reversed][enumerate][[list]](3))
+    >>> star[dict](λ[range][reversed][enumerate][[list]](3))
     {0: 2, 1: 1, 2: 0}
+    
+    >>> star((0,)).range()((1, 2))
+    range(0, 1, 2)
+
    
    
 Unary functions:
@@ -754,6 +803,7 @@ Extra:
 
     >>> assert λ.sub(10).add(3).truediv(2)(20) == 6.5
     >>> assert λ.fnmatch('abc*')('abcde')
+    
     
 """
 
