@@ -3,7 +3,7 @@
 
 """dysfunctional programming in python"""
 __version__ = "0.2.3"
-__all__ = "λ", "Λ", "poser", "this"
+__all__ = "λ", "Λ", "poser", "this", "star"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
@@ -805,9 +805,6 @@ Extra:
     >>> assert λ.fnmatch('abc*')('abcde')
     
     
-Completions
-
-    >>> assert len(λ._ipython_key_completions_()) > 1000
 """
 
 
