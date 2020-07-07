@@ -74,8 +74,12 @@ class Composition(toolz.functoolz.Compose):
         yield x.first
         yield from x.funcs
 
+    def __bool__(x):
+        return not isinstance(x, type)
+
     def __call__(x, *tuple, **dict):
-        tuple, dict = x.args + tuple, {**x.kwargs, **dict}
+        if not isinstance(x, star):
+            tuple, dict = x.args + tuple, {**x.kwargs, **dict}
         for callable in x:
             try:
                 tuple, dict = (callable(*tuple, **dict),), {}
@@ -83,6 +87,12 @@ class Composition(toolz.functoolz.Compose):
             except x.exceptions as Exception:
                 return Ø(Exception)
         return object
+
+    def __len__(self):
+        if isinstance(self, type):
+            return 0
+
+        return (self.funcs and len(self.funcs) or 0) + 1
 
     def partial(this, object=None, *args, **kwargs):
         """append a `partial` an `object` to this composition."""
@@ -92,10 +102,7 @@ class Composition(toolz.functoolz.Compose):
             if object is None:
                 return this
             if isinstance(object, slice):
-                if all(
-                    isinstance(x, (int, type(None)))
-                    for x in operator.attrgetter(*"start stop step".split())(slice)
-                ):
+                if normal_slice(object):
                     return type(this)(funcs=list(this)[object])
                 else:
                     callable(object.start) and this.filter(object.start)
@@ -224,18 +231,11 @@ class Ø(BaseException):
         return False
 
 
-def stars(callable):
-    @functools.wraps(callable)
-    def Callable(*iter, **kwargs):
-        args, iter = list(), list(iter)
-        while iter:
-            if isinstance(iter[-1], typing.Mapping):
-                kwargs.update(iter.pop())
-            else:
-                args.extend(iter.pop())
-        return callable(*args, **kwargs)
-
-    return Callable
+def normal_slice(slice):
+    return all(
+        isinstance(x, (int, type(None)))
+        for x in operator.attrgetter(*"start stop step".split())(slice)
+    )
 
 
 class Extensions:
@@ -252,9 +252,6 @@ def flip(callable, *args, **kwargs):
     return call
 
 
-_evaluate("random.random")()
-
-
 class Compose(Composition, Extensions):
     """`__add__ or partial` a function into the composition."""
 
@@ -266,10 +263,6 @@ class Compose(Composition, Extensions):
     @property
     def __doc__(x):
         return inspect.getdoc(x.first)
-
-    @property
-    def __signature__(x):
-        return inspect.signature(x.first)
 
     __pos__ = (
         __rshift__
@@ -333,6 +326,15 @@ class Compose(Composition, Extensions):
 
     __pow__ = __ipow__ = condition
 
+    def skip(self, bool: bool = True):
+        return bool and self.off() or self.on()
+
+    def on(self):
+        return self
+
+    def off(self):
+        return self[:-1]
+
     def do(λ, callable):
         return λ[toolz.curried.do(juxt(callable))]
 
@@ -369,24 +371,13 @@ class Compose(Composition, Extensions):
     def methodcaller(this, *args, **kwargs):
         return this[operator.methodcaller(*args, **kwargs)]
 
-    @classmethod
-    def macro(cls, name, object=None):
-        if object == None and not isinstance(name, str):
-            name, object = getattr(name, "__name__", repr(object)), name
-        object = juxt(object)
-
-        @functools.wraps(object)
-        def append(λ, *args, **kwargs):
-            return λ.partial(object, *args, **kwargs)
-
-        append.__doc__ = inspect.getdoc(object)
-        setattr(cls, name, append)
-        return object
-
     def _ipython_key_completions_(self):
-        import IPython
-
-        return IPython.core.completerlib.module_completion("import") + list(
+        object = []
+        try:
+            object = __import__("IPython").core.completerlib.module_completion("import")
+        except:
+            ...
+        return object + list(
             itertools.chain(
                 *[
                     [f"{k}.{v}" for v in dir(v) if not v.startswith("_")]
@@ -486,6 +477,14 @@ class λ(Compose, metaclass=Type):
 poser = λ
 
 
+class star(λ, Compose, metaclass=Type):
+    def __call__(x, *object, **dict):
+        args, kwargs = list(), {}
+        for arg in x.args + object:
+            kwargs.update(arg) if isinstance(arg, typing.Mapping) else args.extend(arg)
+        return super().__call__(*args, **kwargs)
+
+
 def _defined(str):
     return any(
         [
@@ -528,9 +527,10 @@ for key, value in toolz.merge(
         (
             toolz,
             inspect,
+            __import__("IPython").display if "IPython" in sys.modules else inspect,
             *map(
                 __import__,
-                "copy io typing types dataclasses abc statistics itertools json math string random re glob".split(),
+                "copy io typing types dataclasses abc statistics itertools json math string random re glob ast dis tokenize".split(),
             ),
         )
     )
@@ -735,7 +735,12 @@ Forward references.
     [<module 'random'...>, <module 'itertools' (built-in)>]
     >>> λ['itertools.chain.__name__']()
     'chain'
-    
+
+Normal slicing when all the slices are integers or None
+
+    >>> len(λ.range().skip()), len(λ.range().skip())
+    (1, 1)
+
 Callable slicing
     
     >>> slice(filter, pipe, map)
@@ -744,16 +749,26 @@ Callable slicing
     {'0': <class 'int'>, '2': <class 'int'>, '4': <class 'int'>}
 
 
+Length and Logic
+
+    >>> len(λ), bool(λ)
+    (0, False)
+    >>> len(λ()), bool(λ())
+    (1, True)
     
 Syntactic sugar causes cancer of the semicolon.  
 
     
 Starred functions allows arguments and dictionaries to be defined in iterables.
 
-    >>> stars(range)([0,10])
+    >>> star.range()([0,10])
     range(0, 10)
-    >>> stars(λ[dict])(λ[range][reversed][enumerate][[list]](3))
+    >>> star[dict](λ[range][reversed][enumerate][[list]](3))
     {0: 2, 1: 1, 2: 0}
+    
+    >>> star((0,)).range()((1, 2))
+    range(0, 1, 2)
+
    
    
 Unary functions:
