@@ -376,7 +376,7 @@ class Compose(Composition, Extensions):
         try:
             object = __import__("IPython").core.completerlib.module_completion("import")
         except:
-            ...
+            return []  # we wont need this if ipython ain't around
         return object + list(
             itertools.chain(
                 *[
