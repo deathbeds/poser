@@ -45,6 +45,7 @@ import inspect
 import itertools
 import operator
 import pathlib
+import re
 import sys
 import typing
 
@@ -55,8 +56,33 @@ from toolz.curried import *
 
 # `Compose` augments `toolz.Compose` to provide a fluent & symbollic object for function composition in python.
 
+# ## Function Composition base class.
 
-class Composition(toolz.functoolz.Compose):
+
+class State:
+    def __getstate__(self):
+        return tuple(getattr(self, x) for x in self.__slots__)
+
+    def __setstate__(self, state):
+        tuple(setattr(self, x, v) for x, v in zip(self.__slots__, state))
+
+
+class Composition(State, toolz.functoolz.Compose):
+    """Extensible function partial composition that excepts Exceptions.
+    
+All of position is overlay on the toolz library that supports conventions for functional programming in python.
+The toolz documentation are some of the best in python.
+    
+>>> Composition([list, range], 5)(10)
+[5, 6, 7, 8, 9]
+
+λ or poser is a convenience type for building compositions.
+
+>>> λ(5).partial(range).list()(10)
+[5, 6, 7, 8, 9]
+
+"""
+
     __slots__ = toolz.functoolz.Compose.__slots__ + tuple(
         "args kwargs exceptions".split()
     )
@@ -70,85 +96,148 @@ class Composition(toolz.functoolz.Compose):
             kwargs,
         )
 
-    def __iter__(x):
-        yield x.first
-        yield from x.funcs
+    def __iter__(self):
+        """Iterate over the functions in a Composition.
+    
+    >>> Composition([range], 1)
+    Composition(<class 'range'>,)
+    """
+        yield self.first
+        yield from self.funcs
 
-    def __bool__(x):
-        return not isinstance(x, type)
+    def __bool__(self):
+        """Composition is inherited as a metaclass later.
+        
+    >>> assert λ() ^ λ
+        
+    Composition is True for both types and objects.
 
-    def __call__(x, *tuple, **dict):
-        if not isinstance(x, star):
-            tuple, dict = x.args + tuple, {**x.kwargs, **dict}
-        for callable in x:
+    >>> assert bool(Composition) and bool(Composition())
+        """
+        return not isinstance(self, type)
+
+    def __call__(self, *args, **kwargs):
+        """Call a partial composition with args and kwargs.
+        
+    >>> Composition([range, enumerate, dict], 5) 
+    Composition(<class 'range'>, <class 'enumerate'>, <class 'dict'>)
+    """
+        if not isinstance(self, star):
+            # A starred method has already consumed the args and kwargs.
+            args, kwargs = (
+                getattr(self, "args", ()) + args,
+                {**getattr(self, "kwargs", {}), **kwargs},
+            )
+
+        # Iterate over the callables in the Composition piping
+        # the output across each function
+        for callable in self:
             try:
-                tuple, dict = (callable(*tuple, **dict),), {}
-                object = tuple[0]
-            except x.exceptions as Exception:
+                args, kwargs = (callable(*args, **kwargs),), {}
+                object = args[0]
+            except self.exceptions as Exception:
+                # If an exception is trigger we return a Ø exception
+                # that is False and can be used in logical circuits.
                 return Ø(Exception)
         return object
 
     def __len__(self):
-        if isinstance(self, type):
-            return 0
+        """A Composition's length is measured by the number of functions.
+        
+    >>> assert len(λ()) ^ len(λ)
+    """
+        return (
+            0 if isinstance(self, type) else (self.funcs and len(self.funcs) or 0) + 1
+        )
 
-        return (self.funcs and len(self.funcs) or 0) + 1
+    def partial(self, object=None, *args, **kwargs):
+        """Append a callable-ish object with partial arguments to the composition.
+        
+    partial can be chained to compose complex functions..
+        
+    >>> assert Composition().partial(range).partial().partial(type)(1) is range
+    
+        """
+        if object is not None:
+            object = juxt(object)
 
-    def partial(this, object=None, *args, **kwargs):
-        """append a `partial` an `object` to this composition."""
-        if isinstance(this, type) and issubclass(this, Composition):
-            this = this()
-        if not isinstance(object, Λ):
+        if isinstance(self, type) and issubclass(self, Composition):
+            # if the object isn't instantiated, instantiate it.
+            self = self()
+        if isinstance(object, Λ):
+            pass  # When using a fat lambda because we can't inspect it's attributes.
+        else:
             if object is None:
-                return this
+                # None is a valid answer
+                return self
             if isinstance(object, slice):
+                # slices are weird
                 if normal_slice(object):
-                    return type(this)(funcs=list(this)[object])
+                    # normal slices operate on a lists of functions.
+                    return type(self)(funcs=list(self)[object])
                 else:
-                    callable(object.start) and this.filter(object.start)
-                    callable(object.stop) and this.map(object.stop)
-                    callable(object.step) and this.partial(object.step)
-                    return this
+                    # slices of callable are crazy!
+                    # They provide access to the common filter, map, pipe pattern.
+                    # slice(filter, map, pipe)
+                    callable(object.start) and self.filter(object.start)
+                    callable(object.stop) and self.map(object.stop)
+                    callable(object.step) and self.partial(object.step)
+                    return self
 
+        # ball the object into a partial when args or kwargs are provided
         if args or kwargs:
             object = toolz.partial(object, *args, **kwargs)
-        if this.first is I:
-            this.first = object
+
+        # update the functions in the composition
+        if self.first is I:
+            # the first function is identity we know that functions have not been added to the composition.
+            # the first attribute is inherited from toolz.
+            self.first = object
         else:
-            this.funcs += (object,)
-        return this
-
-
-# ### Utility functions
+            # append the callable object
+            self.funcs += (object,)
+        return self
 
 
 def istype(object, cls):
+    """A convenience function for checking if an object is a type."""
     return isinstance(object, type) and issubclass(object, cls)
 
 
-def _evaluate(object, property=None):
-    try:
-        object = importlib.import_module(object)
-        if property is None:
-            return object
-    except ModuleNotFoundError:
-        module, sep, next = object.rpartition(".")
-        property = next if property is None else f"{next}.{property}"
-    else:
-        return operator.attrgetter(property)(object)
-    return _evaluate(module, property)
+def normal_slice(slice):
+    return all(
+        isinstance(x, (int, type(None)))
+        for x in operator.attrgetter(*"start stop step".split())(slice)
+    )
 
 
-class Explicit(typing.ForwardRef, _root=False):
-    def __new__(cls, object, *args, **kwargs):
-        if not isinstance(object, str):
+class Ø(BaseException):
+    def __bool__(self):
+        return False
+
+
+def I(*tuple, **_):
+    "A nothing special identity function, does pep8 peph8 me?"
+    return tuple[0] if tuple else None
+
+
+# ### Forward reference to `sys.modules`
+
+
+class Forward(State, typing.ForwardRef, _root=False):
+    """A forward reference implementation that accesses object off of the sys.modules"""
+
+    def __new__(cls, object=None, *args, **kwargs):
+        if not isinstance(object, (str, type(None))):
             return object
-        try:
-            ast.parse(object)
-        except SyntaxError:
-            return object  # if the forward reference isn't valid code...
+        if isinstance(object, str):
+            try:
+                ast.parse(object)
+            except SyntaxError:
+                return object  # if the forward reference isn't valid code...
         self = super().__new__(cls)
-        self.__init__(object, *args, **kwargs)
+        if object is not None:
+            self.__init__(object, *args, **kwargs)
         return self
 
     def __call__(self, *args, **kwargs):
@@ -175,14 +264,28 @@ class Explicit(typing.ForwardRef, _root=False):
         return x.__forward_arg__
 
 
-def I(*tuple, **_):
-    "A nothing special identity function, does pep8 peph8 me?"
-    return tuple[0] if tuple else None
+def _evaluate(object, property=None):
+    """Take a dotted string and return the object it is referencing.
+    
+Used by the Forward types."""
+    try:
+        object = importlib.import_module(object)
+        if property is None:
+            return object
+    except ModuleNotFoundError:
+        module, sep, next = object.rpartition(".")
+        property = next if property is None else f"{next}.{property}"
+    else:
+        return operator.attrgetter(property)(object)
+    return _evaluate(module, property)
 
 
-@functools.wraps(toolz.map)
-def map(callable, object, key=None, *, property=map):
+# ### Overloaded `map` and `filter` objects.
+
+
+def map(callable, object, key=None):
     """A general `map` function for sequences and containers."""
+    property = builtins.map
     if isinstance(object, typing.Mapping):
         if key is not None:
             object = getattr(toolz, f"key{property.__name__}")(key, object)
@@ -190,23 +293,38 @@ def map(callable, object, key=None, *, property=map):
     return getattr(toolz, property.__name__)(callable, object)
 
 
-filter = functools.wraps(filter)(functools.partial(map, property=filter))
+def filter(callable, object, key=None):
+    property = builtins.filter
+    if isinstance(object, typing.Mapping):
+        if key is not None:
+            object = getattr(toolz, f"key{property.__name__}")(key, object)
+        return getattr(toolz, f"val{property.__name__}")(callable, object)
+    return getattr(toolz, property.__name__)(callable, object)
+
+
+# ### Juxtaposition.
 
 
 class juxt(toolz.functoolz.juxt):
-    def __new__(self, funcs):
+    """An overloaded toolz juxtaposition that works with different objects and iterables."""
+
+    def __new__(self, funcs=None):
+        if funcs is None:
+            self = super().__new__(self)
+            return self.__init__() or self
         if isinstance(funcs, str):
-            funcs = Explicit(funcs)
+            funcs = Forward(funcs)
         if callable(funcs) or not toolz.isiterable(funcs):
             return funcs
         self = super().__new__(self)
         return self.__init__(funcs) or self
 
-    def __init__(self, object):
+    def __init__(self, object=None):
         self.funcs = object
 
     def __call__(self, *args, **kwargs):
         if isinstance(self.funcs, typing.Mapping):
+            # Juxtapose a mapping object.
             object = type(self.funcs)()
             for key, value in self.funcs.items():
                 if callable(key):
@@ -214,37 +332,26 @@ class juxt(toolz.functoolz.juxt):
                 if callable(value):
                     value = juxt(value)(*args, **kwargs)
                 object[key] = value
-            else:
-                return object
+            return object
         if toolz.isiterable(self.funcs):
+            # juxtapose an iterable type that returns the container type
             return type(self.funcs)(
                 juxt(x)(*args, **kwargs) if (callable(x) or toolz.isiterable(x)) else x
                 for x in self.funcs
             )
         if callable(self.funcs):
+            # call it ya can
             return self.funcs(*args, **kwargs)
         return self.funcs
 
 
-class Ø(BaseException):
-    def __bool__(self):
-        return False
-
-
-def normal_slice(slice):
-    return all(
-        isinstance(x, (int, type(None)))
-        for x in operator.attrgetter(*"start stop step".split())(slice)
-    )
-
-
 class Extensions:
-    _flip = {}
+    _fold = {}
     _partial = {}
     _method = {}
 
 
-def flip(callable, *args, **kwargs):
+def fold(callable, *args, **kwargs):
     @functools.wraps(callable)
     def call(*a, **k):
         return callable(*a, *args, **{**kwargs, **k})
@@ -253,40 +360,61 @@ def flip(callable, *args, **kwargs):
 
 
 class Compose(Composition, Extensions):
-    """`__add__ or partial` a function into the composition."""
+    """An extended API for function compositions that allow contiguous functional compositions
+    using a fluent and symbollic API.
+    
+    """
 
     def partial(x, object=None, *args, **kwargs):
         if object is Ellipsis:
             return x()  # call when we see ellipsis.
-        return Composition.partial(x, juxt(object), *args, **kwargs)
+        return Composition.partial(x, object, *args, **kwargs)
 
     @property
     def __doc__(x):
+        """The first object is the documentation."""
         return inspect.getdoc(x.first)
 
+    @property
+    def __signature__(x):
+        """Like the doc, the signature comes from the first function."""
+        return inspect.signature(x.first)
+
+    # +, -, >>, and [] append partials.
+    # multiple symbols make it possible to append functions
+    # in different places in python's order of operations.
     __pos__ = (
         __rshift__
     ) = (
         __sub__
     ) = __rsub__ = __isub__ = __add__ = __radd__ = __iadd__ = __getitem__ = partial
 
-    @property
-    def __signature__(x):
-        return inspect.signature(x.first)
-
     """Mapping, Filtering, Groupby, and Reduction."""
 
     def map(λ, callable, key=None):
-        return λ[toolz.partial(map, juxt(callable), key=juxt(key))]
+        """Append an overloaded map that works with iterables and mappings."""
+        if callable is not None:
+            callable = juxt(callable)
+        if key is not None:
+            key = juxt(key)
+        return λ[toolz.partial(map, callable, key=key)]
 
+    # * appends a map to the composition
     __mul__ = __rmul__ = __imul__ = map
 
+    # / appends a filter to the composition
     def filter(λ, callable, key=None):
-        return λ[toolz.partial(filter, juxt(callable), key=juxt(key))]
+        """Append an overloaded map that works with iterables and mappings."""
+        if callable is not None:
+            callable = juxt(callable)
+        if key is not None:
+            key = juxt(key)
+        return λ[toolz.partial(filter, callable, key=key)]
 
     __truediv__ = __rtruediv__ = __itruediv__ = filter
 
-    def groupby(λ, callable):
+    @functools.wraps(toolz.groupby)
+    def groupby(λ, callable, *args, **kwargs):
         return λ[toolz.curried.groupby(juxt(callable))]
 
     __matmul__ = __rmatmul__ = __imatmul__ = groupby
@@ -399,12 +527,12 @@ class Compose(Composition, Extensions):
                 return cls.partial(cls._partial[str], *args, **kwargs)
 
             return defer
-        elif str in cls._flip:
+        elif str in cls._fold:
 
-            @functools.wraps(cls._flip[str])
+            @functools.wraps(cls._fold[str])
             def defer(*args, **kwargs):
                 nonlocal str, cls
-                return cls.partial(flip(cls._flip[str], *args, **kwargs))
+                return cls.partial(fold(cls._fold[str], *args, **kwargs))
 
             return defer
 
@@ -421,14 +549,19 @@ class Compose(Composition, Extensions):
     def __dir__(cls):
         return sorted(
             super().__dir__(cls)
-            + sum(map(list, (cls._method, cls._flip, cls._partial)), [])
+            + sum(map(list, (cls._method, cls._ffold, cls._partial)), [])
         )
 
     def first(cls):
         return cls[iter][next]
 
 
+# ## Conditional compositions
+
+
 class Conditional(Compose):
+    __slots__ = Compose.__slots__ + ("predicate",)
+
     def __init__(self, predicate, *args, **kwargs):
         self.predicate = super().__init__(*args, **kwargs) or predicate
 
@@ -445,13 +578,16 @@ class IfNot(Conditional):
         return object if object else super().__call__(*args, **kwargs)
 
 
+# ## Compositional types.
+
+
 class Type(abc.ABCMeta, Extensions):
     __getattribute__ = Compose.__getattribute__
 
     def __dir__(cls):
         return sorted(
             super().__dir__()
-            + sum(map(list, (cls._method, cls._flip, cls._partial)), [])
+            + sum(map(list, (cls._method, cls._fold, cls._partial)), [])
         )
 
     partial = Compose.partial
@@ -488,7 +624,7 @@ class star(λ, Compose, metaclass=Type):
 def _defined(str):
     return any(
         [
-            str in Extensions._flip,
+            str in Extensions._fold,
             str in Extensions._partial,
             str in Extensions._method,
             str in _type_method_names,
@@ -496,6 +632,7 @@ def _defined(str):
     )
 
 
+# Add caller and getter methods.
 Compose._method.update(
     dict(
         itemgetter=operator.itemgetter,
@@ -503,6 +640,8 @@ Compose._method.update(
         methodcaller=operator.methodcaller,
     )
 )
+
+
 for key, value in toolz.merge(
     toolz.pipe(
         {x: getattr(object, x) for x in dir(object)},
@@ -510,12 +649,12 @@ for key, value in toolz.merge(
         toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
     )
     for object in reversed(
-        (builtins, operator, str, dict, list, pathlib.Path, __import__("fnmatch"))
+        (operator, str, dict, list, pathlib.Path, __import__("fnmatch"), re)
     )
 ).items():
-    _defined(key) or Compose._flip.update({key: value})
-for _ in "compile glob".split():
-    Compose._flip.pop(_)
+    _defined(key) or Compose._fold.update({key: value})
+for _ in "glob".split():
+    Compose._fold.pop(_)
 del _
 for key, value in toolz.merge(
     toolz.pipe(
@@ -530,13 +669,18 @@ for key, value in toolz.merge(
             __import__("IPython").display if "IPython" in sys.modules else inspect,
             *map(
                 __import__,
-                "copy io typing types dataclasses abc statistics itertools json math string random re glob ast dis tokenize".split(),
+                "builtins copy io typing types dataclasses abc statistics itertools json math string random re glob ast dis tokenize".split(),
             ),
+            toolz,
+            toolz.sandbox,
         )
     )
 ).items():
     _defined(key) or Compose._partial.update({key: value})
 Compose._partial.update(dict(Path=pathlib.Path))
+
+
+# ## A self referential function composition.
 
 
 def attribute(property, *args, **kwargs):
@@ -647,6 +791,12 @@ del binop, unaryop
 
 # `"__main__"` tests.
 
+λ()
+
+
+λ[:]
+
+
 __test__ = globals().get("__test__", {})
 __test__[
     __name__
@@ -702,7 +852,7 @@ Filtering Mappings
     {0: 'a', 1: 'b'}
     >>> λ('abc').enumerate().dict().filter(λ().partial(operator.__contains__, 'bc') , (1).__lt__)()
     {2: 'c'}
-    >>> λ('abc').enumerate().dict().keyfilter((1).__lt__)()
+    >>> λ('abc').enumerate().dict().filter(λ(),(1).__lt__)()
     {2: 'c'}
     
 Groupby
@@ -724,7 +874,7 @@ Conditionals
 
 Forward references.
 
-    >>> e = Explicit('builtins.range')
+    >>> e = Forward('builtins.range')
     >>> e
     ForwardRef('builtins.range')
     >>> e._evaluate(), e
@@ -744,9 +894,12 @@ Normal slicing when all the slices are integers or None
 Callable slicing
     
     >>> slice(filter, pipe, map)
-    slice(...(<...filter...pipe...map...>)
+    slice(<...filter...pipe...map...>)
     >>> λ.range(6)[(Λ-1)%2:λ[str, type]:dict]+...
     {'0': <class 'int'>, '2': <class 'int'>, '4': <class 'int'>}
+    
+    >>> λ[bool:type]
+    λ(...map...filter...)
 
 
 Length and Logic
