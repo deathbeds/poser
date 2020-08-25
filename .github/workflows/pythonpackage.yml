@@ -23,7 +23,7 @@ jobs:
         pip install .
     - name: Test with pytest
       run: |
-        pip install pytest pytest-cov nbval dask[bag]
+        pip install pytest pytest-cov nbval dask[bag] pandas
         pytest --cov=poser --doctest-modules --nbval poser.py tests/test_poser_api.ipynb tests/test_dask.ipynb
         
     - name: Build
