@@ -649,7 +649,7 @@ for key, value in toolz.merge(
         toolz.curried.keyfilter(toolz.compose(str.isalpha, toolz.first)),
     )
     for object in reversed(
-        (operator, str, dict, list, pathlib.Path, __import__("fnmatch"))
+        (operator, str, dict, list, pathlib.Path, __import__("fnmatch"), re)
     )
 ).items():
     _defined(key) or Compose._fold.update({key: value})
