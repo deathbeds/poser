@@ -3,7 +3,7 @@
 
 """dysfunctional programming in python"""
 __version__ = "0.2.3"
-__all__ = "λ", "Λ", "poser", "this", "star"
+__all__ = "λ", "Λ", "poser", "this", "star", "juxt"
 
 
 # `λ` is an `object` for fluent function composition in `"python"` based on the `toolz` library.
@@ -302,11 +302,25 @@ def filter(callable, object, key=None):
     return getattr(toolz, property.__name__)(callable, object)
 
 
+def _sympy(object):
+    import sys
+
+    if "sympy" not in sys.modules:
+        return False
+    import sympy
+
+    if isinstance(object, sympy.Expr):
+        return True
+    return False
+
+
 # ### Juxtaposition.
 
 
 class juxt(toolz.functoolz.juxt):
     """An overloaded toolz juxtaposition that works with different objects and iterables."""
+
+    _lambdaified = {}
 
     def __new__(self, funcs=None):
         if funcs is None:
@@ -314,6 +328,14 @@ class juxt(toolz.functoolz.juxt):
             return self.__init__() or self
         if isinstance(funcs, str):
             funcs = Forward(funcs)
+        if _sympy(funcs):
+            import sympy
+
+            if not funcs in self._lambdaified:
+                self._lambdaified[funcs] = sympy.lambdify(
+                    sorted(funcs.free_symbols, key=lambda x: x.name), funcs
+                )
+            return self._lambdaified[funcs]
         if callable(funcs) or not toolz.isiterable(funcs):
             return funcs
         self = super().__new__(self)
@@ -336,7 +358,9 @@ class juxt(toolz.functoolz.juxt):
         if toolz.isiterable(self.funcs):
             # juxtapose an iterable type that returns the container type
             return type(self.funcs)(
-                juxt(x)(*args, **kwargs) if (callable(x) or toolz.isiterable(x)) else x
+                juxt(x)(*args, **kwargs)
+                if (callable(x) or toolz.isiterable(x) or _sympy(x))
+                else x
                 for x in self.funcs
             )
         if callable(self.funcs):
