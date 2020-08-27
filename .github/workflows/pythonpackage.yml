@@ -24,7 +24,7 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest nbval dask[bag] pandas
-        pytest --doctest-modules --nbval poser.py tests/test_poser_api.ipynb tests/test_dask.ipynb
+        pytest --doctest-modules --nbval poser.py tests/test_poser_api.ipynb tests/test_dask.ipynb tests/test_sympy.ipynb
         
     - name: Build
       run: |
