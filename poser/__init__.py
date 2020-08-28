@@ -4,6 +4,7 @@ from .poser import *
 __version__ = "0.2.3"
 __all__ = "λ", "Λ", "poser", "this", "star", "juxt"
 import toolz
+import importlib
 
 
 class juxt(toolz.functoolz.juxt):
@@ -16,7 +17,7 @@ class juxt(toolz.functoolz.juxt):
             self = super().__new__(self)
             return self.__init__() or self
         if isinstance(funcs, str):
-            funcs = Forward(funcs)
+            funcs = importlib.import_module('poser.poser').Forward(funcs)
         if util._sympy(funcs):
             import sympy
 
@@ -58,4 +59,4 @@ class juxt(toolz.functoolz.juxt):
         return self.funcs
 
 
-__import__("importlib").import_module('poser.poser').juxt = juxt
+importlib.import_module('poser.poser').juxt = juxt
