@@ -1,10 +1,9 @@
 """dysfunctional programming in python"""
+from . import util
+from .poser import *
 __version__ = "0.2.3"
 __all__ = "λ", "Λ", "poser", "this", "star", "juxt"
 import toolz
-
-from . import util
-from .poser import *
 
 
 class juxt(toolz.functoolz.juxt):
@@ -18,7 +17,7 @@ class juxt(toolz.functoolz.juxt):
             return self.__init__() or self
         if isinstance(funcs, str):
             funcs = Forward(funcs)
-        if _sympy(funcs):
+        if util._sympy(funcs):
             import sympy
 
             if not funcs in self._lambdaified:
@@ -35,7 +34,7 @@ class juxt(toolz.functoolz.juxt):
         self.funcs = object
 
     def __call__(self, *args, **kwargs):
-        if isinstance(self.funcs, typing.Mapping):
+        if isinstance(self.funcs, __import__("typing").Mapping):
             # Juxtapose a mapping object.
             object = type(self.funcs)()
             for key, value in self.funcs.items():
@@ -49,7 +48,7 @@ class juxt(toolz.functoolz.juxt):
             # juxtapose an iterable type that returns the container type
             return type(self.funcs)(
                 juxt(x)(*args, **kwargs)
-                if (callable(x) or toolz.isiterable(x) or _sympy(x))
+                if (callable(x) or toolz.isiterable(x) or util._sympy(x))
                 else x
                 for x in self.funcs
             )
@@ -57,3 +56,6 @@ class juxt(toolz.functoolz.juxt):
             # call it ya can
             return self.funcs(*args, **kwargs)
         return self.funcs
+
+
+__import__("importlib").import_module('poser.poser').juxt = juxt
