@@ -1,8 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-"""dysfunctional programming in python"""
-__version__ = "0.2.3"
 __all__ = "λ", "Λ", "poser", "this", "star", "juxt"
 
 
@@ -52,6 +47,7 @@ import typing
 import toolz
 from toolz.curried import *
 
+from .util import fold, _sympy, map, filter, istype, normal_slice, _evaluate, attribute
 # #### Source
 
 # `Compose` augments `toolz.Compose` to provide a fluent & symbollic object for function composition in python.
@@ -69,10 +65,10 @@ class State:
 
 class Composition(State, toolz.functoolz.Compose):
     """Extensible function partial composition that excepts Exceptions.
-    
+
 All of position is overlay on the toolz library that supports conventions for functional programming in python.
 The toolz documentation are some of the best in python.
-    
+
 >>> Composition([list, range], 5)(10)
 [5, 6, 7, 8, 9]
 
@@ -98,7 +94,7 @@ The toolz documentation are some of the best in python.
 
     def __iter__(self):
         """Iterate over the functions in a Composition.
-    
+
     >>> Composition([range], 1)
     Composition(<class 'range'>,)
     """
@@ -107,9 +103,9 @@ The toolz documentation are some of the best in python.
 
     def __bool__(self):
         """Composition is inherited as a metaclass later.
-        
+
     >>> assert λ() ^ λ
-        
+
     Composition is True for both types and objects.
 
     >>> assert bool(Composition) and bool(Composition())
@@ -118,7 +114,7 @@ The toolz documentation are some of the best in python.
 
     def __call__(self, *args, **kwargs):
         """Call a partial composition with args and kwargs.
-        
+
     >>> Composition([range, enumerate, dict], 5) 
     Composition(<class 'range'>, <class 'enumerate'>, <class 'dict'>)
     """
@@ -143,20 +139,21 @@ The toolz documentation are some of the best in python.
 
     def __len__(self):
         """A Composition's length is measured by the number of functions.
-        
+
     >>> assert len(λ()) ^ len(λ)
     """
         return (
-            0 if isinstance(self, type) else (self.funcs and len(self.funcs) or 0) + 1
+            0 if isinstance(self, type) else (
+                self.funcs and len(self.funcs) or 0) + 1
         )
 
     def partial(self, object=None, *args, **kwargs):
         """Append a callable-ish object with partial arguments to the composition.
-        
+
     partial can be chained to compose complex functions..
-        
+
     >>> assert Composition().partial(range).partial().partial(type)(1) is range
-    
+
         """
         if object is not None:
             object = juxt(object)
@@ -165,7 +162,8 @@ The toolz documentation are some of the best in python.
             # if the object isn't instantiated, instantiate it.
             self = self()
         if isinstance(object, Λ):
-            pass  # When using a fat lambda because we can't inspect it's attributes.
+            # When using a fat lambda because we can't inspect it's attributes.
+            pass
         else:
             if object is None:
                 # None is a valid answer
@@ -264,129 +262,16 @@ class Forward(State, typing.ForwardRef, _root=False):
         return x.__forward_arg__
 
 
-def _evaluate(object, property=None):
-    """Take a dotted string and return the object it is referencing.
-    
-Used by the Forward types."""
-    try:
-        object = importlib.import_module(object)
-        if property is None:
-            return object
-    except ModuleNotFoundError:
-        module, sep, next = object.rpartition(".")
-        property = next if property is None else f"{next}.{property}"
-    else:
-        return operator.attrgetter(property)(object)
-    return _evaluate(module, property)
-
-
-# ### Overloaded `map` and `filter` objects.
-
-
-def map(callable, object, key=None):
-    """A general `map` function for sequences and containers."""
-    property = builtins.map
-    if isinstance(object, typing.Mapping):
-        if key is not None:
-            object = getattr(toolz, f"key{property.__name__}")(key, object)
-        return getattr(toolz, f"val{property.__name__}")(callable, object)
-    return getattr(toolz, property.__name__)(callable, object)
-
-
-def filter(callable, object, key=None):
-    property = builtins.filter
-    if isinstance(object, typing.Mapping):
-        if key is not None:
-            object = getattr(toolz, f"key{property.__name__}")(key, object)
-        return getattr(toolz, f"val{property.__name__}")(callable, object)
-    return getattr(toolz, property.__name__)(callable, object)
-
-
-def _sympy(object):
-    import sys
-
-    if "sympy" not in sys.modules:
-        return False
-    import sympy
-
-    if isinstance(object, sympy.Expr):
-        return True
-    return False
-
-
-# ### Juxtaposition.
-
-
-class juxt(toolz.functoolz.juxt):
-    """An overloaded toolz juxtaposition that works with different objects and iterables."""
-
-    _lambdaified = {}
-
-    def __new__(self, funcs=None):
-        if funcs is None:
-            self = super().__new__(self)
-            return self.__init__() or self
-        if isinstance(funcs, str):
-            funcs = Forward(funcs)
-        if _sympy(funcs):
-            import sympy
-
-            if not funcs in self._lambdaified:
-                self._lambdaified[funcs] = sympy.lambdify(
-                    sorted(funcs.free_symbols, key=lambda x: x.name), funcs
-                )
-            return self._lambdaified[funcs]
-        if callable(funcs) or not toolz.isiterable(funcs):
-            return funcs
-        self = super().__new__(self)
-        return self.__init__(funcs) or self
-
-    def __init__(self, object=None):
-        self.funcs = object
-
-    def __call__(self, *args, **kwargs):
-        if isinstance(self.funcs, typing.Mapping):
-            # Juxtapose a mapping object.
-            object = type(self.funcs)()
-            for key, value in self.funcs.items():
-                if callable(key):
-                    key = juxt(key)(*args, **kwargs)
-                if callable(value):
-                    value = juxt(value)(*args, **kwargs)
-                object[key] = value
-            return object
-        if toolz.isiterable(self.funcs):
-            # juxtapose an iterable type that returns the container type
-            return type(self.funcs)(
-                juxt(x)(*args, **kwargs)
-                if (callable(x) or toolz.isiterable(x) or _sympy(x))
-                else x
-                for x in self.funcs
-            )
-        if callable(self.funcs):
-            # call it ya can
-            return self.funcs(*args, **kwargs)
-        return self.funcs
-
-
 class Extensions:
     _fold = {}
     _partial = {}
     _method = {}
 
 
-def fold(callable, *args, **kwargs):
-    @functools.wraps(callable)
-    def call(*a, **k):
-        return callable(*a, *args, **{**kwargs, **k})
-
-    return call
-
-
 class Compose(Composition, Extensions):
     """An extended API for function compositions that allow contiguous functional compositions
     using a fluent and symbollic API.
-    
+
     """
 
     def partial(x, object=None, *args, **kwargs):
@@ -473,7 +358,8 @@ class Compose(Composition, Extensions):
 
     def condition(λ, object):
         return IfThen(
-            λ.isinstance(object) if isinstance(object, (tuple, type)) else λ[object]
+            λ.isinstance(object) if isinstance(
+                object, (tuple, type)) else λ[object]
         )
 
     __pow__ = __ipow__ = condition
@@ -526,7 +412,8 @@ class Compose(Composition, Extensions):
     def _ipython_key_completions_(self):
         object = []
         try:
-            object = __import__("IPython").core.completerlib.module_completion("import")
+            object = __import__(
+                "IPython").core.completerlib.module_completion("import")
         except:
             return []  # we wont need this if ipython ain't around
         return object + list(
@@ -641,7 +528,8 @@ class star(λ, Compose, metaclass=Type):
     def __call__(x, *object, **dict):
         args, kwargs = list(), {}
         for arg in x.args + object:
-            kwargs.update(arg) if isinstance(arg, typing.Mapping) else args.extend(arg)
+            kwargs.update(arg) if isinstance(
+                arg, typing.Mapping) else args.extend(arg)
         return super().__call__(*args, **kwargs)
 
 
@@ -690,7 +578,8 @@ for key, value in toolz.merge(
         (
             toolz,
             inspect,
-            __import__("IPython").display if "IPython" in sys.modules else inspect,
+            __import__(
+                "IPython").display if "IPython" in sys.modules else inspect,
             *map(
                 __import__,
                 "builtins copy io typing types dataclasses abc statistics itertools json math string random re glob ast dis tokenize".split(),
@@ -705,15 +594,6 @@ Compose._partial.update(dict(Path=pathlib.Path))
 
 
 # ## A self referential function composition.
-
-
-def attribute(property, *args, **kwargs):
-    def attribute(object):
-        """Return an attrgetter or methodcaller."""
-        object = getattr(object, property)
-        return object(*args, **kwargs) if args or kwargs or callable(object) else object
-
-    return attribute
 
 
 class ThisType(abc.ABCMeta):
@@ -764,7 +644,8 @@ for binop in "add sub mul matmul truediv floordiv mod eq lt gt ne xor".split():
             cls,
             f"__r{binop}__",
             functools.wraps(getattr(operator, binop))(
-                functools.partialmethod(Composition.partial, getattr(operator, binop))
+                functools.partialmethod(
+                    Composition.partial, getattr(operator, binop))
             ),
         )
 
@@ -811,14 +692,6 @@ for unaryop in "pos neg invert abs".split():
     )
 this = Λ
 del binop, unaryop
-
-
-# `"__main__"` tests.
-
-λ()
-
-
-λ[:]
 
 
 __test__ = globals().get("__test__", {})
@@ -983,38 +856,3 @@ Extra:
     
     
 """
-
-
-if __name__ == "__main__":
-    import doctest
-
-    display(
-        doctest.testmod(optionflags=doctest.ELLIPSIS),
-        __import__("IPython").display.Markdown(__test__[__name__]),
-    )
-
-
-if __name__ == "__main__":
-    if "__file__" in locals():
-        if "covtest" in __import__("sys").argv:
-            print(__import__("doctest").testmod(optionflags=8))
-    else:
-        import IPython
-        from IPython import get_ipython
-
-        get_ipython().system(
-            "jupyter nbconvert --to python --TemplateExporter.exclude_input_prompt=True poser.ipynb"
-        )
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("black poser.py")
-        get_ipython().system("isort poser.py")
-        get_ipython().system("pyflakes poser.py")
-        get_ipython().system("ipython -m coverage -- run poser.py covtest")
-        get_ipython().system("coverage report")
-        get_ipython().system("coverage html")
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("pyreverse poser -osvg -pposer")
-        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
-        with IPython.utils.capture.capture_output():
-            get_ipython().system("pyreverse poser -osvg -pposer -my -s1")
-        IPython.display.display(IPython.display.SVG("classes_poser.svg"))
