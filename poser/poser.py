@@ -47,7 +47,7 @@ import typing
 import toolz
 from toolz.curried import *
 
-from .util import fold, _sympy, map, filter, istype, normal_slice, _evaluate, attribute
+from .util import fold, _sympy, map, filter, istype, normal_slice, _evaluate, attribute, flatten
 # #### Source
 
 # `Compose` augments `toolz.Compose` to provide a fluent & symbollic object for function composition in python.
@@ -409,6 +409,11 @@ class Compose(Composition, Extensions):
     def methodcaller(this, *args, **kwargs):
         return this[operator.methodcaller(*args, **kwargs)]
 
+    """non symbollic functions"""
+
+    def flatten(self, *args):
+        return self.partial(fold(flatten), *args)
+
     def _ipython_key_completions_(self):
         object = []
         try:
@@ -462,9 +467,6 @@ class Compose(Composition, Extensions):
             super().__dir__(cls)
             + sum(map(list, (cls._method, cls._ffold, cls._partial)), [])
         )
-
-    def first(cls):
-        return cls[iter][next]
 
 
 # ## Conditional compositions
@@ -567,6 +569,7 @@ for key, value in toolz.merge(
     _defined(key) or Compose._fold.update({key: value})
 for _ in "glob".split():
     Compose._fold.pop(_)
+Compose._fold.update(zip=zip)
 del _
 for key, value in toolz.merge(
     toolz.pipe(

@@ -87,3 +87,7 @@ Used by the Forward types."""
     else:
         return operator.attrgetter(property)(object)
     return _evaluate(module, property)
+
+
+def flatten(object):
+    return toolz.concatv(*object)
