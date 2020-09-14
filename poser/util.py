@@ -9,6 +9,16 @@ import toolz
 import operator
 
 
+def setter(callable, name, object):
+    setattr(object, name, callable(object))
+    return object
+
+
+class Ø(BaseException):
+    def __bool__(self):
+        return False
+
+
 def attribute(property, *args, **kwargs):
     """Methodcaller, attrgetter logic."""
     def attribute(object):
@@ -84,10 +94,59 @@ Used by the Forward types."""
     except ModuleNotFoundError:
         module, _, next = object.rpartition(".")
         property = next if property is None else f"{next}.{property}"
+
+    except ValueError:
+        return Ø(F"can't load module")
+
     else:
         return operator.attrgetter(property)(object)
+
     return _evaluate(module, property)
 
 
 def flatten(object):
     return toolz.concatv(*object)
+
+
+def context(exit, enter, **kwargs):
+    if not callable(enter):
+        if isinstance(enter, str):
+            try:
+                enter = __import__("fsspec").open(enter, **kwargs)
+            except:
+                enter = open(enter, **kwargs)
+    with enter as object:
+        object = exit(object)
+    return object
+
+
+def dump(target, object, format=None, **options):
+    try:
+        __import__('anyconfig').dump(
+            object, target, ac_parser=format, **options)
+    except:
+        __import__('json').dump(
+            object, target, ac_parser=format, **options)
+    return object
+
+
+async def arunner(object):
+    return await functools.partial()
+
+
+async def _runner(*args, **kwargs):
+    return await object(*args, **kwargs)
+
+
+def join(left, right, _key, key_=None):
+    return toolz.join(_key, left, right, key_ or _key, right)
+
+
+def raises(object, exception, msg=None):
+    msg = msg(object) if msg else object
+    raise exception(msg)
+
+
+def glob(object):
+    import glob
+    return glob.glob(object, recursive='**' in object)

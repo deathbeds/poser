@@ -12,8 +12,10 @@ home-page = "https://github.com/deathbeds/poser"
 license = "BSD-3-Clause"
 description-file = 'readme.md'
 
-
 [tool.flit.metadata.requires-extra]
+all = [
+    "dask[bag]", "anyconfig"
+]
 [tool.flit.metadata.urls]    
 [tool.flit.scripts]
 [tool.flit.sdist]
