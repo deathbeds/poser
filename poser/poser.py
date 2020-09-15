@@ -421,10 +421,10 @@ class Compose(Composition):
 
     __xor__ = excepts
 
-    def onlyif(λ, callable):
-        return OnlyIf(λ)[callable]
+    def ifthen(λ, callable):
+        return IfThen(λ)[callable]
 
-    __and__ = onlyif
+    __and__ = ifthen
 
     def ifnot(λ, callable):
         return IfNot(λ)[callable]
@@ -446,15 +446,15 @@ class Compose(Composition):
     def __exit__(*e):
         ...
 
-    def condition(λ, object):
+    def iff(λ, object):
         # use tuple for bool types. (bool,)
-        return IfThen(
+        return Iff(
             object if object is bool else
             λ.isinstance(object) if isinstance(
                 object, (tuple, type)) else λ[object]
         )
 
-    ifthen = __pow__ = __ipow__ = condition
+    __pow__ = __ipow__ = iff
 
     def skip(self, bool: bool = True):
         return bool and self.off() or self.on()
@@ -673,7 +673,7 @@ class Conditional(Compose):
         self.predicate = super().__init__(*args, **kwargs) or predicate
 
 
-class IfThen(Conditional):
+class Iff(Conditional):
     """call a function with the sample arguments and keywords if the predicate is true."""
 
     def __call__(self, *args, **kwargs):
@@ -685,7 +685,7 @@ class IfThen(Conditional):
         return super().__call__(*args, **kwargs) if cond else object
 
 
-class OnlyIf(Conditional):
+class IfThen(Conditional):
     """a conditional that continues only if the predicate is true."""
 
     def __call__(self, *args, **kwargs):
