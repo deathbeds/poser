@@ -32,7 +32,8 @@ from .util import (
     map,
     raises,
     normal_slice,
-    setter,
+    setterattr,
+    setteritem,
     glob,
 )
 
@@ -230,12 +231,17 @@ The toolz documentation are some of the best in python.
     >>> assert Composition().partial(range).partial().partial(type)(1) is range
 
         """
+        duplicate = kwargs.pop("duplicate", True)
         if object is not None:
             object = juxt(object)
 
         if isinstance(self, type) and issubclass(self, Composition):
             # if the object isn't instantiated, instantiate it.
             self = self()
+        elif not isinstance(self, Λ):
+            if duplicate:
+                self = self.duplicate()
+
         if isinstance(object, Λ):
             # When using a fat lambda because we can't inspect it's attributes.
             pass
@@ -252,9 +258,12 @@ The toolz documentation are some of the best in python.
                     # slices of callable are crazy!
                     # They provide access to the common filter, map, pipe pattern.
                     # slice(filter, map, pipe)
-                    callable(object.start) and self.filter(object.start)
-                    callable(object.stop) and self.map(object.stop)
-                    callable(object.step) and self.partial(object.step)
+                    callable(object.start) and self.filter(
+                        object.start, duplicate=False)
+                    callable(object.stop) and self.map(
+                        object.stop, duplicate=False)
+                    callable(object.step) and self.partial(
+                        object.step, duplicate=False)
                     return self
 
         # ball the object into a partial when args or kwargs are provided
@@ -270,6 +279,17 @@ The toolz documentation are some of the best in python.
             # append the callable object
             self.funcs += (object,)
         return self
+
+    def duplicate(self, *callable, deep=False):
+        "Make a duplicate copy of a composition."
+        import copy
+
+        f = getattr(copy, deep and "deepcopy" or "copy")(self)
+        for callable in callable:
+            f += callable
+        return f
+
+    _ = dup = duplicate
 
 
 def istype(object, cls):
@@ -345,6 +365,7 @@ class Compose(Composition):
 
     def partial(self, object=None, *args, **kwargs):
         if object is Ellipsis:
+            kwargs.pop('duplicate', None)
             return self()  # call when we see ellipsis.
         return Composition.partial(self, object, *args, **kwargs)
 
@@ -375,61 +396,86 @@ class Compose(Composition):
     # in different places in python's order of operations.
     __pos__ = (
         __rshift__
-    ) = (
-        __sub__
-    ) = __rsub__ = __isub__ = __add__ = __radd__ = __iadd__ = __getitem__ = partial
+    ) = __sub__ = __rsub__ = __add__ = __radd__ = __getitem__ = partial
 
+    __isub__ = __iadd__ = __irshift__ = functools.partialmethod(
+        partial, duplicate=False)
     """Mapping, Filtering, Groupby, and Reduction."""
 
-    def map(λ, callable, key=None):
+    def map(self, callable, key=None, *, duplicate=True):
         """Append an overloaded map that works with iterables and mappings."""
         if callable is not None:
             callable = juxt(callable)
         if key is not None:
             key = juxt(key)
-        return λ[toolz.partial(map, callable, key=key)]
+        return self.partial(toolz.partial(map, callable, key=key), duplicate=duplicate)
 
     # * appends a map to the composition
-    __mul__ = __rmul__ = __imul__ = map
+    __mul__ = __rmul__ = map
+
+    __imul__ = functools.partialmethod(map, duplicate=False)
 
     # / appends a filter to the composition
-    def filter(λ, callable, key=None):
+    def filter(self, callable, key=None, *, duplicate=True):
         """Append an overloaded map that works with iterables and mappings."""
         if callable is not None:
             callable = juxt(callable)
         if key is not None:
             key = juxt(key)
-        return λ[toolz.partial(filter, callable, key=key)]
+        return self.partial(
+            toolz.partial(filter, callable, key=key), duplicate=duplicate
+        )
 
-    __truediv__ = __rtruediv__ = __itruediv__ = filter
+    __truediv__ = __rtruediv__ = filter
+    __itruediv__ = functools.partialmethod(map, duplicate=False)
 
     @functools.wraps(toolz.groupby)
-    def groupby(λ, callable, *args, **kwargs):
-        return λ[toolz.curried.groupby(juxt(callable))]
+    def groupby(self, callable, *args, **kwargs):
+        return self.partial(
+            toolz.curried.groupby(juxt(callable)),
+            duplicate=kwargs.pop("duplicate", True),
+        )
 
-    __matmul__ = __rmatmul__ = __imatmul__ = groupby
+    __matmul__ = __rmatmul__ = groupby
+    __imatmul__ = functools.partialmethod(groupby, duplicate=False)
 
-    def reduce(λ, callable):
-        return λ[toolz.curried.reduce(juxt(callable))]
+    def reduce(λ, callable, *, duplicate=True):
+        return λ.partial(toolz.curried.reduce(juxt(callable)), duplicate=duplicate)
 
-    __mod__ = __rmod__ = __imod__ = reduce
+    __mod__ = __rmod__ = reduce
+    __imod__ = functools.partialmethod(reduce, duplicate=False)
 
     """Conditionals."""
 
-    def excepts(x, *Exceptions):
-        return λ(exceptions=Exceptions)[x]
+    def excepts(self, *Exceptions, duplicate=True):
+        if duplicate:
+            return Pose(exceptions=Exceptions)[self]
+        self.exceptions += Exceptions
+        return self
 
     __xor__ = excepts
+    __ixor__ = functools.partialmethod(excepts, duplicate=False)
 
-    def ifthen(λ, callable):
-        return IfThen(λ)[callable]
+    def ifthen(self, callable, *, duplicate=True):
+        object = IfThen(self)[callable]
+        if duplicate:
+            return object
+        self.first, self.funcs, self.exceptions = object, (), ()
+        return self
 
     __and__ = ifthen
+    __iand__ = functools.partialmethod(ifthen, duplicate=False)
 
-    def ifnot(λ, callable):
-        return IfNot(λ)[callable]
+    def ifnot(self, callable, *, duplicate=True):
+        object = IfNot(self)[callable]
+        if duplicate:
+            return object
+        self.first, self.funcs, self.exceptions = object, (), ()
+        return object
 
     __or__ = ifnot
+    __ior__ = functools.partialmethod(ifnot, duplicate=False)
+
     raises = functools.partialmethod(fold, raises)
 
     def issubclass(self, object):
@@ -440,19 +486,25 @@ class Compose(Composition):
 
     def __enter__(self):
         exit = Pose[:]
-        self = self.duplicate().partial(context, exit)
+        self = self.partial(context, exit)
         return self, exit
 
     def __exit__(*e):
         ...
 
-    def iff(λ, object):
+    def iff(self, object, *, duplicate=True):
         # use tuple for bool types. (bool,)
-        return Iff(
-            object if object is bool else
-            λ.isinstance(object) if isinstance(
-                object, (tuple, type)) else λ[object]
+        object = Iff(
+            object
+            if object is bool
+            else self.isinstance(object)
+            if isinstance(object, (tuple, type))
+            else self[object]
         )
+        if duplicate:
+            return object
+        self.first, self.funcs, self.exceptions = object, (), ()
+        return self
 
     __pow__ = __ipow__ = iff
 
@@ -465,10 +517,11 @@ class Compose(Composition):
     def off(self):
         return self[:-1]
 
-    def do(λ, callable):
-        return λ[toolz.curried.do(juxt(callable))]
+    def do(λ, callable, *, duplicate=True):
+        return λ.partial(toolz.curried.do(juxt(callable)), duplicate=duplicate)
 
     __lshift__ = do
+    __ilshift__ = functools.partialmethod(do, duplicate=False)
 
     def complement(self, object=None):
         if object == None:
@@ -485,27 +538,21 @@ class Compose(Composition):
     def __abs__(x):
         return Composition(*(object for object in reversed((x.first,) + x.funcs)))
 
-    def __reversed__(x):
-        new = +type(x)
-        for object in reversed((x.first,) + x.funcs):
-            new[object]
+    def __reversed__(self):
+        new = +type(self)
+        for object in reversed((self.first,) + self.funcs):
+            new = new[object]
         else:
             return new
 
-    def duplicate(self, *callable, deep=False):
-        "Make a duplicate copy of a composition."
-        import copy
-
-        f = getattr(copy, deep and "deepcopy" or "copy")(self)
-        for callable in callable:
-            f += callable
-        return f
-
-    _ = dup = duplicate
-
     def __setattr__(self, name, object):
         if name not in self.__slots__:
-            return self.partial(setter, object, name)
+            return self.partial(setterattr, object, name, duplicate=False)
+        return super().__setattr__(name, object)
+
+    def __setitem__(self, name, object):
+        if name not in self.__slots__:
+            return self.partial(setteritem, object, name, duplicate=False)
         return super().__setattr__(name, object)
 
     def compose(self, *callables):

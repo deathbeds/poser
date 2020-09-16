@@ -9,8 +9,15 @@ import toolz
 import operator
 
 
-def setter(callable, name, object):
+def setterattr(callable, name, object):
     setattr(object, name, callable(object))
+    return object
+
+
+def setteritem(f, name, object):
+    if callable(name):
+        name = name(object)
+    object.__setitem__(name, f(object))
     return object
 
 

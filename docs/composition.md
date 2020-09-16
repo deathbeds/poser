@@ -1,20 +1,23 @@
 # [function composition]
 
-[function composition] is the process of applying functions to functions. in procedural programming, we're commonly performing function composition.
+
+        if "shell" in locals():
+            %config shell.testing.update False
+[function composition] is the process of applying functions to functions. in procedural programming, like python, we're commonly performing function composition.
 
         def f(x): return x**2
         def g(x): return x/2
     
-for example, `f(g(20)) and g(f(20))` are function compositions that we may commonly encounter in mathematics or python programming. `assert f(g(20)) != g(f(20))` because function compositions are not commutative.
+for example, `f(g(20)) and g(f(20))` are function compositions that we may commonly encounter in mathematics or python. it is important to note that function compositions are not commutative; `assert f(g(20)) != g(f(20))`.
 
-python does have some functional qualities to it. functional styles of programming are declarative, but python is designed to be imperative. 
+python does have some functional qualities to it, like the `map and filter` functions. functional styles of programming are declarative, but python is designed to be imperative. 
 
-`toolz` is a successfull functional programming toolkit in python that powers many tools in scientific python. 
+`toolz` is a successful functional programming toolkit in python that powers many tools in scientific python. 
 
-        >>> assert toolz.compose(g, f)(10) == g(f(20))
+        >>> assert toolz.compose(g, f)(20) == g(f(20))
         >>> assert toolz.compose(f, g)(20) == f(g(20))
     
-albeit, the right to left application is convention for function composition. it opposes left to right literacy conventions. `toolz` provides an api to compose functions in an opposite direction; from left to right.
+albeit, the right to left application is convention for function composition. it opposes left to right literacy conventions. `toolz` provides an api to compose functions in an opposite direction; from left to right using `toolz.compose_left`.
 
         >>> assert toolz.compose_left(f, g)(20) == g(f(20))
         >>> assert toolz.compose_left(g, f)(20) == f(g(20))
@@ -64,6 +67,31 @@ closely aligned with how the process would be described in a recipe or literatur
         ...     == Pose.pipe(f, g)(20)
         ... )
 
+    
+## Mutable composition
+    
+Typically, `poser` compositions created a new instance of the function with symbollic methods. That is to 
+    
+        F = Pose()
+        >>> assert F[range] is not F
+        
+Appending a composition does not modify the composition in place.
+    
+        F[range] # does not modify F
+        >>> F
+        λ(<function I at ...>,)    
+    
+`poser` compositions are mutable when paired with the incremental python symbols.
+    
+        G = F[:]
+        >>> assert G is not F
+    
+        G += range 
+        G += len
+        
+        >>> G
+        λ(<built-in function len>, <class 'range'>)
+        
     
 
 [function composition]: https://en.wikipedia.org/wiki/Function_composition
