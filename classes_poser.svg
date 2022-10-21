@@ -25,7 +25,7 @@
 <g id="node4" class="node">
 <title>3</title>
 <polygon fill="none" stroke="#000000" points="283.5,-638.5 283.5,-767.5 438.5,-767.5 438.5,-638.5 283.5,-638.5"/>
-<text text-anchor="middle" x="361" y="-752.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.Composition</text>
+<text text-anchor="middle" x="361" y="-752.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.composition</text>
 <polyline fill="none" stroke="#000000" points="283.5,-744.5 438.5,-744.5 "/>
 <text text-anchor="start" x="291.5" y="-729.3" font-family="Times,serif" font-size="14.00" fill="#000000">args : tuple</text>
 <text text-anchor="start" x="291.5" y="-714.3" font-family="Times,serif" font-size="14.00" fill="#000000">exceptions</text>
@@ -90,7 +90,7 @@
 <g id="node3" class="node">
 <title>2</title>
 <polygon fill="none" stroke="#000000" points="470.5,-216.5 470.5,-586.5 647.5,-586.5 647.5,-216.5 470.5,-216.5"/>
-<text text-anchor="middle" x="559" y="-571.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.Compose</text>
+<text text-anchor="middle" x="559" y="-571.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.compose</text>
 <polyline fill="none" stroke="#000000" points="470.5,-563.5 647.5,-563.5 "/>
 <polyline fill="none" stroke="#000000" points="470.5,-539.5 647.5,-539.5 "/>
 <text text-anchor="start" x="478.5" y="-524.3" font-family="Times,serif" font-size="14.00" fill="#000000">attrgetter(this)</text>
@@ -140,7 +140,7 @@
 <g id="node5" class="node">
 <title>4</title>
 <polygon fill="none" stroke="#000000" points="389,-109 389,-178 531,-178 531,-109 389,-109"/>
-<text text-anchor="middle" x="460" y="-162.8" font-family="Times,serif" font-size="14.00" fill="#000000">poser.Conditional</text>
+<text text-anchor="middle" x="460" y="-162.8" font-family="Times,serif" font-size="14.00" fill="#000000">poser.conditional</text>
 <polyline fill="none" stroke="#000000" points="389,-155 531,-155 "/>
 <text text-anchor="start" x="397" y="-139.8" font-family="Times,serif" font-size="14.00" fill="#000000">predicate</text>
 <polyline fill="none" stroke="#000000" points="389,-132 531,-132 "/>
@@ -165,7 +165,7 @@
 <g id="node8" class="node">
 <title>7</title>
 <polygon fill="none" stroke="#000000" points="301,-.5 301,-70.5 399,-70.5 399,-.5 301,-.5"/>
-<text text-anchor="middle" x="350" y="-55.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.IfNot</text>
+<text text-anchor="middle" x="350" y="-55.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.ifnot</text>
 <polyline fill="none" stroke="#000000" points="301,-47.5 399,-47.5 "/>
 <polyline fill="none" stroke="#000000" points="301,-23.5 399,-23.5 "/>
 <text text-anchor="middle" x="350" y="-8.3" font-family="Times,serif" font-size="14.00" fill="#000000"> </text>
@@ -180,7 +180,7 @@
 <g id="node9" class="node">
 <title>8</title>
 <polygon fill="none" stroke="#000000" points="417.5,-.5 417.5,-70.5 524.5,-70.5 524.5,-.5 417.5,-.5"/>
-<text text-anchor="middle" x="471" y="-55.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.IfThen</text>
+<text text-anchor="middle" x="471" y="-55.3" font-family="Times,serif" font-size="14.00" fill="#000000">poser.ifthen</text>
 <polyline fill="none" stroke="#000000" points="417.5,-47.5 524.5,-47.5 "/>
 <polyline fill="none" stroke="#000000" points="417.5,-23.5 524.5,-23.5 "/>
 <text text-anchor="middle" x="471" y="-8.3" font-family="Times,serif" font-size="14.00" fill="#000000"> </text>
